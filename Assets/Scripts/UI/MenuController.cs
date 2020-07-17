@@ -4,11 +4,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.IO;
 
 namespace SpeedTutorMainMenuSystem
 {
     public class MenuController : MonoBehaviour
     {
+        #region Map Properties
+        [Header("Map Properties")]
+        [SerializeField] private Text saveFile;
+        [SerializeField] private Toggle climate;
+        [SerializeField] private Toggle terrain;
+        [SerializeField] private Toggle physcialLandmarks;
+        [SerializeField] private Toggle culturalLandmarks;
+        #endregion
+
         #region Default Values
         [Header("Default Menu Values")]
         [SerializeField] private float defaultBrightness;
@@ -33,7 +43,7 @@ namespace SpeedTutorMainMenuSystem
         const int STARTLAN = 11;
 
         private int menuNumber;
-        
+
         #endregion
 
         #region Menu Dialogs
@@ -50,6 +60,8 @@ namespace SpeedTutorMainMenuSystem
         [SerializeField] private GameObject noSaveDialog;
         [SerializeField] private GameObject newGameDialog;
         [SerializeField] private GameObject loadGameDialog;
+        [SerializeField] private GameObject lanDialog;
+        [SerializeField] private GameObject networkManager;
         #endregion
 
         #region Slider Linking
@@ -180,11 +192,12 @@ namespace SpeedTutorMainMenuSystem
             if (buttonType == "StartLAN")
             {
                 menuDefaultCanvas.SetActive(false);
-                newGameDialog.SetActive(true);
+                lanDialog.SetActive(true);
+                networkManager.SetActive(true);
                 menuNumber = STARTLAN;
             }
 
-            if(buttonType == "Connect")
+            if (buttonType == "Connect")
             {
                 menuDefaultCanvas.SetActive(false);
                 newGameDialog.SetActive(true);
@@ -245,6 +258,8 @@ namespace SpeedTutorMainMenuSystem
             StartCoroutine(ConfirmationBox());
         }
 
+      
+
         #region ResetButton
         public void ResetButton(string GraphicsMenu)
         {
@@ -280,12 +295,22 @@ namespace SpeedTutorMainMenuSystem
         #region Dialog Options - This is where we load what has been saved in player prefs!
         public void ClickNewGameDialog(string ButtonType)
         {
-            if (ButtonType == "Yes")
+            if (ButtonType == "Save")
             {
-                SceneManager.LoadScene(_newGameButtonLevel);
+                //SceneManager.LoadScene(_newGameButtonLevel);
+                SaveObject saveObject = new SaveObject
+                {
+                    climate = climate.isOn,
+                    terrain = terrain.isOn,
+                    culturalLandmarks = culturalLandmarks.isOn,
+                    physicalLandmarks = physcialLandmarks.isOn
+              
+                };
+                string json = JsonUtility.ToJson(saveObject);
+                File.WriteAllText(Application.dataPath + "/" + saveFile.text + ".txt", json);
             }
 
-            if (ButtonType == "No")
+            if (ButtonType == "Back")
             {
                 GoBackToMainMenu();
             }
@@ -340,6 +365,8 @@ namespace SpeedTutorMainMenuSystem
             newGameDialog.SetActive(false);
             loadGameDialog.SetActive(false);
             noSaveDialog.SetActive(false);
+            lanDialog.SetActive(false);
+            networkManager.SetActive(false);
             GeneralSettingsCanvas.SetActive(false);
             graphicsMenu.SetActive(false);
             soundMenu.SetActive(false);
@@ -364,5 +391,14 @@ namespace SpeedTutorMainMenuSystem
             GoBackToMainMenu();
         }
         #endregion
+    }
+    
+    public class SaveObject
+    {
+        public bool climate;
+        public bool terrain;
+        public bool physicalLandmarks;
+        public bool culturalLandmarks;
+        
     }
 }
