@@ -200,7 +200,8 @@ namespace SpeedTutorMainMenuSystem
             if (buttonType == "Connect")
             {
                 menuDefaultCanvas.SetActive(false);
-                newGameDialog.SetActive(true);
+                lanDialog.SetActive(true);
+                networkManager.SetActive(true);
                 menuNumber = CONNECT;
             }
         }

@@ -10,14 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 2331033796029208612}
   - component: {fileID: 9195348077206982146}
-  - component: {fileID: 8825319470331946286}
+  - component: {fileID: 1058768475786603076}
   m_Layer: 0
   m_Name: Student
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2331033796029208612
 Transform:
   m_ObjectHideFlags: 0
@@ -50,7 +50,7 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &8825319470331946286
+--- !u!114 &1058768475786603076
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,13 +59,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2331033796029208613}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c693a06389a65640b634c8bd24d2a8c, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f4dbb7fa4135974585be45700824417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  speed: 30
-  rigidbody2d: {fileID: 0}
+  rectTransform: {fileID: 2331033797031015470}
+  image: {fileID: 0}
+  playerNameText: {fileID: 2331033797031015457}
+  playerDataText: {fileID: 0}
+  playerData: 0
 --- !u!1 &2331033796809964819
 GameObject:
   m_ObjectHideFlags: 0
