@@ -21,8 +21,8 @@ namespace Mirror.GeographyGame
             Transform[] studentTransform = { studentTransform1, studentTransform2, studentTransform3, studentTransform4 };
 
             Transform start = studentTransform[numPlayers];
-            GameObject player = Instantiate(playerPrefab, start.position, start.rotation);
-            player.transform.parent = dialogPanel;
+            GameObject player = Instantiate(playerPrefab, start.position, start.rotation, dialogPanel);
+            //player.transform.parent = dialogPanel;
             NetworkServer.AddPlayerForConnection(conn, player);
         }
 
