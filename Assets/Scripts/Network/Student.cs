@@ -78,16 +78,11 @@ namespace Mirror.Examples.Basic
             image.color = new Color(1f, 1f, 1f, 0.1f);
         }
         [ClientRpc]
-        public void RpcCreateWorld(string mapSettingsPath)
+        public void RpcCreateWorld(string mapSettings)
         {
             if (isLocalPlayer)
             {
-                if (File.Exists(Application.dataPath + "/" + mapSettingsPath + ".txt"))
-                {
-                    string mapSettings = File.ReadAllText(Application.dataPath + "/" + mapSettingsPath + ".txt");
-                    //string json = JsonUtility.ToJson(mapSettings);
-                    File.WriteAllText(Application.dataPath + "/student.txt", mapSettings);
-                }  
+                File.WriteAllText(Application.dataPath + "/student.txt", mapSettings);
             }
         }
     }

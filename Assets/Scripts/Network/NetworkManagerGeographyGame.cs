@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 using System.Collections;
 
 namespace Mirror.GeographyGame
@@ -50,7 +51,12 @@ namespace Mirror.GeographyGame
                 Toggle toggle = players[i].GetComponentInChildren(typeof(Toggle)) as Toggle;
                 if (toggle.isOn)
                 {
-                    players[i].GetComponent<Examples.Basic.Student>().RpcCreateWorld(mapSettingsPath.text);
+                    if (File.Exists(Application.dataPath + "/" + mapSettingsPath.text + ".txt"))
+                    {
+                        string mapSettings = File.ReadAllText(Application.dataPath + "/" + mapSettingsPath.text + ".txt");
+
+                        players[i].GetComponent<Examples.Basic.Student>().RpcCreateWorld(mapSettings);
+                    }
                 }
                 print(toggle.isOn);
             }
