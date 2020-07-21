@@ -50,7 +50,7 @@ namespace Mirror.GeographyGame
                 Toggle toggle = players[i].GetComponentInChildren(typeof(Toggle)) as Toggle;
                 if (toggle.isOn)
                 {
-                    players[i].GetComponent<Examples.Basic.Student>().createWorld(mapSettingsPath);
+                    players[i].GetComponent<Examples.Basic.Student>().RpcCreateWorld(mapSettingsPath.text);
                 }
                 print(toggle.isOn);
             }

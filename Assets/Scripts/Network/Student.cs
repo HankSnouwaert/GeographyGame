@@ -77,15 +77,14 @@ namespace Mirror.Examples.Basic
             // apply a shaded background to our player
             image.color = new Color(1f, 1f, 1f, 0.1f);
         }
-
-        public void createWorld(Text mapSettingsPath)
+        [ClientRpc]
+        public void RpcCreateWorld(string mapSettingsPath)
         {
-
             if (isLocalPlayer)
             {
-                if (File.Exists(Application.dataPath + "/" + mapSettingsPath.text + ".txt"))
+                if (File.Exists(Application.dataPath + "/" + mapSettingsPath + ".txt"))
                 {
-                    string mapSettings = File.ReadAllText(Application.dataPath + "/" + mapSettingsPath.text + ".txt");
+                    string mapSettings = File.ReadAllText(Application.dataPath + "/" + mapSettingsPath + ".txt");
                     //string json = JsonUtility.ToJson(mapSettings);
                     File.WriteAllText(Application.dataPath + "/student.txt", mapSettings);
                 }  
