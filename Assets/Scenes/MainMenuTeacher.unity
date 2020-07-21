@@ -1117,6 +1117,7 @@ MonoBehaviour:
   studentTransform2: {fileID: 18099285}
   studentTransform3: {fileID: 471409791}
   studentTransform4: {fileID: 1701559204}
+  mapSettingsPath: {fileID: 361657678}
 --- !u!114 &564013715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2358,7 +2359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1161423587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2402,9 +2403,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114754864707722820}
-        m_MethodName: ClickNewGameDialog
-        m_Mode: 5
+      - m_Target: {fileID: 564013714}
+        m_MethodName: OnServerSendStudentsMapSettings
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

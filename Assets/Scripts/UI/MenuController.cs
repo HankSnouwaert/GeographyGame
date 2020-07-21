@@ -298,7 +298,6 @@ namespace SpeedTutorMainMenuSystem
         {
             if (ButtonType == "Save")
             {
-                //SceneManager.LoadScene(_newGameButtonLevel);
                 SaveObject saveObject = new SaveObject
                 {
                     climate = climate.isOn,
@@ -309,6 +308,19 @@ namespace SpeedTutorMainMenuSystem
                 };
                 string json = JsonUtility.ToJson(saveObject);
                 File.WriteAllText(Application.dataPath + "/" + saveFile.text + ".txt", json);
+            }
+
+            if (ButtonType == "Back")
+            {
+                GoBackToMainMenu();
+            }
+        }
+
+        public void ClickSendSettingsDialog(string ButtonType)
+        {
+            if (ButtonType == "Send")
+            {
+               
             }
 
             if (ButtonType == "Back")
