@@ -1,1 +1,1 @@
-{"climate":false,"terrain":true,"physicalLandmarks":true,"culturalLandmarks":false}
+{"climate":true,"terrain":true,"physicalLandmarks":false,"culturalLandmarks":false}
