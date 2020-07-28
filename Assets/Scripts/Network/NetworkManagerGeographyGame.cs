@@ -19,7 +19,6 @@ namespace Mirror.GeographyGame
         public Text mapSettingsPath;
         private GameObject[] players = new GameObject[4];
         private int playerNum = 0;
-        GameObject ball;
 
         public override void OnServerAddPlayer(NetworkConnection conn)
         {
@@ -32,16 +31,6 @@ namespace Mirror.GeographyGame
             NetworkServer.AddPlayerForConnection(conn, player);
             players[playerNum] = player;
             playerNum++;
-        }
-
-        public override void OnServerDisconnect(NetworkConnection conn)
-        {
-            // destroy ball
-            if (ball != null)
-                NetworkServer.Destroy(ball);
-
-            // call base functionality (actually destroys the player)
-            base.OnServerDisconnect(conn);
         }
 
         public void OnServerSendStudentsMapSettings()
@@ -61,5 +50,13 @@ namespace Mirror.GeographyGame
                 print(toggle.isOn);
             }
         }
+
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+            playerNum--;
+            // call base functionality (actually destroys the player)
+            base.OnServerDisconnect(conn);
+        }
+
     }
 }
