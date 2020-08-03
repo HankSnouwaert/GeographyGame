@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using SpeedTutorMainMenuSystem;
+using System.Linq;
 
 namespace WPM
 {
@@ -75,7 +76,7 @@ namespace WPM
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["Climate"];
                     GUI.Label(new Rect(10, 10, 200, 500), "Current cell: " + map.lastHighlightedCellIndex + System.Environment.NewLine +
-                         "Province: " + name + System.Environment.NewLine + "Province: " + politicalProvince +
+                         "Province: " + name + System.Environment.NewLine + "Political Province: " + politicalProvince +
                          System.Environment.NewLine + "Climate: " + climate);
                 }
                
@@ -95,8 +96,11 @@ namespace WPM
                 if (countryNameIndex >= 0)
                 {
                     Province[] provinces = worldGlobeMap.countries[countryNameIndex].provinces;
-                    foreach (Province province in provinces)
+                    int index = 0;
+                    Province province;
+                    while (index < provinces.Length)
                     {
+                        province = provinces[index];
                         string politicalProvince = province.attrib["PoliticalProvince"];
                         int provinceIndex = worldGlobeMap.GetProvinceIndex(countryNameIndex, province.name);
                         List<Province> neighbors = worldGlobeMap.ProvinceNeighboursOfMainRegion(provinceIndex);
@@ -105,14 +109,18 @@ namespace WPM
                             string neighborPoliticalProvince = neighbor.attrib["PoliticalProvince"];
                             if (neighborPoliticalProvince != "" && neighborPoliticalProvince == politicalProvince)
                             {
-                                //worldGlobeMap.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
+                                worldGlobeMap.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
+                                List<Province> provinceList = provinces.ToList();
+                                provinceList.Remove(neighbor);
+                                provinces = provinceList.ToArray();
                                 province.attrib["Climate"] = "";
+                                province.name = politicalProvince;
                             }
                         }
+                        index++;
                     }
                 }
-                
-
+                worldGlobeMap.drawAllProvinces = false;
             }
         }
 
