@@ -11,9 +11,11 @@ namespace WPM
     public class GameManager : MonoBehaviour
     {
         [Header("Player Components")]
-        public WorldMapGlobe worldGlobeMap; 
+        public WorldMapGlobe worldGlobeMap;
+        public Landmark landmarkPrefab;
         WorldMapGlobe map;
-        bool globeInitialized = true;
+        List<Landmark> culturalLandmarks = null;
+        List<Landmark> naturalLandmarks = null;
 
         enum SELECTION_MODE
         {
@@ -91,8 +93,8 @@ namespace WPM
                 string savedMapSettings = File.ReadAllText(Application.dataPath + "/student.txt");
                 SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
                 worldGlobeMap.showFrontiers = loadedMapSettings.climate;
-                
                 int countryNameIndex = worldGlobeMap.GetCountryIndex("United States of America");
+                #region Merge Provinces
                 if (countryNameIndex >= 0)
                 {
                     Province[] provinces = worldGlobeMap.countries[countryNameIndex].provinces;
@@ -121,6 +123,23 @@ namespace WPM
                     }
                 }
                 worldGlobeMap.drawAllProvinces = false;
+                #endregion
+                #region Intantiate Landmarks
+                //worldGlobeMap.ReloadMountPointsData();
+                List<MountPoint> USmountPoints = new List<MountPoint>();
+                int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, USmountPoints);
+                foreach(MountPoint mountPoint in USmountPoints)
+                {
+                    if (mountPoint.type == 0)
+                    {
+                        Landmark landmark = Instantiate<Landmark>(landmarkPrefab);
+                        GameObject model = (GameObject)Resources.Load("Prefabs/Landmark", typeof(GameObject));
+                        landmark.model = model;
+                        landmark.transform.localScale = Vector3.one * 0.1f;
+                        worldGlobeMap.AddMarker(model, mountPoint.localPosition, 0.02f, false, 0.0f, true, true);
+                    }
+                }
+                #endregion
             }
         }
 
