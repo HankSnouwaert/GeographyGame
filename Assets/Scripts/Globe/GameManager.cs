@@ -12,7 +12,7 @@ namespace WPM
     {
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
-        public Landmark landmarkPrefab;
+        public GameObject landmarkPrefab;
         WorldMapGlobe map;
         List<Landmark> culturalLandmarks = null;
         List<Landmark> naturalLandmarks = null;
@@ -94,6 +94,7 @@ namespace WPM
                 SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
                 worldGlobeMap.showFrontiers = loadedMapSettings.climate;
                 int countryNameIndex = worldGlobeMap.GetCountryIndex("United States of America");
+                
                 #region Merge Provinces
                 if (countryNameIndex >= 0)
                 {
@@ -128,18 +129,24 @@ namespace WPM
                 //worldGlobeMap.ReloadMountPointsData();
                 List<MountPoint> USmountPoints = new List<MountPoint>();
                 int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, USmountPoints);
-                foreach(MountPoint mountPoint in USmountPoints)
+                
+                foreach (MountPoint mountPoint in USmountPoints)
                 {
                     if (mountPoint.type == 0)
                     {
-                        Landmark landmark = Instantiate<Landmark>(landmarkPrefab);
-                        GameObject model = (GameObject)Resources.Load("Prefabs/Landmark", typeof(GameObject));
-                        landmark.model = model;
-                        landmark.transform.localScale = Vector3.one * 0.1f;
-                        worldGlobeMap.AddMarker(model, mountPoint.localPosition, 0.02f, false, 0.0f, true, true);
+                        GameObject landmark = Instantiate(landmarkPrefab);
+                        Landmark landmarkComponent = landmark.GetComponent(typeof(Landmark)) as Landmark;
+                        landmarkComponent.mountPoint = mountPoint;
+                        //GameObject model = (GameObject)Resources.Load("Prefabs/Landmark", typeof(GameObject));
+                        //landmark.model = model;
+                        //landmark.transform.localScale = Vector3.one * 0.1f;
+                        //Change this to move existing game object
+                        worldGlobeMap.AddMarker(landmark, mountPoint.localPosition, 0.02f, false, 0.0f, true, true);
                     }
                 }
+                
                 #endregion
+            
             }
         }
 

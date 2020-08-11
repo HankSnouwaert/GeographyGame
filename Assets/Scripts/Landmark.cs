@@ -7,7 +7,6 @@ namespace WPM
     public class Landmark : MonoBehaviour
     {
         public MountPoint mountPoint;
-        public GameObject model;
         // Start is called before the first frame update
         void Start()
         {
