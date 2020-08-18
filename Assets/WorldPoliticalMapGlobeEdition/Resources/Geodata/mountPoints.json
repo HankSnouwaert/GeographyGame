@@ -6,7 +6,67 @@
 		"Type":0,
 		"X":1823226,
 		"Y":1628451,
-		"Z":523441,
+		"Z":523440,
+		"Attrib":null
+	},
+	{
+		"Name":"Washington Monument",
+		"Country":"United States of America",
+		"Province":3913,
+		"Type":0,
+		"X":1892457,
+		"Y":1572730,
+		"Z":441723,
+		"Attrib":null
+	},
+	{
+		"Name":"GatewayArch",
+		"Country":"United States of America",
+		"Province":3887,
+		"Type":0,
+		"X":1950647,
+		"Y":1563600,
+		"Z":-11408,
+		"Attrib":null
+	},
+	{
+		"Name":"HooverDam",
+		"Country":"United States of America",
+		"Province":3879,
+		"Type":0,
+		"X":1840539,
+		"Y":1462020,
+		"Z":-851416,
+		"Attrib":null
+	},
+	{
+		"Name":"GoldenGateBridge",
+		"Country":"United States of America",
+		"Province":3877,
+		"Type":0,
+		"X":1666847,
+		"Y":1531633,
+		"Z":-1060999,
+		"Attrib":null
+	},
+	{
+		"Name":"MountRushmore",
+		"Country":"United States of America",
+		"Province":3890,
+		"Type":0,
+		"X":1747198,
+		"Y":1737536,
+		"Z":-422214,
+		"Attrib":null
+	},
+	{
+		"Name":"SpaceNeedle",
+		"Country":"United States of America",
+		"Province":3875,
+		"Type":0,
+		"X":1423515,
+		"Y":1848568,
+		"Z":-897996,
 		"Attrib":null
 	}
 ]
