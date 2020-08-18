@@ -132,16 +132,13 @@ namespace WPM
                 {
                     if (mountPoint.type == 0)
                     {
-                        //string mountPointName = mountPoint.name; //Not needed yet
-                        var model = Resources.Load<GameObject>("Prefabs/Landmarks/Space_Needle");
+                        string mountPointName = mountPoint.name;
+                        mountPointName = mountPointName.Replace(" ", "");
+                        var model = Resources.Load<GameObject>("Prefabs/Landmarks/" + mountPointName);
                         var modelClone = Instantiate(model);
                         Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                         landmarkComponent.mountPoint = mountPoint;
-                        //GameObject model = (GameObject)Resources.Load("Prefabs/Landmark", typeof(GameObject));
-                        //landmark.model = model;
-                        //landmark.transform.localScale = Vector3.one * 0.1f;
-                        //Change this to move existing game object
-                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.02f, false, 0.0f, true, true);
+                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.01f, false, 0.0f, true, true);
                     }
                 }
                 
