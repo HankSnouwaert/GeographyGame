@@ -1,12 +1,12 @@
 ﻿[
 	{
-		"Name":"Statue of Liberty",
+		"Name":"Statue Of Liberty",
 		"Country":"United States of America",
 		"Province":3915,
 		"Type":0,
-		"X":1823226,
-		"Y":1628451,
-		"Z":523440,
+		"X":1823447,
+		"Y":1628202,
+		"Z":523445,
 		"Attrib":null
 	},
 	{
@@ -15,8 +15,8 @@
 		"Province":3913,
 		"Type":0,
 		"X":1892457,
-		"Y":1572730,
-		"Z":441723,
+		"Y":1572729,
+		"Z":441722,
 		"Attrib":null
 	},
 	{
@@ -24,9 +24,9 @@
 		"Country":"United States of America",
 		"Province":3887,
 		"Type":0,
-		"X":1950647,
+		"X":1950646,
 		"Y":1563600,
-		"Z":-11408,
+		"Z":-11403,
 		"Attrib":null
 	},
 	{
@@ -34,9 +34,9 @@
 		"Country":"United States of America",
 		"Province":3879,
 		"Type":0,
-		"X":1840539,
-		"Y":1462020,
-		"Z":-851416,
+		"X":1840537,
+		"Y":1462018,
+		"Z":-851415,
 		"Attrib":null
 	},
 	{
@@ -45,7 +45,7 @@
 		"Province":3877,
 		"Type":0,
 		"X":1666847,
-		"Y":1531633,
+		"Y":1531631,
 		"Z":-1060999,
 		"Attrib":null
 	},
@@ -54,7 +54,7 @@
 		"Country":"United States of America",
 		"Province":3890,
 		"Type":0,
-		"X":1747198,
+		"X":1747197,
 		"Y":1737536,
 		"Z":-422214,
 		"Attrib":null
@@ -64,9 +64,9 @@
 		"Country":"United States of America",
 		"Province":3875,
 		"Type":0,
-		"X":1423515,
+		"X":1423514,
 		"Y":1848568,
-		"Z":-897996,
+		"Z":-897995,
 		"Attrib":null
 	}
 ]

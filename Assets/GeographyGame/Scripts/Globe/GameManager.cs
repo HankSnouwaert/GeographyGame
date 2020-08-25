@@ -15,6 +15,10 @@ namespace WPM
         WorldMapGlobe map;
         List<Landmark> culturalLandmarks = null;
         List<Landmark> naturalLandmarks = null;
+        const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
+        const int POLITICAL_PROVINCE = 0;
+        const int TERRAIN = 1;
+        const int CLIMATE = 2;
 
         enum SELECTION_MODE
         {
@@ -89,37 +93,96 @@ namespace WPM
             Debug.Log("Applying Globe Settings");
             if (File.Exists(Application.dataPath + "/student.txt"))
             {
+                //Load Settings
                 string savedMapSettings = File.ReadAllText(Application.dataPath + "/student.txt");
                 SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
-                worldGlobeMap.showFrontiers = loadedMapSettings.climate;
+                //worldGlobeMap.showFrontiers = loadedMapSettings.climate; //TEST LINE, REMOVE LATER
+                bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
+                provinceSettings[POLITICAL_PROVINCE] = loadedMapSettings.provinces;
+                provinceSettings[TERRAIN] = loadedMapSettings.terrain;
+                provinceSettings[CLIMATE] = loadedMapSettings.climate;
+                //Add loop for all countries here
                 int countryNameIndex = worldGlobeMap.GetCountryIndex("United States of America");
                 #region Merge Provinces
                 if (countryNameIndex >= 0)
                 {
+                    //Get all provinces for country and loop through them
                     Province[] provinces = worldGlobeMap.countries[countryNameIndex].provinces;
                     int index = 0;
                     Province province;
+                    string[] provinceAttributes = new string[NUMBER_OF_PROVINCE_ATTRIBUTES];
                     while (index < provinces.Length)
                     {
+                        //Get province attributes
                         province = provinces[index];
-                        string politicalProvince = province.attrib["PoliticalProvince"];
+                        if (province.attrib["PoliticalProvince"] == "Georgia" || province.attrib["PoliticalProvince"] == "Georgia2" || province.attrib["PoliticalProvince"] == "Georgia3")
+                        {
+                            bool debug = true;
+                            string name = province.name;
+                            int regionIndex = province.mainRegionIndex;
+                        }
+                        if (province.attrib["PoliticalProvince"] == "Florida")
+                        {
+                            bool debug = true;
+                            string name = province.name;
+                            int regionIndex = province.mainRegionIndex;
+                        }
+                        provinceAttributes[POLITICAL_PROVINCE] = province.attrib["PoliticalProvince"];
+                        if (provinceAttributes[POLITICAL_PROVINCE] == null) provinceAttributes[POLITICAL_PROVINCE] = "";
+                        provinceAttributes[TERRAIN] = province.attrib["Terrain"];
+                        if (provinceAttributes[TERRAIN] == null) provinceAttributes[TERRAIN] = "";
+                        provinceAttributes[CLIMATE] = province.attrib["Climate"];
+                        if (provinceAttributes[CLIMATE] == null) provinceAttributes[CLIMATE] = "";
+                        //Get all neighbors for province and loop through them
                         int provinceIndex = worldGlobeMap.GetProvinceIndex(countryNameIndex, province.name);
                         List<Province> neighbors = worldGlobeMap.ProvinceNeighboursOfMainRegion(provinceIndex);
                         foreach (Province neighbor in neighbors)
                         {
-                            string neighborPoliticalProvince = neighbor.attrib["PoliticalProvince"];
-                            if (neighborPoliticalProvince != "" && neighborPoliticalProvince == politicalProvince)
+                            //Check that neighbor is in same country
+                            if (neighbor.countryIndex == countryNameIndex)
                             {
-                                worldGlobeMap.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
-                                List<Province> provinceList = provinces.ToList();
-                                provinceList.Remove(neighbor);
-                                provinces = provinceList.ToArray();
-                                province.attrib["Climate"] = "";
-                                province.name = politicalProvince;
+                                //Default to assuming the neighbor will be merged
+                                bool mergeNeighbor = true;
+                                
+                                //Get neighbor attributes
+                                string[] neighborAttributes = new string[NUMBER_OF_PROVINCE_ATTRIBUTES];
+                                neighborAttributes[POLITICAL_PROVINCE] = neighbor.attrib["PoliticalProvince"];
+                                if (neighborAttributes[POLITICAL_PROVINCE] == null) neighborAttributes[POLITICAL_PROVINCE] = "";
+                                neighborAttributes[TERRAIN] = neighbor.attrib["Terrain"];
+                                if (neighborAttributes[TERRAIN] == null) neighborAttributes[TERRAIN] = "";
+                                neighborAttributes[CLIMATE] = neighbor.attrib["Climate"];
+                                if (neighborAttributes[CLIMATE] == null) neighborAttributes[CLIMATE] = "";
+
+                                //Loop through all attributes a province can have
+                                int i = 0;
+                                bool attributeSet;
+                                while (i < NUMBER_OF_PROVINCE_ATTRIBUTES)
+                                {
+                                    //If the attribute is being used AND is different between the province and its neighbor, 
+                                    // OR the attributes haven't been set for either province, abort the merge
+                                    attributeSet = provinceAttributes[i] != "" && neighborAttributes[i] != "";
+                                    if ((provinceAttributes[i] != neighborAttributes[i] && provinceSettings[i]) || !attributeSet)
+                                    {
+                                        mergeNeighbor = false;
+                                    }
+                                    i++;
+                                }
+                                if (mergeNeighbor)
+                                {
+                                    //Merge provinces
+                                    worldGlobeMap.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
+                                    List<Province> provinceList = provinces.ToList();
+                                    provinceList.Remove(neighbor);
+                                    provinces = provinceList.ToArray();
+                                    //Clear unused attributes
+                                    if (loadedMapSettings.provinces) neighbor.attrib["PoliticalProvince"] = "";
+                                    if (loadedMapSettings.terrain) neighbor.attrib["Terrain"] = "";
+                                    if (loadedMapSettings.climate) neighbor.attrib["Climate"] = "";
+                                }
                             }
                         }
                         index++;
-                    }
+                    }   
                 }
                 worldGlobeMap.drawAllProvinces = false;
                 #endregion
@@ -145,6 +208,7 @@ namespace WPM
                 #endregion
             
             }
+            
         }
 
         private void Update()

@@ -1,10 +1,22 @@
 ﻿{
 	"3898":{
 		"PoliticalProvince":"Florida",
-		"Climate":"HumidSubtropical"
+		"Climate":"HumidSubtropical",
+		"Terrain":"Lowland"
+	},
+	"3899":{
+		"PoliticalProvince":"Georgia",
+		"Climate":"HumidSubtropical",
+		"Terrain":"Highland"
 	},
 	"4078":{
 		"PoliticalProvince":"Florida",
-		"Climate":"TropicalWet"
+		"Climate":"TropicalWet",
+		"Terrain":"Lowland"
+	},
+	"4079":{
+		"PoliticalProvince":"Georgia",
+		"Climate":"HumidSubtropical",
+		"Terrain":"Lowland"
 	}
 }

@@ -15,8 +15,9 @@ namespace SpeedTutorMainMenuSystem
         [SerializeField] private Text saveFile;
         [SerializeField] private Toggle climate;
         [SerializeField] private Toggle terrain;
-        [SerializeField] private Toggle physcialLandmarks;
+        [SerializeField] private Toggle physicalLandmarks;
         [SerializeField] private Toggle culturalLandmarks;
+        [SerializeField] private Toggle provinces;
         #endregion
 
         #region Default Values
@@ -303,8 +304,8 @@ namespace SpeedTutorMainMenuSystem
                     climate = climate.isOn,
                     terrain = terrain.isOn,
                     culturalLandmarks = culturalLandmarks.isOn,
-                    physicalLandmarks = physcialLandmarks.isOn
-              
+                    physicalLandmarks = physicalLandmarks.isOn,
+                    provinces = provinces.isOn
                 };
                 string json = JsonUtility.ToJson(saveObject);
                 File.WriteAllText(Application.dataPath + "/" + saveFile.text + ".txt", json);
@@ -412,6 +413,6 @@ namespace SpeedTutorMainMenuSystem
         public bool terrain;
         public bool physicalLandmarks;
         public bool culturalLandmarks;
-        
+        public bool provinces;
     }
 }
