@@ -1,0 +1,72 @@
+﻿[
+	{
+		"Name":"Statue Of Liberty",
+		"Country":"United States of America",
+		"Province":3915,
+		"Type":0,
+		"X":1823447,
+		"Y":1628202,
+		"Z":523445,
+		"Attrib":null
+	},
+	{
+		"Name":"Washington Monument",
+		"Country":"United States of America",
+		"Province":3913,
+		"Type":0,
+		"X":1892457,
+		"Y":1572729,
+		"Z":441722,
+		"Attrib":null
+	},
+	{
+		"Name":"GatewayArch",
+		"Country":"United States of America",
+		"Province":3887,
+		"Type":0,
+		"X":1950646,
+		"Y":1563600,
+		"Z":-11403,
+		"Attrib":null
+	},
+	{
+		"Name":"HooverDam",
+		"Country":"United States of America",
+		"Province":3879,
+		"Type":0,
+		"X":1840537,
+		"Y":1462018,
+		"Z":-851415,
+		"Attrib":null
+	},
+	{
+		"Name":"GoldenGateBridge",
+		"Country":"United States of America",
+		"Province":3877,
+		"Type":0,
+		"X":1666847,
+		"Y":1531631,
+		"Z":-1060999,
+		"Attrib":null
+	},
+	{
+		"Name":"MountRushmore",
+		"Country":"United States of America",
+		"Province":3890,
+		"Type":0,
+		"X":1747197,
+		"Y":1737536,
+		"Z":-422214,
+		"Attrib":null
+	},
+	{
+		"Name":"SpaceNeedle",
+		"Country":"United States of America",
+		"Province":3875,
+		"Type":0,
+		"X":1423514,
+		"Y":1848568,
+		"Z":-897995,
+		"Attrib":null
+	}
+]
