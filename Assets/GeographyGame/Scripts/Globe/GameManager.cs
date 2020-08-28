@@ -88,7 +88,7 @@ namespace WPM
             }
         }
 
-    void ApplyGlobeSettings()
+        void ApplyGlobeSettings()
         {
             Debug.Log("Applying Globe Settings");
             if (File.Exists(Application.dataPath + "/student.txt"))
@@ -96,7 +96,6 @@ namespace WPM
                 //Load Settings
                 string savedMapSettings = File.ReadAllText(Application.dataPath + "/student.txt");
                 SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
-                //worldGlobeMap.showFrontiers = loadedMapSettings.climate; //TEST LINE, REMOVE LATER
                 bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
                 provinceSettings[POLITICAL_PROVINCE] = loadedMapSettings.provinces;
                 provinceSettings[TERRAIN] = loadedMapSettings.terrain;
@@ -193,7 +192,7 @@ namespace WPM
                 
                 foreach (MountPoint mountPoint in USmountPoints)
                 {
-                    if (mountPoint.type == 0)
+                    if (mountPoint.type == 0 && loadedMapSettings.culturalLandmarks)
                     {
                         string mountPointName = mountPoint.name;
                         mountPointName = mountPointName.Replace(" ", "");
@@ -208,12 +207,7 @@ namespace WPM
                 #endregion
             
             }
-            
         }
 
-        private void Update()
-        {
-            bool debug = worldGlobeMap.showFrontiers;
-        }
     }
 }

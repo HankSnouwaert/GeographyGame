@@ -1,1 +1,1 @@
-{"provinces": true,"climate":true,"terrain":true,"physicalLandmarks":false,"culturalLandmarks":false}
+{"provinces": true,"climate":false,"terrain":false,"physicalLandmarks":false,"culturalLandmarks":false}
