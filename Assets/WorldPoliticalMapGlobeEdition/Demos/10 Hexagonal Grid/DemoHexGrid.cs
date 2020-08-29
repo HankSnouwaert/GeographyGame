@@ -59,6 +59,11 @@ namespace WPM {
         void HandleOnCellClick(int cellIndex) {
             Debug.Log("Clicked cell: " + cellIndex);
 
+            if (Input.GetMouseButtonDown(1))
+            {
+                Debug.Log("Pressed second button.");
+            }
+
             switch (selectionMode) {
                 case SELECTION_MODE.CUSTOM_PATH:
                     if (selectionState == 0) {

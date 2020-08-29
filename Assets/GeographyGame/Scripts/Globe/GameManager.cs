@@ -19,6 +19,9 @@ namespace WPM
         const int POLITICAL_PROVINCE = 0;
         const int TERRAIN = 1;
         const int CLIMATE = 2;
+        const int START_POINT = 0;
+        const int NATURAL_POINT = 1;
+        const int CULTURAL_POINT = 2;
 
         enum SELECTION_MODE
         {
@@ -29,7 +32,7 @@ namespace WPM
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
         SELECTION_MODE selectionMode = SELECTION_MODE.NONE;
-        int selectionState;
+        int selectionState = 0;
         // 0 = selecting first cell, 1 = selecting second cell
         int firstCell;
         // the cell index of the first selected cell when setting edge cost between two neighbour cells
@@ -66,7 +69,7 @@ namespace WPM
             // Setup grid events
             map.OnCellEnter += (int cellIndex) => Debug.Log("Entered cell: " + cellIndex);
             map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
-            //map.OnCellClick += HandleOnCellClick;
+            map.OnCellClick += HandleOnCellClick;
         }
 
         void OnGUI()
@@ -86,6 +89,44 @@ namespace WPM
                 }
                
             }
+        }
+
+        void HandleOnCellClick(int cellIndex)
+        {
+            Debug.Log("Clicked cell: " + cellIndex);
+            if (selectionState == 0)
+            {
+                firstCell = cellIndex;
+                map.SetCellColor(firstCell, Color.green, true);
+                selectionState = 1;
+            }
+            else
+            {
+                DrawPath(firstCell, cellIndex);
+                selectionState = 0;
+            }
+        }
+
+        /// <summary>
+        /// Draws a path between startCellIndex and endCellIndex
+        /// </summary>
+        /// <returns><c>true</c>, if path was found and drawn, <c>false</c> otherwise.</returns>
+        /// <param name="startCellIndex">Start cell index.</param>
+        /// <param name="endCellIndex">End cell index.</param>
+        bool DrawPath(int startCellIndex, int endCellIndex)
+        {
+
+            List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex);
+            map.ClearCells(true, false, false);
+            if (cellIndices == null)
+                return false;   // no path found
+
+            // Color starting cell, end cell and path
+            map.SetCellColor(cellIndices, Color.gray, true);
+            map.SetCellColor(startCellIndex, Color.green, true);
+            map.SetCellColor(endCellIndex, Color.red, true);
+
+            return true;
         }
 
         void ApplyGlobeSettings()
@@ -192,7 +233,7 @@ namespace WPM
                 
                 foreach (MountPoint mountPoint in USmountPoints)
                 {
-                    if (mountPoint.type == 0 && loadedMapSettings.culturalLandmarks)
+                    if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
                     {
                         string mountPointName = mountPoint.name;
                         mountPointName = mountPointName.Replace(" ", "");
