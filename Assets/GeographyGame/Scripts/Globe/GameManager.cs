@@ -12,9 +12,13 @@ namespace WPM
     {
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
+        public GameObject playerCharacter;
         WorldMapGlobe map;
         List<Landmark> culturalLandmarks = null;
         List<Landmark> naturalLandmarks = null;
+        string startingCountry = "United States of America";
+        string startingProvince = "North Carolina";
+        int travelDistance = 10;
         const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         const int POLITICAL_PROVINCE = 0;
         const int TERRAIN = 1;
@@ -22,7 +26,7 @@ namespace WPM
         const int START_POINT = 0;
         const int NATURAL_POINT = 1;
         const int CULTURAL_POINT = 2;
-
+        const string CELL_PLAYER = "Player";
         enum SELECTION_MODE
         {
             NONE = 0,
@@ -94,7 +98,7 @@ namespace WPM
         void HandleOnCellClick(int cellIndex)
         {
             Debug.Log("Clicked cell: " + cellIndex);
-            if (selectionState == 0)
+            if (selectionState == 0  && worldGlobeMap.cells[cellIndex].tag == CELL_PLAYER)
             {
                 firstCell = cellIndex;
                 map.SetCellColor(firstCell, Color.green, true);
@@ -116,7 +120,7 @@ namespace WPM
         bool DrawPath(int startCellIndex, int endCellIndex)
         {
 
-            List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex);
+            List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex, travelDistance);
             map.ClearCells(true, false, false);
             if (cellIndices == null)
                 return false;   // no path found
@@ -226,13 +230,21 @@ namespace WPM
                 }
                 worldGlobeMap.drawAllProvinces = false;
                 #endregion
-                #region Intantiate Landmarks
+                #region Intantiate Player and Landmarks
                 //worldGlobeMap.ReloadMountPointsData();
                 List<MountPoint> USmountPoints = new List<MountPoint>();
                 int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, USmountPoints);
-                
+
                 foreach (MountPoint mountPoint in USmountPoints)
                 {
+                    if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
+                    {
+                        playerCharacter = Instantiate(Resources.Load<GameObject>("Prefabs/PlayerCharacter"));
+                        int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
+                        Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
+                        worldGlobeMap.AddMarker(playerCharacter, startingLocation, 0.005f, false, 0.0f, true, true);
+                        worldGlobeMap.cells[startingCellIndex].tag = CELL_PLAYER;
+                    }
                     if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
                     {
                         string mountPointName = mountPoint.name;
@@ -244,9 +256,8 @@ namespace WPM
                         worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.01f, false, 0.0f, true, true);
                     }
                 }
-                
+
                 #endregion
-            
             }
         }
 

@@ -26,7 +26,7 @@
 		"Type":2,
 		"X":1950646,
 		"Y":1563600,
-		"Z":-11402,
+		"Z":-11401,
 		"Attrib":null
 	},
 	{
@@ -67,6 +67,16 @@
 		"X":1423514,
 		"Y":1848568,
 		"Z":-897995,
+		"Attrib":null
+	},
+	{
+		"Name":"Player Start: North Carolina",
+		"Country":"United States of America",
+		"Province":3905,
+		"Type":0,
+		"X":1998246,
+		"Y":1457822,
+		"Z":362994,
 		"Attrib":null
 	}
 ]
