@@ -12,7 +12,7 @@ namespace WPM
     {
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
-        public GameObject playerCharacter;
+        public GameObject playerPrefab;
         WorldMapGlobe map;
         List<Landmark> culturalLandmarks = null;
         List<Landmark> naturalLandmarks = null;
@@ -45,6 +45,7 @@ namespace WPM
         {
             Debug.Log("Globe Loaded");
             ApplyGlobeSettings();
+            PlayerCharacter playerCharacter = playerPrefab.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
             // UI Setup - non-important, only for this demo
             labelStyle = new GUIStyle();
             labelStyle.alignment = TextAnchor.MiddleLeft;
@@ -98,17 +99,28 @@ namespace WPM
         void HandleOnCellClick(int cellIndex)
         {
             Debug.Log("Clicked cell: " + cellIndex);
-            if (selectionState == 0  && worldGlobeMap.cells[cellIndex].tag == CELL_PLAYER)
+            if (worldGlobeMap.cells[cellIndex].tag == CELL_PLAYER || selectionState == 1)
             {
-                firstCell = cellIndex;
-                map.SetCellColor(firstCell, Color.green, true);
-                selectionState = 1;
+                if (selectionState == 0)
+                {
+                    map.ClearCells(true, false, false);
+                    firstCell = cellIndex;
+                    map.SetCellColor(firstCell, Color.green, true);
+                    selectionState = 1;
+                    //playerCharacter.selected = true;
+                }
+                else
+                {
+                    DrawPath(firstCell, cellIndex);
+                    selectionState = 0;
+                }
             }
             else
             {
-                DrawPath(firstCell, cellIndex);
+                map.ClearCells(true, false, false);
                 selectionState = 0;
             }
+            
         }
 
         /// <summary>
@@ -239,10 +251,11 @@ namespace WPM
                 {
                     if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
                     {
-                        playerCharacter = Instantiate(Resources.Load<GameObject>("Prefabs/PlayerCharacter"));
+                        //playerObject = Instantiate(Resources.Load<GameObject>("Prefabs/PlayerCharacter"));
+                        GameObject playerObject = Instantiate(playerPrefab);
                         int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                         Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
-                        worldGlobeMap.AddMarker(playerCharacter, startingLocation, 0.005f, false, 0.0f, true, true);
+                        worldGlobeMap.AddMarker(playerObject, startingLocation, 0.005f, false, 0.0f, true, true);
                         worldGlobeMap.cells[startingCellIndex].tag = CELL_PLAYER;
                     }
                     if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
