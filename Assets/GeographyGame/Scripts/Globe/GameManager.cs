@@ -13,12 +13,14 @@ namespace WPM
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
+        PlayerCharacter playerCharacter;
+        public SelectableObject selectedObject = null;
+        Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
         WorldMapGlobe map;
         List<Landmark> culturalLandmarks = null;
         List<Landmark> naturalLandmarks = null;
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
-        int travelDistance = 10;
         const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         const int POLITICAL_PROVINCE = 0;
         const int TERRAIN = 1;
@@ -45,7 +47,7 @@ namespace WPM
         {
             Debug.Log("Globe Loaded");
             ApplyGlobeSettings();
-            PlayerCharacter playerCharacter = playerPrefab.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
+            //PlayerCharacter playerCharacter = playerPrefab.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
             // UI Setup - non-important, only for this demo
             labelStyle = new GUIStyle();
             labelStyle.alignment = TextAnchor.MiddleLeft;
@@ -72,7 +74,7 @@ namespace WPM
             map = WorldMapGlobe.instance;
 
             // Setup grid events
-            map.OnCellEnter += (int cellIndex) => Debug.Log("Entered cell: " + cellIndex);
+            map.OnCellEnter += HandleOnCellEnter;
             map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
             map.OnCellClick += HandleOnCellClick;
         }
@@ -99,50 +101,73 @@ namespace WPM
         void HandleOnCellClick(int cellIndex)
         {
             Debug.Log("Clicked cell: " + cellIndex);
-            if (worldGlobeMap.cells[cellIndex].tag == CELL_PLAYER || selectionState == 1)
+            if (selectedObject == null)
             {
-                if (selectionState == 0)
+                if (worldGlobeMap.cells[cellIndex].tag != null)
                 {
-                    map.ClearCells(true, false, false);
-                    firstCell = cellIndex;
-                    map.SetCellColor(firstCell, Color.green, true);
-                    selectionState = 1;
-                    //playerCharacter.selected = true;
+                    //A new selected object is being selected
+                    selectedObject = mappedObjects[worldGlobeMap.cells[cellIndex].tag];
+                    selectedObject.selected = true;
+                    selectedObject.Selected();
                 }
                 else
                 {
-                    DrawPath(firstCell, cellIndex);
-                    selectionState = 0;
+                    //Nothing is selected, and an empty hex is being clicked
                 }
             }
             else
             {
-                map.ClearCells(true, false, false);
-                selectionState = 0;
+                //A hex is being clicked while an object is selected
+                selectedObject.OnCellClick(cellIndex);
+                if (selectedObject.selected == false)
+                {
+                    //The selected object deselected itself
+                    selectedObject = null;
+                }
             }
-            
+            /*switch (worldGlobeMap.cells[cellIndex].tag)
+            {
+                case CELL_PLAYER:
+                    if (playerCharacter.selected == false)
+                    {
+                        playerCharacter.selected = true;
+                        selectedObject = playerCharacter;
+                        firstCell = cellIndex;
+                        map.SetCellColor(firstCell, Color.green, true);
+                    }
+                    else
+                    {
+                        playerCharacter.selected = false;
+                        selectedObject = null;
+                        map.ClearCells(true, false, false);
+                        firstCell = 0;
+                    }
+                    break;
+                default:
+                    if (playerCharacter.selected == true)
+                    {
+                        DrawPath(firstCell, cellIndex);
+                        playerCharacter.selected = false;
+                        selectedObject = null;
+                    }
+                    break;
+
+            }
+            if (playerCharacter.selected == true)
+            {
+                if (worldGlobeMap.cells[cellIndex].tag == CELL_PLAYER)
+                {
+
+                }
+            }*/
         }
 
-        /// <summary>
-        /// Draws a path between startCellIndex and endCellIndex
-        /// </summary>
-        /// <returns><c>true</c>, if path was found and drawn, <c>false</c> otherwise.</returns>
-        /// <param name="startCellIndex">Start cell index.</param>
-        /// <param name="endCellIndex">End cell index.</param>
-        bool DrawPath(int startCellIndex, int endCellIndex)
+        void HandleOnCellEnter(int index)
         {
-
-            List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex, travelDistance);
-            map.ClearCells(true, false, false);
-            if (cellIndices == null)
-                return false;   // no path found
-
-            // Color starting cell, end cell and path
-            map.SetCellColor(cellIndices, Color.gray, true);
-            map.SetCellColor(startCellIndex, Color.green, true);
-            map.SetCellColor(endCellIndex, Color.red, true);
-
-            return true;
+            if (selectedObject != null)
+            {
+                selectedObject.OnCellEnter(index);
+            }
         }
 
         void ApplyGlobeSettings()
@@ -251,12 +276,17 @@ namespace WPM
                 {
                     if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
                     {
-                        //playerObject = Instantiate(Resources.Load<GameObject>("Prefabs/PlayerCharacter"));
                         GameObject playerObject = Instantiate(playerPrefab);
+                        playerCharacter = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
                         int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
+                        playerCharacter.cellLocation = startingCellIndex;
                         Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
+                        playerCharacter.vectorLocation = startingLocation;
                         worldGlobeMap.AddMarker(playerObject, startingLocation, 0.005f, false, 0.0f, true, true);
-                        worldGlobeMap.cells[startingCellIndex].tag = CELL_PLAYER;
+                        string playerID = playerCharacter.GetInstanceID().ToString();
+                        worldGlobeMap.cells[startingCellIndex].tag = playerID;
+                        mappedObjects.Add(playerID, playerCharacter);
+                        //worldGlobeMap.cells[startingCellIndex].tag = CELL_PLAYER;
                     }
                     if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
                     {
