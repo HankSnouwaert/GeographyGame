@@ -21,14 +21,14 @@ namespace WPM
         List<Landmark> naturalLandmarks = null;
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
-        const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
-        const int POLITICAL_PROVINCE = 0;
-        const int TERRAIN = 1;
-        const int CLIMATE = 2;
-        const int START_POINT = 0;
-        const int NATURAL_POINT = 1;
-        const int CULTURAL_POINT = 2;
-        const string CELL_PLAYER = "Player";
+        public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
+        public const int POLITICAL_PROVINCE = 0;
+        public const int TERRAIN = 1;
+        public const int CLIMATE = 2;
+        public const int START_POINT = 0;
+        public const int NATURAL_POINT = 1;
+        public const int CULTURAL_POINT = 2;
+        public const string CELL_PLAYER = "Player";
         enum SELECTION_MODE
         {
             NONE = 0,
@@ -125,41 +125,6 @@ namespace WPM
                     selectedObject = null;
                 }
             }
-            /*switch (worldGlobeMap.cells[cellIndex].tag)
-            {
-                case CELL_PLAYER:
-                    if (playerCharacter.selected == false)
-                    {
-                        playerCharacter.selected = true;
-                        selectedObject = playerCharacter;
-                        firstCell = cellIndex;
-                        map.SetCellColor(firstCell, Color.green, true);
-                    }
-                    else
-                    {
-                        playerCharacter.selected = false;
-                        selectedObject = null;
-                        map.ClearCells(true, false, false);
-                        firstCell = 0;
-                    }
-                    break;
-                default:
-                    if (playerCharacter.selected == true)
-                    {
-                        DrawPath(firstCell, cellIndex);
-                        playerCharacter.selected = false;
-                        selectedObject = null;
-                    }
-                    break;
-
-            }
-            if (playerCharacter.selected == true)
-            {
-                if (worldGlobeMap.cells[cellIndex].tag == CELL_PLAYER)
-                {
-
-                }
-            }*/
         }
 
         void HandleOnCellEnter(int index)
@@ -198,13 +163,11 @@ namespace WPM
                         province = provinces[index];
                         if (province.attrib["PoliticalProvince"] == "Georgia" || province.attrib["PoliticalProvince"] == "Georgia2" || province.attrib["PoliticalProvince"] == "Georgia3")
                         {
-                            bool debug = true;
                             string name = province.name;
                             int regionIndex = province.mainRegionIndex;
                         }
                         if (province.attrib["PoliticalProvince"] == "Florida")
                         {
-                            bool debug = true;
                             string name = province.name;
                             int regionIndex = province.mainRegionIndex;
                         }

@@ -7,10 +7,14 @@ namespace WPM
     public class PlayerCharacter : MappableObject
     {
         int travelDistance = 10;
+        public int destination = 0;
+        public List<int> pathIndices = null;
+        GeoPosAnimator anim;
 
         void Start()
         {
             map = WorldMapGlobe.instance;
+            anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
         }
 
         public override void Selected()
@@ -23,7 +27,7 @@ namespace WPM
             //Attempt to display path to new location
             map.ClearCells(true, false, false);
             map.SetCellColor(cellLocation, Color.green, true);
-            DrawPath(cellLocation, index);
+            pathIndices = DrawPath(cellLocation, index);
         }
 
         public override void OnCellClick(int index)
@@ -35,6 +39,20 @@ namespace WPM
                 selected = false;
             }
             //Attempt to move to new location
+            if(pathIndices != null)
+            {
+                destination = index;
+                //Add latlon of each hex in path to animator's path
+                anim.latLon.Clear();
+                foreach (var hexIndex in pathIndices)
+                {
+                    anim.latLon.Add(map.cells[hexIndex].latlonCenter);
+                }
+                // Compute path length
+                anim.ComputePath();
+                anim.auto = true;
+                
+            }
         }
 
         /// <summary>
@@ -43,20 +61,28 @@ namespace WPM
         /// <returns><c>true</c>, if path was found and drawn, <c>false</c> otherwise.</returns>
         /// <param name="startCellIndex">Start cell index.</param>
         /// <param name="endCellIndex">End cell index.</param>
-        bool DrawPath(int startCellIndex, int endCellIndex)
+        List<int> DrawPath(int startCellIndex, int endCellIndex)
         {
 
             List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex, travelDistance);
             map.ClearCells(true, false, false);
             if (cellIndices == null)
-                return false;   // no path found
+                return null;   // no path found
 
             // Color starting cell, end cell and path
             map.SetCellColor(cellIndices, Color.gray, true);
             map.SetCellColor(startCellIndex, Color.green, true);
             map.SetCellColor(endCellIndex, Color.red, true);
 
-            return true;
+            return cellIndices;
+        }
+
+        public void FinishedPathFinding()
+        {
+            map.cells[cellLocation].tag = null;
+            cellLocation = destination;
+            map.cells[cellLocation].tag = GetInstanceID().ToString();
+            vectorLocation = map.cells[cellLocation].sphereCenter;
         }
 
     }
