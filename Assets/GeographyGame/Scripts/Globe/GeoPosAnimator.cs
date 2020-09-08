@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WPM
 {
@@ -49,7 +50,7 @@ namespace WPM
         /// <param name="progress">Progress expressed in 0..1.</param>
         public void MoveTo(float progress)
         {
-            currentProgress = progress;
+            currentProgress = progress;  //This seems pointless
 
             // Iterate again until we reach progress
             int steps = latLon.Count;
@@ -81,6 +82,22 @@ namespace WPM
 
                     break;
                 }
+                else
+                {
+                    bool Debug = true;
+                }
+            }
+        }
+
+        public void GenerateLatLon(List<int> pathIndices)
+        {
+            if (latLon != null)
+            {
+                latLon.Clear();
+            }
+            foreach (var hexIndex in pathIndices)
+            {
+                latLon.Add(map.cells[hexIndex].latlonCenter);
             }
         }
 

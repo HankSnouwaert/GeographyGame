@@ -48,11 +48,7 @@ namespace WPM
             {
                 destination = index;
                 //Add latlon of each hex in path to animator's path
-                anim.latLon.Clear();
-                foreach (var hexIndex in pathIndices)
-                {
-                    anim.latLon.Add(map.cells[hexIndex].latlonCenter);
-                }
+                anim.GenerateLatLon(pathIndices);
                 // Compute path length
                 anim.ComputePath();
                 anim.auto = true;
