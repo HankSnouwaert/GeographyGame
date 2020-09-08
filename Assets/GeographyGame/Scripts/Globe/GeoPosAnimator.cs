@@ -77,7 +77,7 @@ namespace WPM
                     transform.LookAt(map.transform.TransformPoint(proj + pos0), map.transform.transform.TransformDirection(pos0));
 
                     // Follow object
-                    map.FlyToLocation(pos, 0f);
+                    //map.FlyToLocation(pos, 0f);
                     break;
                 }
             }

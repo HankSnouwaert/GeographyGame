@@ -28,6 +28,10 @@ namespace WPM
             map.ClearCells(true, false, false);
             map.SetCellColor(cellLocation, Color.green, true);
             pathIndices = DrawPath(cellLocation, index);
+            if(pathIndices != null)
+            {
+                pathIndices.Insert(0, cellLocation);
+            } 
         }
 
         public override void OnCellClick(int index)
