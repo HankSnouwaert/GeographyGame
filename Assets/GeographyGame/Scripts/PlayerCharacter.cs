@@ -9,6 +9,7 @@ namespace WPM
         int travelDistance = 10;
         public int destination = 0;
         public List<int> pathIndices = null;
+        public float size = 0.005f;
         GeoPosAnimator anim;
 
         void Start()

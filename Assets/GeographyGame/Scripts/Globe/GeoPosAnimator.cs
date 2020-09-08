@@ -69,15 +69,16 @@ namespace WPM
                     Vector3 pos1 = Conversion.GetSpherePointFromLatLon(latLon[k + 1]);
                     Vector3 pos = Vector3.Lerp(pos0, pos1, progress);
                     pos = pos.normalized * 0.5f;
-                    map.AddMarker(gameObject, pos, 0.01f, false);
+                    map.AddMarker(gameObject, pos, playerCharacter.size, false);
 
                     // Make it look towards destination
-                    Vector3 dir = (pos1 - pos0).normalized;
+                    Vector3 dir = (pos0 - pos1).normalized;
                     Vector3 proj = Vector3.ProjectOnPlane(dir, pos0);
                     transform.LookAt(map.transform.TransformPoint(proj + pos0), map.transform.transform.TransformDirection(pos0));
 
                     // Follow object
                     //map.FlyToLocation(pos, 0f);
+
                     break;
                 }
             }

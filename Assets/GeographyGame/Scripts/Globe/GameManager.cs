@@ -245,7 +245,7 @@ namespace WPM
                         playerCharacter.cellLocation = startingCellIndex;
                         Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
                         playerCharacter.vectorLocation = startingLocation;
-                        worldGlobeMap.AddMarker(playerObject, startingLocation, 0.005f, false, 0.0f, true, true);
+                        worldGlobeMap.AddMarker(playerObject, startingLocation, playerCharacter.size, false, 0.0f, true, true);
                         string playerID = playerCharacter.GetInstanceID().ToString();
                         worldGlobeMap.cells[startingCellIndex].tag = playerID;
                         mappedObjects.Add(playerID, playerCharacter);
