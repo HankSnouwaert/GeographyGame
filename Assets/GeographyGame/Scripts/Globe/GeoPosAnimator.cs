@@ -17,6 +17,7 @@ namespace WPM
         WorldMapGlobe map;
         PlayerCharacter playerCharacter;
         float[] stepLengths;
+        int latlonIndex;
         float totalLength;
         float currentProgress = 0;
 
@@ -50,8 +51,21 @@ namespace WPM
         /// <param name="progress">Progress expressed in 0..1.</param>
         public void MoveTo(float progress)
         {
+
             currentProgress = progress;  //This seems pointless
 
+            Vector3 pos0 = Conversion.GetSpherePointFromLatLon(latLon[latlonIndex]);
+            Vector3 pos1 = Conversion.GetSpherePointFromLatLon(latLon[latlonIndex + 1]);
+            Vector3 pos = Vector3.Lerp(pos0, pos1, progress);
+            pos = pos.normalized * 0.5f;
+            map.AddMarker(gameObject, pos, playerCharacter.size, false);
+
+            // Make it look towards destination
+            Vector3 dir = (pos0 - pos1).normalized;
+            Vector3 proj = Vector3.ProjectOnPlane(dir, pos0);
+            transform.LookAt(map.transform.TransformPoint(proj + pos0), map.transform.transform.TransformDirection(pos0));
+            
+            /*
             // Iterate again until we reach progress
             int steps = latLon.Count;
             float acum = 0, acumPrev = 0;
@@ -82,11 +96,8 @@ namespace WPM
 
                     break;
                 }
-                else
-                {
-                    bool Debug = true;
-                }
             }
+            */
         }
 
         public void GenerateLatLon(List<int> pathIndices)
@@ -106,12 +117,19 @@ namespace WPM
             if (auto)
             {
                 MoveTo(currentProgress);
-                currentProgress += Time.deltaTime * 0.1f;
+                currentProgress += 0.005f;
                 if (currentProgress > 1f)
                 {
+                    latlonIndex++;
                     currentProgress = 0;
-                    auto = false;
-                    playerCharacter.FinishedPathFinding();
+                    if(latlonIndex >= latLon.Count - 1)
+                    {
+                        latlonIndex = 0;
+                        latLon.Clear();
+                        auto = false;
+                        playerCharacter.FinishedPathFinding();
+                    }
+                    
                 }
             }
 
