@@ -7,6 +7,7 @@ namespace WPM
     public class PlayerCharacter : MappableObject
     {
         int travelDistance = 10;
+        int distanceTraveled = 0;
         public int destination = 0;
         public List<int> pathIndices = null;
         public float size = 0.005f;
@@ -60,6 +61,11 @@ namespace WPM
             }
         }
 
+        public override void EndOfTurn()
+        {
+            distanceTraveled = 0;
+        }
+
         /// <summary>
         /// Draws a path between startCellIndex and endCellIndex
         /// </summary>
@@ -68,8 +74,8 @@ namespace WPM
         /// <param name="endCellIndex">End cell index.</param>
         List<int> DrawPath(int startCellIndex, int endCellIndex)
         {
-
-            List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex, travelDistance);
+            int remainingMovement = travelDistance - distanceTraveled;
+            List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex, remainingMovement);
             map.ClearCells(true, false, false);
             if (cellIndices == null)
                 return null;   // no path found
@@ -92,6 +98,7 @@ namespace WPM
 
         public void FinishedPathFinding()
         {
+            distanceTraveled = distanceTraveled + (pathIndices.Count);
             pathIndices.Clear();
             UpdateLocation(destination);
             moving = false;

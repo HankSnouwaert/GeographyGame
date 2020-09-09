@@ -29,6 +29,7 @@ namespace WPM
         public const int NATURAL_POINT = 1;
         public const int CULTURAL_POINT = 2;
         public const string CELL_PLAYER = "Player";
+        public int turnCount = 1;
         enum SELECTION_MODE
         {
             NONE = 0,
@@ -77,6 +78,20 @@ namespace WPM
             map.OnCellEnter += HandleOnCellEnter;
             map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
             map.OnCellClick += HandleOnCellClick;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("Space key was pressed.");
+                SelectableObject[] selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
+                foreach(SelectableObject selectableObject in selectableObjects)
+                {
+                    selectableObject.EndOfTurn();
+                    turnCount++;
+                }
+            }
         }
 
         void OnGUI()

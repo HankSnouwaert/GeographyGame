@@ -25,5 +25,10 @@ namespace WPM
         {
 
         }
+
+        public virtual void EndOfTurn()
+        {
+
+        }
     }
 }
