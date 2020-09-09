@@ -37,14 +37,14 @@ namespace WPM
 
         public override void OnCellClick(int index)
         {
-            if(index == cellLocation)
+            if (index == cellLocation)
             {
                 //The player was clicked while selected
                 map.ClearCells(true, false, false);
                 selected = false;
             }
             //Attempt to move to new location
-            if(pathIndices != null)
+            else if (pathIndices != null)
             {
                 destination = index;
                 //Add latlon of each hex in path to animator's path
@@ -52,7 +52,7 @@ namespace WPM
                 // Compute path length
                 anim.ComputePath();
                 anim.auto = true;
-                
+
             }
         }
 
@@ -80,6 +80,7 @@ namespace WPM
 
         public void FinishedPathFinding()
         {
+            pathIndices.Clear();
             map.cells[cellLocation].tag = null;
             cellLocation = destination;
             map.cells[cellLocation].tag = GetInstanceID().ToString();
