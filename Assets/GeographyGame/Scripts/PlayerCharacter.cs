@@ -11,6 +11,7 @@ namespace WPM
         public List<int> pathIndices = null;
         public float size = 0.005f;
         GeoPosAnimator anim;
+        bool moving = false;
 
         void Start()
         {
@@ -25,14 +26,17 @@ namespace WPM
 
         public override void OnCellEnter(int index)
         {
-            //Attempt to display path to new location
-            map.ClearCells(true, false, false);
-            map.SetCellColor(cellLocation, Color.green, true);
-            pathIndices = DrawPath(cellLocation, index);
-            if(pathIndices != null)
+            if (!anim.auto)
             {
-                pathIndices.Insert(0, cellLocation);
-            } 
+                //Attempt to display path to new location
+                map.ClearCells(true, false, false);
+                map.SetCellColor(cellLocation, Color.green, true);
+                pathIndices = DrawPath(cellLocation, index);
+                if (pathIndices != null)
+                {
+                    pathIndices.Insert(0, cellLocation);
+                }
+            }
         }
 
         public override void OnCellClick(int index)
@@ -44,7 +48,7 @@ namespace WPM
                 selected = false;
             }
             //Attempt to move to new location
-            else if (pathIndices != null)
+            else if (pathIndices != null && moving == false)
             {
                 destination = index;
                 //Add latlon of each hex in path to animator's path
@@ -52,7 +56,7 @@ namespace WPM
                 // Compute path length
                 anim.ComputePath();
                 anim.auto = true;
-
+                moving = true;
             }
         }
 
@@ -78,13 +82,19 @@ namespace WPM
             return cellIndices;
         }
 
+        public void UpdateLocation(int newCellIndex)
+        {
+            map.cells[cellLocation].tag = null;
+            cellLocation = newCellIndex;
+            map.cells[cellLocation].tag = GetInstanceID().ToString();
+            vectorLocation = map.cells[cellLocation].sphereCenter;
+        }
+
         public void FinishedPathFinding()
         {
             pathIndices.Clear();
-            map.cells[cellLocation].tag = null;
-            cellLocation = destination;
-            map.cells[cellLocation].tag = GetInstanceID().ToString();
-            vectorLocation = map.cells[cellLocation].sphereCenter;
+            UpdateLocation(destination);
+            moving = false;
         }
 
     }

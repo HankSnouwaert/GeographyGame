@@ -64,40 +64,6 @@ namespace WPM
             Vector3 dir = (pos0 - pos1).normalized;
             Vector3 proj = Vector3.ProjectOnPlane(dir, pos0);
             transform.LookAt(map.transform.TransformPoint(proj + pos0), map.transform.transform.TransformDirection(pos0));
-            
-            /*
-            // Iterate again until we reach progress
-            int steps = latLon.Count;
-            float acum = 0, acumPrev = 0;
-            for (int k = 0; k < steps - 1; k++)
-            {
-                acumPrev = acum;
-                acum += stepLengths[k] / totalLength;
-                if (acum > progress)
-                {
-                    // This is the step where "progress" is contained.
-                    if (k > 0)
-                    {
-                        progress = (progress - acumPrev) / (acum - acumPrev);
-                    }
-                    Vector3 pos0 = Conversion.GetSpherePointFromLatLon(latLon[k]);
-                    Vector3 pos1 = Conversion.GetSpherePointFromLatLon(latLon[k + 1]);
-                    Vector3 pos = Vector3.Lerp(pos0, pos1, progress);
-                    pos = pos.normalized * 0.5f;
-                    map.AddMarker(gameObject, pos, playerCharacter.size, false);
-
-                    // Make it look towards destination
-                    Vector3 dir = (pos0 - pos1).normalized;
-                    Vector3 proj = Vector3.ProjectOnPlane(dir, pos0);
-                    transform.LookAt(map.transform.TransformPoint(proj + pos0), map.transform.transform.TransformDirection(pos0));
-
-                    // Follow object
-                    //map.FlyToLocation(pos, 0f);
-
-                    break;
-                }
-            }
-            */
         }
 
         public void GenerateLatLon(List<int> pathIndices)
@@ -121,6 +87,8 @@ namespace WPM
                 if (currentProgress > 1f)
                 {
                     latlonIndex++;
+                    int newCell = map.GetCellIndex(latLon[latlonIndex]);
+                    playerCharacter.UpdateLocation(newCell);
                     currentProgress = 0;
                     if(latlonIndex >= latLon.Count - 1)
                     {
