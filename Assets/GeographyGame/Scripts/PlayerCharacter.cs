@@ -6,18 +6,25 @@ namespace WPM
 {
     public class PlayerCharacter : MappableObject
     {
-        int travelDistance = 10;
+        int travelDistance = 5;
         int distanceTraveled = 0;
         public int destination = 0;
         public List<int> pathIndices = null;
         public float size = 0.005f;
         GeoPosAnimator anim;
+        Vehicle vehicle = new Vehicle();
         bool moving = false;
+
+        Dictionary<string, int> climateCosts = new Dictionary<string, int>();
+        Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
 
         void Start()
         {
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
+            vehicle.InitVehicles();
+            climateCosts = vehicle.GetClimateVehicle("Mild");
+            SetCellCosts();
         }
 
         public override void Selected()
@@ -74,7 +81,8 @@ namespace WPM
         /// <param name="endCellIndex">End cell index.</param>
         List<int> DrawPath(int startCellIndex, int endCellIndex)
         {
-            int remainingMovement = travelDistance - distanceTraveled;
+            int debug = cellLocation;
+            int remainingMovement = travelDistance - distanceTraveled - 1;
             List<int> cellIndices = map.FindPath(startCellIndex, endCellIndex, remainingMovement);
             map.ClearCells(true, false, false);
             if (cellIndices == null)
@@ -104,5 +112,35 @@ namespace WPM
             moving = false;
         }
 
+        public void SetCellCosts()
+        {
+            foreach(Cell cell in map.cells)
+            {
+                //Get Cell Attributes from Province
+                int provinceIndex = map.GetProvinceNearPoint(cell.sphereCenter);
+                Province province = map.provinces[provinceIndex];
+
+                //Loop Through Each Neighbor and Set the Cost from the Neighbor to the Cell
+                string climateAttribute = province.attrib["ClimateGroup"];
+                if (climateAttribute != "")
+                {
+                    int cost = climateCosts[climateAttribute];
+                    //map.SetCellCanCross(cell.index, true);
+                    //map.SetCellNeighboursCost(cell.index, cost, false);
+                    if (cost == 0)  //Need to Change this to CONST
+                    {
+                        map.SetCellCanCross(cell.index, false);
+                    }
+                    else
+                    {
+                    map.SetCellCanCross(cell.index, true);
+                        foreach (Cell neighbour in map.GetCellNeighbours(cell.index))
+                        {
+                            map.SetCellNeighbourCost(neighbour.index, cell.index, cost, false);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
