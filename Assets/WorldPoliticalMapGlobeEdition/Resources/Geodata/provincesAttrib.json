@@ -1,22 +1,38 @@
 ﻿{
+	"3897":{
+		"ClimateGroup":"Polar"
+	},
 	"3898":{
 		"PoliticalProvince":"Florida",
 		"Climate":"HumidSubtropical",
-		"Terrain":"Lowland"
+		"Terrain":"Lowland",
+		"ClimateGroup":"Mild"
 	},
 	"3899":{
 		"PoliticalProvince":"Georgia",
 		"Climate":"HumidSubtropical",
-		"Terrain":"Highland"
+		"Terrain":"Highland",
+		"ClimateGroup":"Mild"
+	},
+	"3901":{
+		"ClimateGroup":"Polar"
+	},
+	"3905":{
+		"ClimateGroup":"Dry"
+	},
+	"3907":{
+		"ClimateGroup":"Dry"
 	},
 	"4078":{
 		"PoliticalProvince":"Florida",
 		"Climate":"TropicalWet",
-		"Terrain":"Lowland"
+		"Terrain":"Lowland",
+		"ClimateGroup":"Tropical"
 	},
 	"4079":{
 		"PoliticalProvince":"Georgia",
 		"Climate":"HumidSubtropical",
-		"Terrain":"Lowland"
+		"Terrain":"Lowland",
+		"ClimateGroup":"Mild"
 	}
 }

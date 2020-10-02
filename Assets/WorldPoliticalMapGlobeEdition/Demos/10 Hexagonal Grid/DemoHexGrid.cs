@@ -56,6 +56,11 @@ namespace WPM {
 
         }
 
+        void HandleOnCellEnter(int cellIndex)
+        {
+
+        }
+
         void HandleOnCellClick(int cellIndex) {
             Debug.Log("Clicked cell: " + cellIndex);
 
