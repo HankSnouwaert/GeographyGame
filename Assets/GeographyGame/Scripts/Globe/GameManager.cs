@@ -30,25 +30,34 @@ namespace WPM
         public const int CULTURAL_POINT = 2;
         public const string CELL_PLAYER = "Player";
         public int turnCount = 1;
-        enum SELECTION_MODE
-        {
-            NONE = 0,
-            CUSTOM_PATH = 1,
-            CUSTOM_COST = 2
-        }
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
-        SELECTION_MODE selectionMode = SELECTION_MODE.NONE;
-        int selectionState = 0;
-        // 0 = selecting first cell, 1 = selecting second cell
-        int firstCell;
-        // the cell index of the first selected cell when setting edge cost between two neighbour cells
+
+        static GameManager _instance;
+
+        /// <summary>
+        /// Instance of the game manager. Use this property to access World Map functionality.
+        /// </summary>
+        public static GameManager instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<GameManager>();
+                    if (_instance == null)
+                    {
+                        Debug.LogWarning("'GameManger' GameObject could not be found in the scene. Make sure it's created with this name before using any map functionality.");
+                    }
+                }
+                return _instance;
+            }
+        }
 
         void Start()
         {
             Debug.Log("Globe Loaded");
             ApplyGlobeSettings();
-            //PlayerCharacter playerCharacter = playerPrefab.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
             // UI Setup - non-important, only for this demo
             labelStyle = new GUIStyle();
             labelStyle.alignment = TextAnchor.MiddleLeft;
@@ -82,9 +91,10 @@ namespace WPM
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            //Check if Turn is Ending
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-                Debug.Log("Space key was pressed.");
+                Debug.Log("Return key was pressed.");
                 SelectableObject[] selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
                 {
@@ -106,7 +116,9 @@ namespace WPM
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["Climate"];
                     GUI.Label(new Rect(10, 10, 200, 500), "Current cell: " + map.lastHighlightedCellIndex + System.Environment.NewLine +
-                         "Province: " + name + System.Environment.NewLine + "Political Province: " + politicalProvince +
+                         "Latitude: " + map.cells[map.lastHighlightedCellIndex].latlon[0] + System.Environment.NewLine +
+                         "Longitude: " + map.cells[map.lastHighlightedCellIndex].latlon[1] + System.Environment.NewLine +
+                         " Province: " + name + System.Environment.NewLine + "Political Province: " + politicalProvince +
                          System.Environment.NewLine + "Climate: " + climate);
                 }
                
@@ -148,6 +160,73 @@ namespace WPM
             {
                 selectedObject.OnCellEnter(index);
             }
+        }
+
+        /// <summary> 
+        /// Get all cells within a certain range (measured in cells) of a target cell
+        /// Returns an array of lists, with List0 containing all cells within range
+        /// and ListX containing the cells X number of cells away from the target cell
+        /// </summary>
+        public List<int>[] GetCellsInRange(int startCell, int range = 0)
+        {
+            //NOTE: this function uses the canCross flag of cells to track which cells
+            //it has checked and assumes all cells will start with it false
+
+            if (range < 0 || startCell < 0 || map.cells.Count() > startCell)
+            {
+                Debug.LogWarning("Invalid input for GetCellsInRange");
+                return null;
+            }
+
+            int distance = 0;                           //distance measures how many rings of hexes we've moved out
+            List<int>[] cells = new List<int>[range+1]; //cells is an array of lists with each list other than 0 containing 
+                                                        //the ring of hexes at that distance.  List 0 contains
+                                                        //all hexes at every distance
+
+            //Add the startCell to List0
+            cells[0] = new List<int>();
+            cells[0].Add(startCell);
+            map.cells[startCell].canCross = false;
+
+            if(range > 0)
+            {
+                //Add the neighbors of the start cell to List1
+                //And add them to List0
+                distance++;
+                cells[distance] = new List<int>();
+                foreach (Cell neighbour in map.GetCellNeighbours(startCell))
+                {
+                    cells[0].Add(neighbour.index);
+                    cells[distance].Add(neighbour.index);
+                    neighbour.canCross = false;
+                }
+            }
+            while (distance < range)
+            {
+                //Continue adding rings of hexes to List0 and creating a new
+                //List for each ring until the distance checked equals the 
+                //disired range
+                distance++;
+                cells[distance] = new List<int>();
+                foreach (int cell in cells[distance - 1])
+                {
+                    foreach (Cell neighbour in map.GetCellNeighbours(cell))
+                    {
+                        if (neighbour.canCross)
+                        {
+                            cells[0].Add(neighbour.index);
+                            cells[distance].Add(neighbour.index);
+                            neighbour.canCross = false;
+                        }
+                    }
+                }
+            }
+            //Set each hex has traverable again
+            foreach (int cell in cells[0])
+            {
+                map.cells[cell].canCross = true;
+            }
+            return cells;
         }
 
         void ApplyGlobeSettings()
@@ -258,6 +337,7 @@ namespace WPM
                         playerCharacter = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
                         int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                         playerCharacter.cellLocation = startingCellIndex;
+                        playerCharacter.latlon = worldGlobeMap.cells[startingCellIndex].latlon;
                         Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
                         playerCharacter.vectorLocation = startingLocation;
                         worldGlobeMap.AddMarker(playerObject, startingLocation, playerCharacter.size, false, 0.0f, true, true);

@@ -8,6 +8,6 @@ namespace WPM
     {
         public int cellLocation;
         public Vector3 vectorLocation;
-
+        public Vector2[] latlon;
     }
 }
