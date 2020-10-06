@@ -37,8 +37,9 @@ namespace WPM
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
             //Create Starting Resort (THIS NEEDS TO BE CLEANED UP)
-            InventoryResort Resort = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
-            InventoryResort startingResort = Instantiate(Resort, new Vector3(0, 0, 0), Quaternion.identity);
+            InventoryResort resortPrefab = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
+            InventoryResort startingResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            startingResort.transform.parent = gameObject.transform.Find("Inventory");
             startingResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
             startingResort.inventoryLocation = 1;
             inventory.Add(startingResort);
