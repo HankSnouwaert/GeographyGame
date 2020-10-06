@@ -104,6 +104,17 @@ namespace WPM
             }
         }
 
+        public void NextTurn()
+        {
+            SelectableObject []
+            selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
+                foreach(SelectableObject selectableObject in selectableObjects)
+                {
+                    selectableObject.EndOfTurn();
+                    turnCount++;
+                }
+        }
+
         void OnGUI()
         {
             if (worldGlobeMap.lastHighlightedCellIndex >= 0)
@@ -172,7 +183,7 @@ namespace WPM
             //NOTE: this function uses the canCross flag of cells to track which cells
             //it has checked and assumes all cells will start with it false
 
-            if (range < 0 || startCell < 0 || map.cells.Count() > startCell)
+            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
             {
                 Debug.LogWarning("Invalid input for GetCellsInRange");
                 return null;

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace WPM
 {
@@ -13,9 +14,13 @@ namespace WPM
         bool moving = false;
         public List<int> pathIndices = null;
         public float size = 0.005f;
+        private int inventorySize = 7;
+        private List<InventoryItem> inventory = new List<InventoryItem>();
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
-        GameManager gameManger;
+        GameManager gameManager;
+        GameObject InventoryPanel; 
+        InventoryGUI inventoryGUI;
         List<int>[] cellsInRange;
         Dictionary<string, int> climateCosts = new Dictionary<string, int>();
         Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
@@ -23,12 +28,21 @@ namespace WPM
 
         void Start()
         {
-            gameManger = GameManager.instance;
+            gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
+            InventoryPanel = GameObject.Find("Canvas/InventoryPanel");
+            inventoryGUI = InventoryPanel.GetComponent(typeof(InventoryGUI)) as InventoryGUI;
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
-            cellsInRange = gameManger.GetCellsInRange(cellLocation, travelRange+1);
+            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
+            //Create Starting Resort (THIS NEEDS TO BE CLEANED UP)
+            InventoryResort Resort = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
+            InventoryResort startingResort = Instantiate(Resort, new Vector3(0, 0, 0), Quaternion.identity);
+            startingResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
+            startingResort.inventoryLocation = 1;
+            inventory.Add(startingResort);
+            inventoryGUI.AddItem(startingResort);
         }
 
         private void Update()
@@ -89,7 +103,7 @@ namespace WPM
             distanceTraveled = 0;
             if (selected) ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = gameManger.GetCellsInRange(cellLocation, travelRange+1);
+            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
             if (selected) SetCellCosts();
         }
 
