@@ -143,9 +143,8 @@ namespace WPM
             {
                 if (worldGlobeMap.cells[cellIndex].tag != null)
                 {
-                    //A new selected object is being selected
+                    //A new mappable object is being selected
                     selectedObject = mappedObjects[worldGlobeMap.cells[cellIndex].tag];
-                    selectedObject.selected = true;
                     selectedObject.Selected();
                 }
                 else
@@ -157,11 +156,6 @@ namespace WPM
             {
                 //A hex is being clicked while an object is selected
                 selectedObject.OnCellClick(cellIndex);
-                if (selectedObject.selected == false)
-                {
-                    //The selected object deselected itself
-                    selectedObject = null;
-                }
             }
         }
 
@@ -171,6 +165,11 @@ namespace WPM
             {
                 selectedObject.OnCellEnter(index);
             }
+        }
+
+        public void DeselectObject()
+        {
+            selectedObject = null;
         }
 
         /// <summary> 

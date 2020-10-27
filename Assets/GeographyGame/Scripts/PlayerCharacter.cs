@@ -26,8 +26,9 @@ namespace WPM
         Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
 
-        void Start()
+        public override void Start()
         {
+            base.Start();
             gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
@@ -41,9 +42,16 @@ namespace WPM
             InventoryResort startingResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             startingResort.transform.parent = gameObject.transform.Find("Inventory");
             startingResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
-            startingResort.inventoryLocation = 1;
+            startingResort.inventoryLocation = 0;
             inventory.Add(startingResort);
             inventoryGUI.AddItem(startingResort);
+
+            InventoryResort secondResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            secondResort.transform.parent = gameObject.transform.Find("Inventory");
+            secondResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
+            secondResort.inventoryLocation = 1;
+            inventory.Add(secondResort);
+            inventoryGUI.AddItem(secondResort);
         }
 
         private void Update()
@@ -57,8 +65,17 @@ namespace WPM
 
         public override void Selected()
         {
+            base.Selected();
             map.SetCellColor(cellLocation, Color.green, true);
             SetCellCosts();
+        }
+
+        public override void Deselected()
+        {
+            base.Deselected();
+            ClearCellCosts();
+            map.ClearCells(true, false, false);
+            selected = false;
         }
 
         public override void OnCellEnter(int index)
@@ -81,10 +98,7 @@ namespace WPM
         {
             if (index == cellLocation)
             {
-                //The player was clicked while selected
-                ClearCellCosts();
-                map.ClearCells(true, false, false);
-                selected = false;
+                Deselected();
             }
             //Attempt to move to new location
             else if (pathIndices != null && moving == false)

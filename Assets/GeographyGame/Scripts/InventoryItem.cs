@@ -6,23 +6,17 @@ using UnityEngine.UI;
 namespace WPM
 {
 
-    public class InventoryItem : MonoBehaviour
+    public class InventoryItem : SelectableObject
     {
         public Sprite inventoryIcon;
         public int inventorySpace = 1;
         public int inventoryLocation;
+        protected InventoryGUI inventoryGUI;
 
-        // Start is called before the first frame update
-        void Start()
+        public override void Start()
         {
-
+            base.Start();
+            inventoryGUI = FindObjectOfType<InventoryGUI>();
         }
-
-        public void Selected()
-        {
-
-        }
-
-
     }
 }

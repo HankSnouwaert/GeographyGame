@@ -26,5 +26,46 @@ namespace WPM
             numberofItems++;
         }
 
+        public void RemoveItem(int location)
+        {
+            numberofItems--;
+            int i = location;
+            do
+            {
+                if (i == numberofItems)  //Am I at the last item?
+                {
+                    displayedItems[i] = null;
+                    displayedItemButtons[i].gameObject.SetActive(false);
+                    displayedItemButtons[i].GetComponent<Image>().sprite = null;
+                }
+                else
+                {
+                    displayedItems[i] = displayedItems[i + 1];
+                    displayedItems[i].inventoryLocation = i;
+                    displayedItemButtons[i].gameObject.SetActive(true);
+                    displayedItemButtons[i].GetComponent<Image>().sprite = displayedItemButtons[i + 1].GetComponent<Image>().sprite;
+                }
+                i++;
+            } while (i <= numberofItems);
+           
+        }
+
+        /// <summary>
+        /// This function is called when an item in the inventory is selected
+        /// </summary>
+        /// <param name="inventoryNumber">What position in the inventory the item is in.</param>
+        public void ItemSelected(int inventoryNumber)
+        {
+            //The inventory position needs to be offset so it starts at 0 instead of 1
+            //inventoryNumber--;
+            if (inventoryNumber <= numberofItems && inventoryNumber >= 0)
+            {
+                if(displayedItems[inventoryNumber].selected)
+                    displayedItems[inventoryNumber].Deselected();
+                else
+                    displayedItems[inventoryNumber].Selected();
+            }
+        }
+
     }
 }
