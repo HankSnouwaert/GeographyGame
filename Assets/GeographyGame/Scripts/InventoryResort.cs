@@ -46,6 +46,11 @@ namespace WPM
                 //Remove Resort from Inventory
                 inventoryGUI.RemoveItem(inventoryLocation);
             }
+            else
+            {
+                //Cell Occupied
+                Deselected();
+            }
         }
     }
 }

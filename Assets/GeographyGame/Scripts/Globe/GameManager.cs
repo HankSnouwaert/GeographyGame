@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using SpeedTutorMainMenuSystem;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 namespace WPM
 {
@@ -13,6 +14,7 @@ namespace WPM
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
+        public bool cursorOverUI = false;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
@@ -138,33 +140,39 @@ namespace WPM
 
         void HandleOnCellClick(int cellIndex)
         {
-            Debug.Log("Clicked cell: " + cellIndex);
-            if (selectedObject == null)
+            if (!cursorOverUI)
             {
-                if (worldGlobeMap.cells[cellIndex].tag != null)
+                Debug.Log("Clicked cell: " + cellIndex);
+                if (selectedObject == null)
                 {
-                    //A new mappable object is being selected
-                    selectedObject = mappedObjects[worldGlobeMap.cells[cellIndex].tag];
-                    selectedObject.Selected();
+                    if (worldGlobeMap.cells[cellIndex].tag != null)
+                    {
+                        //A new mappable object is being selected
+                        selectedObject = mappedObjects[worldGlobeMap.cells[cellIndex].tag];
+                        selectedObject.Selected();
+                    }
+                    else
+                    {
+                        //Nothing is selected, and an empty hex is being clicked
+                    }
                 }
                 else
                 {
-                    //Nothing is selected, and an empty hex is being clicked
+                    //A hex is being clicked while an object is selected
+                    selectedObject.OnCellClick(cellIndex);
                 }
-            }
-            else
-            {
-                //A hex is being clicked while an object is selected
-                selectedObject.OnCellClick(cellIndex);
             }
         }
 
         void HandleOnCellEnter(int index)
         {
-            if (selectedObject != null)
+            if (!cursorOverUI)
             {
-                selectedObject.OnCellEnter(index);
-            }
+                if (selectedObject != null)
+                {
+                    selectedObject.OnCellEnter(index);
+                }
+            } 
         }
 
         public void DeselectObject()

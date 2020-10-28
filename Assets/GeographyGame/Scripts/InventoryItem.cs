@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WPM
@@ -17,6 +18,18 @@ namespace WPM
         {
             base.Start();
             inventoryGUI = FindObjectOfType<InventoryGUI>();
+        }
+
+        public override void Selected()
+        {
+            base.Selected();
+            //EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+
+        public override void Deselected()
+        {
+            base.Deselected();
+            EventSystem.current.SetSelectedGameObject(null);
         }
     }
 }

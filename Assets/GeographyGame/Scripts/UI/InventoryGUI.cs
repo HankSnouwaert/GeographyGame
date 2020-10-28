@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WPM
 {
-    public class InventoryGUI : MonoBehaviour
+    public class InventoryGUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         private PlayerCharacter playerCharacter;
+        private GameManager gameManager;
         public InventoryItem[] displayedItems;
         public Button[] displayedItemButtons;
         private int numberofItems = 0;
@@ -16,6 +18,7 @@ namespace WPM
         {
             displayedItemButtons = GetComponentsInChildren<Button>(true);
             displayedItems = new InventoryItem[displayedItemButtons.Length];
+            gameManager = FindObjectOfType<GameManager>();
         }
 
         public void AddItem(InventoryItem item)
@@ -50,6 +53,18 @@ namespace WPM
            
         }
 
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            Debug.Log(gameObject.name + ": I was entered!");
+            gameManager.cursorOverUI = true;
+        }
+
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            Debug.Log(gameObject.name + ": I was exited!");
+            gameManager.cursorOverUI = false;
+        }
+
         /// <summary>
         /// This function is called when an item in the inventory is selected
         /// </summary>
@@ -60,10 +75,14 @@ namespace WPM
             //inventoryNumber--;
             if (inventoryNumber <= numberofItems && inventoryNumber >= 0)
             {
-                if(displayedItems[inventoryNumber].selected)
-                    displayedItems[inventoryNumber].Deselected();
+                if (displayedItems[inventoryNumber].selected)
+                {
+                    displayedItems[inventoryNumber].Deselected();  
+                }
                 else
+                {
                     displayedItems[inventoryNumber].Selected();
+                }   
             }
         }
 
