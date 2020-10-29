@@ -14,6 +14,8 @@ namespace WPM
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
+        public EventSystem eventSystem;
+        private InventoryGUI inventoryGUI;
         public bool cursorOverUI = false;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
@@ -89,6 +91,9 @@ namespace WPM
             map.OnCellEnter += HandleOnCellEnter;
             map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
             map.OnCellClick += HandleOnCellClick;
+
+            //Get scene objects
+            inventoryGUI = FindObjectOfType<InventoryGUI>();
         }
 
         private void Update()
@@ -104,6 +109,16 @@ namespace WPM
                     turnCount++;
                 }
             }
+            /* THIS CODE IS AN ATTEMPT TO RESOLVE THE ISSUE WHERE INVENTORY BUTTONS ARE DECOLORED WHEN YOU CLICK ANYWHERE ON THE MAP
+            if(selectedObject != null)
+            {
+                if (eventSystem.currentSelectedGameObject != selectedObject.gameObject)
+                {
+                    EventSystem.current.SetSelectedGameObject(selectedObject.gameObject);
+                }
+            }
+            */
+
         }
 
         public void NextTurn()
