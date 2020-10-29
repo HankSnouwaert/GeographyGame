@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace WPM
 {
@@ -13,22 +14,44 @@ namespace WPM
         bool moving = false;
         public List<int> pathIndices = null;
         public float size = 0.005f;
+        private int inventorySize = 7;
+        private List<InventoryItem> inventory = new List<InventoryItem>();
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
-        GameManager gameManger;
+        GameManager gameManager;
+        GameObject InventoryPanel; 
+        InventoryGUI inventoryGUI;
         List<int>[] cellsInRange;
         Dictionary<string, int> climateCosts = new Dictionary<string, int>();
         Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
 
-        void Start()
+        public override void Start()
         {
-            gameManger = GameManager.instance;
+            base.Start();
+            gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
+            InventoryPanel = GameObject.Find("Canvas/InventoryPanel");
+            inventoryGUI = InventoryPanel.GetComponent(typeof(InventoryGUI)) as InventoryGUI;
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
-            cellsInRange = gameManger.GetCellsInRange(cellLocation, travelRange+1);
+            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
+            //Create Starting Resort (THIS NEEDS TO BE CLEANED UP)
+            InventoryResort resortPrefab = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
+            InventoryResort startingResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            startingResort.transform.parent = gameObject.transform.Find("Inventory");
+            startingResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
+            startingResort.inventoryLocation = 0;
+            inventory.Add(startingResort);
+            inventoryGUI.AddItem(startingResort);
+
+            InventoryResort secondResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            secondResort.transform.parent = gameObject.transform.Find("Inventory");
+            secondResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
+            secondResort.inventoryLocation = 1;
+            inventory.Add(secondResort);
+            inventoryGUI.AddItem(secondResort);
         }
 
         private void Update()
@@ -42,8 +65,17 @@ namespace WPM
 
         public override void Selected()
         {
+            base.Selected();
             map.SetCellColor(cellLocation, Color.green, true);
             SetCellCosts();
+        }
+
+        public override void Deselected()
+        {
+            base.Deselected();
+            ClearCellCosts();
+            map.ClearCells(true, false, false);
+            selected = false;
         }
 
         public override void OnCellEnter(int index)
@@ -66,10 +98,7 @@ namespace WPM
         {
             if (index == cellLocation)
             {
-                //The player was clicked while selected
-                ClearCellCosts();
-                map.ClearCells(true, false, false);
-                selected = false;
+                Deselected();
             }
             //Attempt to move to new location
             else if (pathIndices != null && moving == false)
@@ -89,7 +118,7 @@ namespace WPM
             distanceTraveled = 0;
             if (selected) ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = gameManger.GetCellsInRange(cellLocation, travelRange+1);
+            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
             if (selected) SetCellCosts();
         }
 

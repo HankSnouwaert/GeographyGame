@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using SpeedTutorMainMenuSystem;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 namespace WPM
 {
@@ -13,6 +14,9 @@ namespace WPM
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
+        public EventSystem eventSystem;
+        private InventoryGUI inventoryGUI;
+        public bool cursorOverUI = false;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
@@ -87,6 +91,9 @@ namespace WPM
             map.OnCellEnter += HandleOnCellEnter;
             map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
             map.OnCellClick += HandleOnCellClick;
+
+            //Get scene objects
+            inventoryGUI = FindObjectOfType<InventoryGUI>();
         }
 
         private void Update()
@@ -102,6 +109,27 @@ namespace WPM
                     turnCount++;
                 }
             }
+            /* THIS CODE IS AN ATTEMPT TO RESOLVE THE ISSUE WHERE INVENTORY BUTTONS ARE DECOLORED WHEN YOU CLICK ANYWHERE ON THE MAP
+            if(selectedObject != null)
+            {
+                if (eventSystem.currentSelectedGameObject != selectedObject.gameObject)
+                {
+                    EventSystem.current.SetSelectedGameObject(selectedObject.gameObject);
+                }
+            }
+            */
+
+        }
+
+        public void NextTurn()
+        {
+            SelectableObject []
+            selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
+                foreach(SelectableObject selectableObject in selectableObjects)
+                {
+                    selectableObject.EndOfTurn();
+                    turnCount++;
+                }
         }
 
         void OnGUI()
@@ -127,39 +155,44 @@ namespace WPM
 
         void HandleOnCellClick(int cellIndex)
         {
-            Debug.Log("Clicked cell: " + cellIndex);
-            if (selectedObject == null)
+            if (!cursorOverUI)
             {
-                if (worldGlobeMap.cells[cellIndex].tag != null)
+                Debug.Log("Clicked cell: " + cellIndex);
+                if (selectedObject == null)
                 {
-                    //A new selected object is being selected
-                    selectedObject = mappedObjects[worldGlobeMap.cells[cellIndex].tag];
-                    selectedObject.selected = true;
-                    selectedObject.Selected();
+                    if (worldGlobeMap.cells[cellIndex].tag != null)
+                    {
+                        //A new mappable object is being selected
+                        selectedObject = mappedObjects[worldGlobeMap.cells[cellIndex].tag];
+                        selectedObject.Selected();
+                    }
+                    else
+                    {
+                        //Nothing is selected, and an empty hex is being clicked
+                    }
                 }
                 else
                 {
-                    //Nothing is selected, and an empty hex is being clicked
-                }
-            }
-            else
-            {
-                //A hex is being clicked while an object is selected
-                selectedObject.OnCellClick(cellIndex);
-                if (selectedObject.selected == false)
-                {
-                    //The selected object deselected itself
-                    selectedObject = null;
+                    //A hex is being clicked while an object is selected
+                    selectedObject.OnCellClick(cellIndex);
                 }
             }
         }
 
         void HandleOnCellEnter(int index)
         {
-            if (selectedObject != null)
+            if (!cursorOverUI)
             {
-                selectedObject.OnCellEnter(index);
-            }
+                if (selectedObject != null)
+                {
+                    selectedObject.OnCellEnter(index);
+                }
+            } 
+        }
+
+        public void DeselectObject()
+        {
+            selectedObject = null;
         }
 
         /// <summary> 
@@ -172,7 +205,7 @@ namespace WPM
             //NOTE: this function uses the canCross flag of cells to track which cells
             //it has checked and assumes all cells will start with it false
 
-            if (range < 0 || startCell < 0 || map.cells.Count() > startCell)
+            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
             {
                 Debug.LogWarning("Invalid input for GetCellsInRange");
                 return null;
