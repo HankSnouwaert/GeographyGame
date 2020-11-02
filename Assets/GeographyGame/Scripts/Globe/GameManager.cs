@@ -21,6 +21,7 @@ namespace WPM
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         public bool cursorOverUI = false;
+        public int touristSpawnRate = 5;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
@@ -37,7 +38,7 @@ namespace WPM
         public const int NATURAL_POINT = 1;
         public const int CULTURAL_POINT = 2;
         public const string CELL_PLAYER = "Player";
-        public const int touristSpawnRate = 10;
+        
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
 
@@ -416,9 +417,9 @@ namespace WPM
             InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             tourist.transform.parent = gameObject.transform.Find("Inventory");
             tourist.inventoryIcon = Resources.Load<Sprite>("Images/Tourist");
-            tourist.inventoryLocation = 0;
-            player.inventory.Add(tourist);
-            inventoryGUI.AddItem(tourist);
+            if (player.inventory.Count >= player.inventorySize)
+                player.RemoveItem(0);
+            player.AddItem(tourist);
         }
 
     }

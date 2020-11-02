@@ -14,8 +14,8 @@ namespace WPM
         bool moving = false;
         public List<int> pathIndices = null;
         public float size = 0.005f;
-        private int inventorySize = 7;
         public List<InventoryItem> inventory = new List<InventoryItem>();
+        public int inventorySize = 3;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         //GameManager gameManager;
@@ -262,6 +262,27 @@ namespace WPM
                     map.SetCellNeighbourCost(neighbour.index, cell, 0, false);
                 }
             }
+        }
+
+        public bool AddItem(InventoryItem item)
+        {
+            if(inventory.Count < inventorySize)
+            {
+                item.inventoryLocation = inventory.Count;
+                inventory.Add(item);
+                inventoryGUI.AddItem(item);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void RemoveItem(int itemLocation)
+        {
+            inventory.RemoveAt(itemLocation);
+            inventoryGUI.RemoveItem(itemLocation);
         }
     }
 }
