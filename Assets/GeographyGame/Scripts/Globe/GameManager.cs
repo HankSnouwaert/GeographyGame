@@ -16,6 +16,10 @@ namespace WPM
         public GameObject playerPrefab;
         public EventSystem eventSystem;
         private InventoryGUI inventoryGUI;
+        private InventoryTourist touristPrefab;
+        private PlayerCharacter player;
+        public int globalTurnCounter = 0;
+        private int touristCounter = 0;
         public bool cursorOverUI = false;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
@@ -33,7 +37,7 @@ namespace WPM
         public const int NATURAL_POINT = 1;
         public const int CULTURAL_POINT = 2;
         public const string CELL_PLAYER = "Player";
-        public int turnCount = 1;
+        public const int touristSpawnRate = 10;
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
 
@@ -92,8 +96,12 @@ namespace WPM
             map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
             map.OnCellClick += HandleOnCellClick;
 
+            //Get Prefabs
+            touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
+
             //Get scene objects
             inventoryGUI = FindObjectOfType<InventoryGUI>();
+            player = FindObjectOfType<PlayerCharacter>();
         }
 
         private void Update()
@@ -125,13 +133,19 @@ namespace WPM
 
         public void NextTurn(int turns)
         {
+            globalTurnCounter = globalTurnCounter + turns;
+            touristCounter = touristCounter + turns;
             SelectableObject []
             selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
                 {
                     selectableObject.EndOfTurn(turns);
-                    turnCount++;
                 }
+            if(touristCounter >= touristSpawnRate)
+            {
+                touristCounter = 0;
+                GenerateTourist();
+            }
         }
 
         void OnGUI()
@@ -395,6 +409,16 @@ namespace WPM
 
                 #endregion
             }
+        }
+
+        void GenerateTourist()
+        {
+            InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            tourist.transform.parent = gameObject.transform.Find("Inventory");
+            tourist.inventoryIcon = Resources.Load<Sprite>("Images/Tourist");
+            tourist.inventoryLocation = 0;
+            player.inventory.Add(tourist);
+            inventoryGUI.AddItem(tourist);
         }
 
     }

@@ -15,7 +15,7 @@ namespace WPM
         public List<int> pathIndices = null;
         public float size = 0.005f;
         private int inventorySize = 7;
-        private List<InventoryItem> inventory = new List<InventoryItem>();
+        public List<InventoryItem> inventory = new List<InventoryItem>();
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         //GameManager gameManager;
@@ -38,6 +38,7 @@ namespace WPM
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
             //Create Starting Resort (THIS NEEDS TO BE CLEANED UP)
+            /*
             InventoryResort resortPrefab = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
             InventoryResort startingResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             startingResort.transform.parent = gameObject.transform.Find("Inventory");
@@ -52,6 +53,7 @@ namespace WPM
             secondResort.inventoryLocation = 1;
             inventory.Add(secondResort);
             inventoryGUI.AddItem(secondResort);
+            */
         }
 
         private void Update()
@@ -197,7 +199,8 @@ namespace WPM
             map.cells[cellLocation].tag = GetInstanceID().ToString();
             vectorLocation = map.cells[cellLocation].sphereCenter;
             //Update Turns
-            gameManager.NextTurn(map.GetCellNeighbourCost(cellLocation, neighborIndex));
+            int turns = map.GetCellNeighbourCost(cellLocation, neighborIndex);
+            gameManager.NextTurn(turns);
         }
 
         /// <summary>
