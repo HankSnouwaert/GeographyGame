@@ -44,7 +44,7 @@ namespace WPM
 
         }
 
-        public virtual void EndOfTurn()
+        public virtual void EndOfTurn(int turns)
         {
 
         }

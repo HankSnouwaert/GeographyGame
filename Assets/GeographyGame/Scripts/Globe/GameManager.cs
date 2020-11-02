@@ -99,6 +99,7 @@ namespace WPM
         private void Update()
         {
             //Check if Turn is Ending
+            /*
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 Debug.Log("Return key was pressed.");
@@ -109,6 +110,7 @@ namespace WPM
                     turnCount++;
                 }
             }
+            */
             /* THIS CODE IS AN ATTEMPT TO RESOLVE THE ISSUE WHERE INVENTORY BUTTONS ARE DECOLORED WHEN YOU CLICK ANYWHERE ON THE MAP
             if(selectedObject != null)
             {
@@ -121,13 +123,13 @@ namespace WPM
 
         }
 
-        public void NextTurn()
+        public void NextTurn(int turns)
         {
             SelectableObject []
             selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
                 {
-                    selectableObject.EndOfTurn();
+                    selectableObject.EndOfTurn(turns);
                     turnCount++;
                 }
         }
