@@ -15,6 +15,7 @@ namespace WPM
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
         public EventSystem eventSystem;
+        public GameObject dialogPanel;
         private InventoryGUI inventoryGUI;
         private InventoryTourist touristPrefab;
         private PlayerCharacter player;
@@ -103,6 +104,8 @@ namespace WPM
             //Get scene objects
             inventoryGUI = FindObjectOfType<InventoryGUI>();
             player = FindObjectOfType<PlayerCharacter>();
+            dialogPanel = GameObject.Find("/Canvas/DialogPanel");
+            dialogPanel.SetActive(false);
         }
 
         private void Update()

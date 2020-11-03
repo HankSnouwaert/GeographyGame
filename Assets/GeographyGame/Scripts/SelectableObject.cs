@@ -20,8 +20,9 @@ namespace WPM
 
         public virtual void Selected()
         {
-            if (gameManager.selectedObject != null && gameManager.selectedObject != this)
-                gameManager.selectedObject.Deselected();
+            if (gameManager.selectedObject != null)
+                if (gameManager.selectedObject != this)
+                    gameManager.selectedObject.Deselected();
 
             gameManager.selectedObject = this;
             selected = true;
