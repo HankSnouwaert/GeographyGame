@@ -15,7 +15,7 @@ namespace WPM
         public List<int> pathIndices = null;
         public float size = 0.005f;
         public List<InventoryItem> inventory = new List<InventoryItem>();
-        public int inventorySize = 3;
+        public int inventorySize = 8;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         //GameManager gameManager;

@@ -27,8 +27,8 @@ namespace WPM
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
         WorldMapGlobe map;
-        List<Landmark> culturalLandmarks = null;
-        List<Landmark> naturalLandmarks = null;
+        public List<Landmark> culturalLandmarks = null;
+        public List<Landmark> naturalLandmarks = null;
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
@@ -407,7 +407,11 @@ namespace WPM
                         var modelClone = Instantiate(model);
                         Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                         landmarkComponent.mountPoint = mountPoint;
+                        landmarkComponent.name = mountPointName;
+                        landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
+                        landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex]; 
                         worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.01f, false, 0.0f, true, true);
+                        culturalLandmarks.Add(landmarkComponent);
                     }
                 }
 
