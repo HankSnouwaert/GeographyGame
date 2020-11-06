@@ -10,12 +10,14 @@ namespace WPM
         public bool selected;
         protected WorldMapGlobe map;
         protected GameManager gameManager;
+        protected PlayerCharacter player;
 
         // Start is called before the first frame update
 
         public virtual void Start()
         {
             gameManager = FindObjectOfType<GameManager>();
+            player = FindObjectOfType<PlayerCharacter>();
         }
 
         public virtual void Selected()

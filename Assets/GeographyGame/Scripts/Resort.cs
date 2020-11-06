@@ -7,7 +7,7 @@ namespace WPM
 
     public class Resort : MappableObject
     {
-        public string name;
+        public string resortName;
 
         public void createInventoryItem()
         {

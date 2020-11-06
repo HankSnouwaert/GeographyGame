@@ -407,7 +407,7 @@ namespace WPM
                         var modelClone = Instantiate(model);
                         Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                         landmarkComponent.mountPoint = mountPoint;
-                        landmarkComponent.name = mountPointName;
+                        landmarkComponent.landmarkName = mountPointName;
                         landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                         landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex]; 
                         worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.01f, false, 0.0f, true, true);
