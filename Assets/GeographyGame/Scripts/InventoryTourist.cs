@@ -63,47 +63,60 @@ namespace WPM
 
         public override void OnCellClick(int index)
         {
-            
+            bool playerAtLocation = false;
             Cell selectedCell = gameManager.worldGlobeMap.cells[index];
-     
-            switch (destinationType)
+
+            Cell[] playerNeighbourCells = gameManager.worldGlobeMap.GetCellNeighbours(player.cellLocation);
+            foreach (Cell cell in playerNeighbourCells)
             {
-                case PROVINCE:
-                    int selectedProvinceIndex = gameManager.worldGlobeMap.GetProvinceIndex(selectedCell.sphereCenter);
-                    if (gameManager.worldGlobeMap.provinces[selectedProvinceIndex] == provinceDestination)
-                    {
-                        Deselected();
-                        //Remove Tourist from Inventory
-                        player.RemoveItem(inventoryLocation);
-                    }
+                if (cell == selectedCell)
+                {
+                    playerAtLocation = true;
+                }
+            }
 
-                    break;
-
-                case LANDMARK:
-                    if (selectedCell == landmarkDestination.cell)
-                    {
-                        Deselected();
-                        //Remove Tourist from Inventory
-                        player.RemoveItem(inventoryLocation);
-                    }
-                    else
-                    {
-                        Cell[] selectedCellNeighbours = gameManager.worldGlobeMap.GetCellNeighbours(selectedCell.index);
-                        foreach(Cell cell in selectedCellNeighbours)
+            if (playerAtLocation)
+            {
+                switch (destinationType)
+                {
+                    case PROVINCE:
+                        int selectedProvinceIndex = gameManager.worldGlobeMap.GetProvinceIndex(selectedCell.sphereCenter);
+                        if (gameManager.worldGlobeMap.provinces[selectedProvinceIndex] == provinceDestination)
                         {
-                            if(cell == landmarkDestination.cell)
+                            Deselected();
+                            //Remove Tourist from Inventory
+                            player.RemoveItem(inventoryLocation);
+                        }
+
+                        break;
+
+                    case LANDMARK:
+                        if (selectedCell == landmarkDestination.cell)
+                        {
+                            Deselected();
+                            //Remove Tourist from Inventory
+                            player.RemoveItem(inventoryLocation);
+                        }
+                        else
+                        {
+                            Cell[] selectedCellNeighbours = gameManager.worldGlobeMap.GetCellNeighbours(selectedCell.index);
+                            foreach (Cell cell in selectedCellNeighbours)
                             {
-                                Deselected();
-                                //Remove Tourist from Inventory
-                                player.RemoveItem(inventoryLocation);
+                                if (cell == landmarkDestination.cell)
+                                {
+                                    Deselected();
+                                    //Remove Tourist from Inventory
+                                    player.RemoveItem(inventoryLocation);
+                                }
                             }
                         }
-                    }
-                    break;
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
+           
         }
     }
 }

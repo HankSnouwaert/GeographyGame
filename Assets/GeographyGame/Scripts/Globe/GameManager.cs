@@ -410,7 +410,7 @@ namespace WPM
                         landmarkComponent.landmarkName = mountPointName;
                         landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                         landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex]; 
-                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.01f, false, 0.0f, true, true);
+                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.002f, false, 0.0f, true, true);
                         culturalLandmarks.Add(landmarkComponent);
                     }
                 }
