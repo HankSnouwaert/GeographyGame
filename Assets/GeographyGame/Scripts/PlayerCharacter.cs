@@ -9,16 +9,16 @@ namespace WPM
     public class PlayerCharacter : MappableObject
     {
         int travelRange = 8;
-        int distanceTraveled = 0;
+        //int distanceTraveled = 0;
         public int destination = 0;
         bool moving = false;
         public List<int> pathIndices = null;
         public float size = 0.005f;
-        private int inventorySize = 7;
-        private List<InventoryItem> inventory = new List<InventoryItem>();
+        public List<InventoryItem> inventory = new List<InventoryItem>();
+        public int inventorySize = 8;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
-        GameManager gameManager;
+        //GameManager gameManager;
         GameObject InventoryPanel; 
         InventoryGUI inventoryGUI;
         List<int>[] cellsInRange;
@@ -29,7 +29,7 @@ namespace WPM
         public override void Start()
         {
             base.Start();
-            gameManager = GameManager.instance;
+            //gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
             InventoryPanel = GameObject.Find("Canvas/InventoryPanel");
@@ -38,6 +38,7 @@ namespace WPM
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
             //Create Starting Resort (THIS NEEDS TO BE CLEANED UP)
+            /*
             InventoryResort resortPrefab = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
             InventoryResort startingResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             startingResort.transform.parent = gameObject.transform.Find("Inventory");
@@ -52,6 +53,7 @@ namespace WPM
             secondResort.inventoryLocation = 1;
             inventory.Add(secondResort);
             inventoryGUI.AddItem(secondResort);
+            */
         }
 
         private void Update()
@@ -113,9 +115,9 @@ namespace WPM
             }
         }
 
-        public override void EndOfTurn()
+        public override void EndOfTurn(int turns)
         {
-            distanceTraveled = 0;
+           // distanceTraveled = 0;
             if (selected) ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
@@ -130,9 +132,10 @@ namespace WPM
         /// <param name="endCellIndex">End cell index.</param>
         List<int> DrawPath(int startCellIndex, int endCellIndex)
         {
-            int remainingMovement = travelRange - distanceTraveled;
             List<int> cellIndices;
-
+            /*
+            int remainingMovement = travelRange - distanceTraveled;
+            
             //Get path to location
             if (remainingMovement > 0)
             {
@@ -143,6 +146,10 @@ namespace WPM
             {
                 cellIndices = null;
             }
+            */
+
+            cellIndices = map.FindPath(startCellIndex, endCellIndex);
+            map.ClearCells(true, false, false);
 
             if (cellIndices == null)
                 return null;   // no path found
@@ -163,7 +170,8 @@ namespace WPM
                 }
             }
 
-            if (pathCost > remainingMovement)
+            //if (pathCost > remainingMovement)
+            if (pathCost > travelRange)
                 return null;   //Path costs more movement than is available
 
             //Path Successful
@@ -184,12 +192,15 @@ namespace WPM
         {
             //Update distance travelled
             int neighborIndex = map.GetCellNeighbourIndex(cellLocation, newCellIndex);
-            distanceTraveled = distanceTraveled + map.GetCellNeighbourCost(cellLocation, neighborIndex);
+            //distanceTraveled = distanceTraveled + map.GetCellNeighbourCost(cellLocation, neighborIndex);
             //Update cell tags and player character location
             map.cells[cellLocation].tag = null;
             cellLocation = newCellIndex;
             map.cells[cellLocation].tag = GetInstanceID().ToString();
             vectorLocation = map.cells[cellLocation].sphereCenter;
+            //Update Turns
+            int turns = map.GetCellNeighbourCost(cellLocation, neighborIndex);
+            gameManager.NextTurn(turns);
         }
 
         /// <summary>
@@ -251,6 +262,27 @@ namespace WPM
                     map.SetCellNeighbourCost(neighbour.index, cell, 0, false);
                 }
             }
+        }
+
+        public bool AddItem(InventoryItem item)
+        {
+            if(inventory.Count < inventorySize)
+            {
+                item.inventoryLocation = inventory.Count;
+                inventory.Add(item);
+                inventoryGUI.AddItem(item);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void RemoveItem(int itemLocation)
+        {
+            inventory.RemoveAt(itemLocation);
+            inventoryGUI.RemoveItem(itemLocation);
         }
     }
 }

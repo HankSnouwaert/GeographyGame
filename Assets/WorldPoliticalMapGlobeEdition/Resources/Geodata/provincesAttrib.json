@@ -1,6 +1,87 @@
 ﻿{
+	"3869":{
+		"ClimateGroup":"Mild"
+	},
+	"3870":{
+		"ClimateGroup":"Mild"
+	},
+	"3871":{
+		"ClimateGroup":"Mild"
+	},
+	"3872":{
+		"ClimateGroup":"Mild"
+	},
+	"3874":{
+		"ClimateGroup":"Mild"
+	},
+	"3875":{
+		"ClimateGroup":"Mild"
+	},
+	"3876":{
+		"ClimateGroup":"Mild"
+	},
+	"3877":{
+		"ClimateGroup":"Mild"
+	},
+	"3878":{
+		"ClimateGroup":"Mild"
+	},
+	"3879":{
+		"ClimateGroup":"Mild"
+	},
+	"3880":{
+		"ClimateGroup":"Mild"
+	},
+	"3881":{
+		"ClimateGroup":"Mild"
+	},
+	"3882":{
+		"ClimateGroup":"Mild"
+	},
+	"3883":{
+		"ClimateGroup":"Mild"
+	},
+	"3884":{
+		"ClimateGroup":"Mild"
+	},
+	"3885":{
+		"ClimateGroup":"Mild"
+	},
+	"3886":{
+		"ClimateGroup":"Mild"
+	},
+	"3887":{
+		"ClimateGroup":"Mild"
+	},
+	"3888":{
+		"ClimateGroup":"Mild"
+	},
+	"3889":{
+		"ClimateGroup":"Mild"
+	},
+	"3890":{
+		"ClimateGroup":"Mild"
+	},
+	"3891":{
+		"ClimateGroup":"Mild"
+	},
+	"3892":{
+		"ClimateGroup":"Mild"
+	},
+	"3893":{
+		"ClimateGroup":"Mild"
+	},
+	"3894":{
+		"ClimateGroup":"Mild"
+	},
+	"3895":{
+		"ClimateGroup":"Mild"
+	},
+	"3896":{
+		"ClimateGroup":"Mild"
+	},
 	"3897":{
-		"ClimateGroup":"Polar"
+		"ClimateGroup":"Mild"
 	},
 	"3898":{
 		"PoliticalProvince":"Florida",
@@ -14,20 +95,68 @@
 		"Terrain":"Highland",
 		"ClimateGroup":"Mild"
 	},
+	"3900":{
+		"ClimateGroup":"Mild"
+	},
 	"3901":{
-		"ClimateGroup":"Polar"
+		"ClimateGroup":"Mild"
+	},
+	"3902":{
+		"ClimateGroup":"Mild"
+	},
+	"3903":{
+		"ClimateGroup":"Mild"
+	},
+	"3904":{
+		"ClimateGroup":"Mild"
 	},
 	"3905":{
-		"ClimateGroup":"Dry"
+		"ClimateGroup":"Mild"
+	},
+	"3906":{
+		"ClimateGroup":"Mild"
 	},
 	"3907":{
-		"ClimateGroup":"Dry"
+		"ClimateGroup":"Mild"
+	},
+	"3908":{
+		"ClimateGroup":"Mild"
+	},
+	"3909":{
+		"ClimateGroup":"Mild"
+	},
+	"3910":{
+		"ClimateGroup":"Mild"
+	},
+	"3911":{
+		"ClimateGroup":"Mild"
+	},
+	"3913":{
+		"ClimateGroup":"Mild"
+	},
+	"3914":{
+		"ClimateGroup":"Mild"
+	},
+	"3915":{
+		"ClimateGroup":"Mild"
+	},
+	"3916":{
+		"ClimateGroup":"Mild"
+	},
+	"3917":{
+		"ClimateGroup":"Mild"
+	},
+	"3918":{
+		"ClimateGroup":"Mild"
+	},
+	"3919":{
+		"ClimateGroup":"Mild"
 	},
 	"4078":{
 		"PoliticalProvince":"Florida",
 		"Climate":"TropicalWet",
 		"Terrain":"Lowland",
-		"ClimateGroup":"Tropical"
+		"ClimateGroup":"Mild"
 	},
 	"4079":{
 		"PoliticalProvince":"Georgia",

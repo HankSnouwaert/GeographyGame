@@ -15,14 +15,20 @@ namespace WPM
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
         public EventSystem eventSystem;
+        public GameObject dialogPanel;
         private InventoryGUI inventoryGUI;
+        private InventoryTourist touristPrefab;
+        private PlayerCharacter player;
+        public int globalTurnCounter = 0;
+        private int touristCounter = 0;
         public bool cursorOverUI = false;
+        public int touristSpawnRate = 5;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
         WorldMapGlobe map;
-        List<Landmark> culturalLandmarks = null;
-        List<Landmark> naturalLandmarks = null;
+        public List<Landmark> culturalLandmarks = null;
+        public List<Landmark> naturalLandmarks = null;
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
@@ -33,7 +39,7 @@ namespace WPM
         public const int NATURAL_POINT = 1;
         public const int CULTURAL_POINT = 2;
         public const string CELL_PLAYER = "Player";
-        public int turnCount = 1;
+        
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
 
@@ -92,13 +98,20 @@ namespace WPM
             map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
             map.OnCellClick += HandleOnCellClick;
 
+            //Get Prefabs
+            touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
+
             //Get scene objects
             inventoryGUI = FindObjectOfType<InventoryGUI>();
+            player = FindObjectOfType<PlayerCharacter>();
+            dialogPanel = GameObject.Find("/Canvas/DialogPanel");
+            dialogPanel.SetActive(false);
         }
 
         private void Update()
         {
             //Check if Turn is Ending
+            /*
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 Debug.Log("Return key was pressed.");
@@ -109,6 +122,7 @@ namespace WPM
                     turnCount++;
                 }
             }
+            */
             /* THIS CODE IS AN ATTEMPT TO RESOLVE THE ISSUE WHERE INVENTORY BUTTONS ARE DECOLORED WHEN YOU CLICK ANYWHERE ON THE MAP
             if(selectedObject != null)
             {
@@ -121,15 +135,21 @@ namespace WPM
 
         }
 
-        public void NextTurn()
+        public void NextTurn(int turns)
         {
+            globalTurnCounter = globalTurnCounter + turns;
+            touristCounter = touristCounter + turns;
             SelectableObject []
             selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
                 {
-                    selectableObject.EndOfTurn();
-                    turnCount++;
+                    selectableObject.EndOfTurn(turns);
                 }
+            if(touristCounter >= touristSpawnRate)
+            {
+                touristCounter = 0;
+                GenerateTourist();
+            }
         }
 
         void OnGUI()
@@ -387,12 +407,26 @@ namespace WPM
                         var modelClone = Instantiate(model);
                         Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                         landmarkComponent.mountPoint = mountPoint;
-                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.01f, false, 0.0f, true, true);
+                        landmarkComponent.landmarkName = mountPointName;
+                        landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
+                        landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex]; 
+                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.002f, false, 0.0f, true, true);
+                        culturalLandmarks.Add(landmarkComponent);
                     }
                 }
 
                 #endregion
             }
+        }
+
+        void GenerateTourist()
+        {
+            InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            tourist.transform.parent = gameObject.transform.Find("Inventory");
+            tourist.inventoryIcon = Resources.Load<Sprite>("Images/Tourist");
+            if (player.inventory.Count >= player.inventorySize)
+                player.RemoveItem(0);
+            player.AddItem(tourist);
         }
 
     }

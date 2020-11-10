@@ -10,18 +10,21 @@ namespace WPM
         public bool selected;
         protected WorldMapGlobe map;
         protected GameManager gameManager;
+        protected PlayerCharacter player;
 
         // Start is called before the first frame update
 
         public virtual void Start()
         {
             gameManager = FindObjectOfType<GameManager>();
+            player = FindObjectOfType<PlayerCharacter>();
         }
 
         public virtual void Selected()
         {
-            if (gameManager.selectedObject != null && gameManager.selectedObject != this)
-                gameManager.selectedObject.Deselected();
+            if (gameManager.selectedObject != null)
+                if (gameManager.selectedObject != this)
+                    gameManager.selectedObject.Deselected();
 
             gameManager.selectedObject = this;
             selected = true;
@@ -44,7 +47,7 @@ namespace WPM
 
         }
 
-        public virtual void EndOfTurn()
+        public virtual void EndOfTurn(int turns)
         {
 
         }

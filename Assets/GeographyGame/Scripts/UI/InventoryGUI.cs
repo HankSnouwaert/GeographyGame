@@ -8,7 +8,7 @@ namespace WPM
 {
     public class InventoryGUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        private PlayerCharacter playerCharacter;
+       //private PlayerCharacter playerCharacter;
         private GameManager gameManager;
         public InventoryItem[] displayedItems;
         public Button[] displayedItemButtons;
@@ -19,6 +19,7 @@ namespace WPM
             displayedItemButtons = GetComponentsInChildren<Button>(true);
             displayedItems = new InventoryItem[displayedItemButtons.Length];
             gameManager = FindObjectOfType<GameManager>();
+            //playerCharacter = FindObjectOfType<PlayerCharacter>();
         }
 
         public void AddItem(InventoryItem item)

@@ -20,16 +20,6 @@
 		"Attrib":null
 	},
 	{
-		"Name":"GatewayArch",
-		"Country":"United States of America",
-		"Province":3887,
-		"Type":2,
-		"X":1950646,
-		"Y":1563600,
-		"Z":-11401,
-		"Attrib":null
-	},
-	{
 		"Name":"HooverDam",
 		"Country":"United States of America",
 		"Province":3879,
@@ -44,9 +34,9 @@
 		"Country":"United States of America",
 		"Province":3877,
 		"Type":2,
-		"X":1666847,
-		"Y":1531631,
-		"Z":-1060999,
+		"X":1665091,
+		"Y":1535124,
+		"Z":-1058707,
 		"Attrib":null
 	},
 	{
@@ -60,16 +50,6 @@
 		"Attrib":null
 	},
 	{
-		"Name":"SpaceNeedle",
-		"Country":"United States of America",
-		"Province":3875,
-		"Type":2,
-		"X":1423514,
-		"Y":1848568,
-		"Z":-897995,
-		"Attrib":null
-	},
-	{
 		"Name":"Player Start: North Carolina",
 		"Country":"United States of America",
 		"Province":3905,
@@ -77,6 +57,26 @@
 		"X":1998246,
 		"Y":1457822,
 		"Z":362994,
+		"Attrib":null
+	},
+	{
+		"Name":"SpaceNeedle",
+		"Country":"United States of America",
+		"Province":3875,
+		"Type":2,
+		"X":1419449,
+		"Y":1853106,
+		"Z":-895074,
+		"Attrib":null
+	},
+	{
+		"Name":"GatewayArch",
+		"Country":"United States of America",
+		"Province":3887,
+		"Type":2,
+		"X":1952514,
+		"Y":1561263,
+		"Z":-11795,
 		"Attrib":null
 	}
 ]
