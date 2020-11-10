@@ -12,6 +12,9 @@ namespace WPM
         private GameManager gameManager;
         public InventoryItem[] displayedItems;
         public Button[] displayedItemButtons;
+        private GameObject selectedObject;
+        private int selectedItemIndex;
+        private bool inventorySelected = false;
         private int numberofItems = 0;
         // Start is called before the first frame update
         void Start()
@@ -21,7 +24,36 @@ namespace WPM
             gameManager = FindObjectOfType<GameManager>();
             //playerCharacter = FindObjectOfType<PlayerCharacter>();
         }
+        void Update()
+        {
+            if(selectedObject != null)
+            {
+                //Check if the inventory has been selected while the GUI still thinks it's selected
+                if (inventorySelected && !displayedItems[selectedItemIndex].selected)
+                {
+                    //Check if the EventSystem still thinks the inventory item is selected
+                    if (EventSystem.current.currentSelectedGameObject == selectedObject)
+                    {
+                        //The EventSystem still thinks the inventory item is selected and needs to be cleared
+                        EventSystem.current.SetSelectedGameObject(null);
+                    }
+                    //The inventory should be deselected
+                    inventorySelected = false;
+                    selectedObject = null;
+                }
+                else
+                {
+                    //The GUI is up to date
+                    //Check if the EventSystem has been cleared when it shouldn't
+                    if (EventSystem.current.currentSelectedGameObject == null)
+                    {
+                        //The EventSystem was cleared and needs to be updated
+                        EventSystem.current.SetSelectedGameObject(selectedObject);
+                    }
+                }
 
+            }
+        }
         public void AddItem(InventoryItem item)
         {
             displayedItems[numberofItems] = item;
@@ -85,6 +117,9 @@ namespace WPM
                     displayedItems[inventoryNumber].Selected();
                 }   
             }
+            inventorySelected = true;
+            selectedItemIndex = inventoryNumber;
+            selectedObject = EventSystem.current.currentSelectedGameObject;
         }
 
     }

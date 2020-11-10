@@ -23,7 +23,15 @@ namespace WPM
             inventoryGUI = FindObjectOfType<InventoryGUI>();
             //spriteRenderer = GetComponent<SpriteRenderer>();
         }
-
+        /*
+        public void Update()
+        {
+            if (selected)
+            {
+                EventSystem.current.SetSelectedGameObject(gameObject);
+            }
+        }
+        */
         public override void Selected()
         {
             base.Selected();
@@ -34,7 +42,8 @@ namespace WPM
         public override void Deselected()
         {
             base.Deselected();
-            EventSystem.current.SetSelectedGameObject(null);
+            //EventSystem.current.SetSelectedGameObject(null);
+            
             //spriteRenderer.color = normalColor;
         }
     }

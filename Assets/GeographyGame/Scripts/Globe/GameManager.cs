@@ -422,7 +422,7 @@ namespace WPM
         void GenerateTourist()
         {
             InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            tourist.transform.parent = gameObject.transform.Find("Inventory");
+            tourist.transform.parent = gameObject.transform.Find("Canvas/InventoryPanel");
             tourist.inventoryIcon = Resources.Load<Sprite>("Images/Tourist");
             if (player.inventory.Count >= player.inventorySize)
                 player.RemoveItem(0);
