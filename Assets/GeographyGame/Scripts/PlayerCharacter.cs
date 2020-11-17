@@ -15,7 +15,7 @@ namespace WPM
         public List<int> pathIndices = null;
         public float size = 0.005f;
         public List<InventoryItem> inventory = new List<InventoryItem>();
-        public int inventorySize = 8;
+        private int inventorySize = 7;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         //GameManager gameManager;
@@ -25,6 +25,7 @@ namespace WPM
         Dictionary<string, int> climateCosts = new Dictionary<string, int>();
         Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
+        private const int STARTING_NUMBER_OF_TOURISTS = 2;
 
         public override void Start()
         {
@@ -37,23 +38,14 @@ namespace WPM
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
-            //Create Starting Resort (THIS NEEDS TO BE CLEANED UP)
-            /*
-            InventoryResort resortPrefab = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
-            InventoryResort startingResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            startingResort.transform.parent = gameObject.transform.Find("Inventory");
-            startingResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
-            startingResort.inventoryLocation = 0;
-            inventory.Add(startingResort);
-            inventoryGUI.AddItem(startingResort);
+            map.FlyToLocation(vectorLocation);
 
-            InventoryResort secondResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            secondResort.transform.parent = gameObject.transform.Find("Inventory");
-            secondResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
-            secondResort.inventoryLocation = 1;
-            inventory.Add(secondResort);
-            inventoryGUI.AddItem(secondResort);
-            */
+            //Generate Initial Tourists
+            for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
+            {
+                gameManager.GenerateTourist();
+            }
+
         }
 
         private void Update()
@@ -266,7 +258,10 @@ namespace WPM
 
         public bool AddItem(InventoryItem item)
         {
-            if(inventory.Count < inventorySize)
+            if (inventory.Count >= inventorySize)
+                RemoveItem(0);
+
+            if (inventory.Count < inventorySize)
             {
                 item.inventoryLocation = inventory.Count;
                 inventory.Add(item);

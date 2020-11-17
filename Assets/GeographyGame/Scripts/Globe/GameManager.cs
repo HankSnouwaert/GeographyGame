@@ -22,7 +22,7 @@ namespace WPM
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         public bool cursorOverUI = false;
-        public int touristSpawnRate = 5;
+        public int touristSpawnRate = 30;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
@@ -39,7 +39,10 @@ namespace WPM
         public const int NATURAL_POINT = 1;
         public const int CULTURAL_POINT = 2;
         public const string CELL_PLAYER = "Player";
-        
+
+        private string[] touristImageFiles;
+        private int touristImageIndex = 0;
+        private const int NUMBER_OF_TOURIST_IMAGES = 3;
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
 
@@ -106,33 +109,12 @@ namespace WPM
             player = FindObjectOfType<PlayerCharacter>();
             dialogPanel = GameObject.Find("/Canvas/DialogPanel");
             dialogPanel.SetActive(false);
-        }
 
-        private void Update()
-        {
-            //Check if Turn is Ending
-            /*
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                Debug.Log("Return key was pressed.");
-                SelectableObject[] selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
-                foreach(SelectableObject selectableObject in selectableObjects)
-                {
-                    selectableObject.EndOfTurn();
-                    turnCount++;
-                }
-            }
-            */
-            /* THIS CODE IS AN ATTEMPT TO RESOLVE THE ISSUE WHERE INVENTORY BUTTONS ARE DECOLORED WHEN YOU CLICK ANYWHERE ON THE MAP
-            if(selectedObject != null)
-            {
-                if (eventSystem.currentSelectedGameObject != selectedObject.gameObject)
-                {
-                    EventSystem.current.SetSelectedGameObject(selectedObject.gameObject);
-                }
-            }
-            */
-
+            //Set Tourist Images
+            touristImageFiles = new string[3];
+            touristImageFiles[0] = "Images/Tourist1";
+            touristImageFiles[1] = "Images/Tourist2";
+            touristImageFiles[2] = "Images/Tourist3";
         }
 
         public void NextTurn(int turns)
@@ -419,13 +401,14 @@ namespace WPM
             }
         }
 
-        void GenerateTourist()
+        public void GenerateTourist()
         {
             InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             tourist.transform.parent = gameObject.transform.Find("Canvas/InventoryPanel");
-            tourist.inventoryIcon = Resources.Load<Sprite>("Images/Tourist");
-            if (player.inventory.Count >= player.inventorySize)
-                player.RemoveItem(0);
+            tourist.inventoryIcon = Resources.Load<Sprite>(touristImageFiles[touristImageIndex]);
+            touristImageIndex++;
+            if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
+                touristImageIndex = 0;
             player.AddItem(tourist);
         }
 
