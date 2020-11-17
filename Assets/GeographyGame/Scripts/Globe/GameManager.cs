@@ -22,7 +22,7 @@ namespace WPM
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         public bool cursorOverUI = false;
-        public int touristSpawnRate = 30;
+        private int touristSpawnRate = 30;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();

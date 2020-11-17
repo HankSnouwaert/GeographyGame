@@ -64,6 +64,14 @@ namespace WPM
 
         public void RemoveItem(int location)
         {
+            //Check if you are removing the currently selected object
+            if(selectedItemIndex == location)
+            {
+                EventSystem.current.SetSelectedGameObject(null);
+                inventorySelected = false;
+                selectedObject = null;
+            }
+
             numberofItems--;
             int i = location;
             do
