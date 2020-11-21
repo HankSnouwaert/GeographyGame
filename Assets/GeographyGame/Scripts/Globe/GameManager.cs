@@ -6,6 +6,7 @@ using System.IO;
 using SpeedTutorMainMenuSystem;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace WPM
 {
@@ -16,13 +17,15 @@ namespace WPM
         public GameObject playerPrefab;
         public EventSystem eventSystem;
         public GameObject dialogPanel;
+        public GameObject hexInfoPanel;
+        private Text hexInfo;
         private InventoryGUI inventoryGUI;
         private InventoryTourist touristPrefab;
         private PlayerCharacter player;
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         public bool cursorOverUI = false;
-        private int touristSpawnRate = 30;
+        private int touristSpawnRate = 2;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
@@ -98,7 +101,7 @@ namespace WPM
 
             // Setup grid events
             map.OnCellEnter += HandleOnCellEnter;
-            map.OnCellExit += (int cellIndex) => Debug.Log("Exited cell: " + cellIndex);
+            map.OnCellExit += HandleOnCellExit;
             map.OnCellClick += HandleOnCellClick;
 
             //Get Prefabs
@@ -109,6 +112,10 @@ namespace WPM
             player = FindObjectOfType<PlayerCharacter>();
             dialogPanel = GameObject.Find("/Canvas/DialogPanel");
             dialogPanel.SetActive(false);
+            hexInfoPanel = GameObject.Find("/Canvas/HexInfoPanel");
+            hexInfoPanel.SetActive(false);
+            Transform textObject = hexInfoPanel.transform.GetChild(0);
+            hexInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
 
             //Set Tourist Images
             touristImageFiles = new string[3];
@@ -134,6 +141,7 @@ namespace WPM
             }
         }
 
+        /*
         void OnGUI()
         {
             if (worldGlobeMap.lastHighlightedCellIndex >= 0)
@@ -154,6 +162,7 @@ namespace WPM
                
             }
         }
+        */
 
         void HandleOnCellClick(int cellIndex)
         {
@@ -183,13 +192,31 @@ namespace WPM
 
         void HandleOnCellEnter(int index)
         {
-            if (!cursorOverUI)
+            if (!cursorOverUI && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
+                Province province = worldGlobeMap.provinceHighlighted;
+                Country country = worldGlobeMap.countryHighlighted;
+                if (province != null)
+                {
+                    string name = province.name;
+                    string politicalProvince = province.attrib["PoliticalProvince"];
+                    string climate = province.attrib["ClimateGroup"];
+                    hexInfoPanel.SetActive(true);
+                    hexInfo.text =  " Province: " + name + System.Environment.NewLine + "Climate: " + climate;
+                }
+
                 if (selectedObject != null)
                 {
                     selectedObject.OnCellEnter(index);
                 }
             } 
+        }
+
+        void HandleOnCellExit(int index)
+        {
+            Province province = worldGlobeMap.provinceHighlighted;
+            if (province == null || cursorOverUI)
+                hexInfoPanel.SetActive(false);
         }
 
         public void DeselectObject()
@@ -379,7 +406,6 @@ namespace WPM
                         string playerID = playerCharacter.GetInstanceID().ToString();
                         worldGlobeMap.cells[startingCellIndex].tag = playerID;
                         mappedObjects.Add(playerID, playerCharacter);
-                        //worldGlobeMap.cells[startingCellIndex].tag = CELL_PLAYER;
                     }
                     if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
                     {
@@ -393,6 +419,8 @@ namespace WPM
                         landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                         landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex]; 
                         worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.002f, false, 0.0f, true, true);
+                        string landmarkID = landmarkComponent.GetInstanceID().ToString();
+                        worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
                         culturalLandmarks.Add(landmarkComponent);
                     }
                 }
