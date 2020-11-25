@@ -95,7 +95,8 @@ namespace WPM
                 Deselected();
             }
             //Attempt to move to new location
-            else if (pathIndices != null && moving == false)
+            else 
+            if (pathIndices != null && moving == false)
             {
                 destination = index;
                 //Add latlon of each hex in path to animator's path
@@ -109,11 +110,13 @@ namespace WPM
 
         public override void EndOfTurn(int turns)
         {
-           // distanceTraveled = 0;
-            if (selected) ClearCellCosts();
+            // distanceTraveled = 0;
+            //if (selected) 
+            ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
-            if (selected) SetCellCosts();
+            //if (selected) 
+            SetCellCosts();
         }
 
         /// <summary>
@@ -125,21 +128,6 @@ namespace WPM
         List<int> DrawPath(int startCellIndex, int endCellIndex)
         {
             List<int> cellIndices;
-            /*
-            int remainingMovement = travelRange - distanceTraveled;
-            
-            //Get path to location
-            if (remainingMovement > 0)
-            {
-                cellIndices = map.FindPath(startCellIndex, endCellIndex);
-                map.ClearCells(true, false, false);
-            }
-            else
-            {
-                cellIndices = null;
-            }
-            */
-
             cellIndices = map.FindPath(startCellIndex, endCellIndex);
             map.ClearCells(true, false, false);
 
