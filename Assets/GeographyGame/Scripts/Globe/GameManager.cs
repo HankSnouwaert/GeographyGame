@@ -25,7 +25,7 @@ namespace WPM
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         public bool cursorOverUI = false;
-        private int touristSpawnRate = 2;
+        private int touristSpawnRate = 10;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
@@ -417,7 +417,8 @@ namespace WPM
                         landmarkComponent.mountPoint = mountPoint;
                         landmarkComponent.landmarkName = mountPointName;
                         landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
-                        landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex]; 
+                        landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
+                        landmarkComponent.cell.canCross = false;
                         worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.002f, false, 0.0f, true, true);
                         string landmarkID = landmarkComponent.GetInstanceID().ToString();
                         worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;

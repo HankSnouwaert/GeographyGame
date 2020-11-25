@@ -8,7 +8,7 @@ namespace WPM
 {
     public class PlayerCharacter : MappableObject
     {
-        int travelRange = 8;
+        int travelRange = 10;
         //int distanceTraveled = 0;
         public int destination = 0;
         bool moving = false;

@@ -130,5 +130,10 @@ namespace WPM
             selectedObject = EventSystem.current.currentSelectedGameObject;
         }
 
+        public void touristDropOff()
+        {
+            
+        }
+
     }
 }
