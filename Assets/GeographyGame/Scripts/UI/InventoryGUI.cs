@@ -129,11 +129,5 @@ namespace WPM
             selectedItemIndex = inventoryNumber;
             selectedObject = EventSystem.current.currentSelectedGameObject;
         }
-
-        public void touristDropOff()
-        {
-            
-        }
-
     }
 }

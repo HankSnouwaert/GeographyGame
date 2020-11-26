@@ -64,7 +64,6 @@ namespace WPM
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             dialogPanel.SetActive(false);
             dropOffButton.onClick.RemoveAllListeners();
-            player.Selected();
         }
 
         public void DropOff()
@@ -79,6 +78,7 @@ namespace WPM
                         Deselected();
                         //Remove Tourist from Inventory
                         player.RemoveItem(inventoryLocation);
+                        gameManager.cursorOverUI = false;
                     }
                     else
                     {
@@ -101,6 +101,7 @@ namespace WPM
                             Deselected();
                             //Remove Tourist from Inventory
                             player.RemoveItem(inventoryLocation);
+                            gameManager.cursorOverUI = false;
                         }
                         else
                         {

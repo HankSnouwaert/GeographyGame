@@ -98,6 +98,8 @@ namespace WPM
             else 
             if (pathIndices != null && moving == false)
             {
+                if (map.cells[index].tag != null)
+                    Debug.Log("This shouldn't happen");
                 destination = index;
                 //Add latlon of each hex in path to animator's path
                 anim.GenerateLatLon(pathIndices);
@@ -211,8 +213,18 @@ namespace WPM
                 string climateAttribute = province.attrib["ClimateGroup"];
                 if (climateAttribute != "")
                 {
+                    bool cellOccupied = false;
+                    //Check if cell is occupied
+                    if (map.cells[cell].tag != null)
+                    {
+                       //Check if cell is occupied by something other than the player
+                       if(map.cells[cell].tag != GetInstanceID().ToString())
+                       {
+                            cellOccupied = true;
+                       }
+                    }
                     int cost = climateCosts[climateAttribute];
-                    if (cost == IMPASSABLE)  
+                    if (cost == IMPASSABLE || cellOccupied)  
                     {
                         map.SetCellCanCross(cell, false);
                     }

@@ -141,29 +141,6 @@ namespace WPM
             }
         }
 
-        /*
-        void OnGUI()
-        {
-            if (worldGlobeMap.lastHighlightedCellIndex >= 0)
-            {
-                Province province = worldGlobeMap.provinceHighlighted;
-                Country country = worldGlobeMap.countryHighlighted;
-                if (province != null)
-                {
-                    string name = province.name;
-                    string politicalProvince = province.attrib["PoliticalProvince"];
-                    string climate = province.attrib["Climate"];
-                    GUI.Label(new Rect(10, 10, 200, 500), "Current cell: " + map.lastHighlightedCellIndex + System.Environment.NewLine +
-                         "Latitude: " + map.cells[map.lastHighlightedCellIndex].latlon[0] + System.Environment.NewLine +
-                         "Longitude: " + map.cells[map.lastHighlightedCellIndex].latlon[1] + System.Environment.NewLine +
-                         " Province: " + name + System.Environment.NewLine + "Political Province: " + politicalProvince +
-                         System.Environment.NewLine + "Climate: " + climate);
-                }
-               
-            }
-        }
-        */
-
         void HandleOnCellClick(int cellIndex)
         {
             if (!cursorOverUI)
@@ -422,6 +399,7 @@ namespace WPM
                         worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.002f, false, 0.0f, true, true);
                         string landmarkID = landmarkComponent.GetInstanceID().ToString();
                         worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
+                        mappedObjects.Add(landmarkID, landmarkComponent);
                         culturalLandmarks.Add(landmarkComponent);
                     }
                 }
