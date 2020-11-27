@@ -408,7 +408,7 @@ namespace WPM
                         landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                         landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
                         landmarkComponent.cell.canCross = false;
-                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.002f, false, 0.0f, true, true);
+                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, 0.0f, true, true);
                         string landmarkID = landmarkComponent.GetInstanceID().ToString();
                         worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
                         mappedObjects.Add(landmarkID, landmarkComponent);
