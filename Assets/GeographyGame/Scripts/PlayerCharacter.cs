@@ -98,8 +98,6 @@ namespace WPM
             else 
             if (pathIndices != null && moving == false)
             {
-                if (map.cells[index].tag != null)
-                    Debug.Log("This shouldn't happen");
                 destination = index;
                 //Add latlon of each hex in path to animator's path
                 anim.GenerateLatLon(pathIndices);
@@ -191,9 +189,14 @@ namespace WPM
         public void FinishedPathFinding()
         {
             pathIndices.Clear();
+            map.ClearCells(true, false, false);
             if (selected)
             {
                 map.SetCellColor(cellLocation, Color.green, true);
+                if (!gameManager.cursorOverUI && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0)
+                {
+                    OnCellEnter(gameManager.worldGlobeMap.lastHighlightedCellIndex);
+                }
             }
             moving = false;
         }

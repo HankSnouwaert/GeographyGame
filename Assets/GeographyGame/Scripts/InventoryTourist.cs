@@ -117,6 +117,7 @@ namespace WPM
                         Deselected();
                         //Remove Tourist from Inventory
                         player.RemoveItem(inventoryLocation);
+                        gameManager.cursorOverUI = false;
                     }
                     else
                     {
@@ -128,6 +129,7 @@ namespace WPM
                                 Deselected();
                                 //Remove Tourist from Inventory
                                 player.RemoveItem(inventoryLocation);
+                                gameManager.cursorOverUI = false;
                             }
                         }
                     }
