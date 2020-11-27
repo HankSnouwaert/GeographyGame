@@ -179,7 +179,7 @@ namespace WPM
                     string name = province.name;
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["ClimateGroup"];
-                    displayText = " Province: " + name; // + System.Environment.NewLine + "Climate: " + climate;
+                    displayText = " Province: " + politicalProvince; // + System.Environment.NewLine + "Climate: " + climate;
                     if (worldGlobeMap.cells[index].tag != null)
                     {
                         if (worldGlobeMap.cells[index].index != player.cellLocation)
@@ -289,7 +289,7 @@ namespace WPM
                 SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
                 bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
                 provinceSettings[POLITICAL_PROVINCE] = loadedMapSettings.provinces;
-                provinceSettings[TERRAIN] = loadedMapSettings.terrain;
+                provinceSettings[TERRAIN] =  loadedMapSettings.terrain;
                 provinceSettings[CLIMATE] = loadedMapSettings.climate;
                 //Add loop for all countries here
                 int countryNameIndex = worldGlobeMap.GetCountryIndex("United States of America");
@@ -305,16 +305,6 @@ namespace WPM
                     {
                         //Get province attributes
                         province = provinces[index];
-                        if (province.attrib["PoliticalProvince"] == "Georgia" || province.attrib["PoliticalProvince"] == "Georgia2" || province.attrib["PoliticalProvince"] == "Georgia3")
-                        {
-                            string name = province.name;
-                            int regionIndex = province.mainRegionIndex;
-                        }
-                        if (province.attrib["PoliticalProvince"] == "Florida")
-                        {
-                            string name = province.name;
-                            int regionIndex = province.mainRegionIndex;
-                        }
                         provinceAttributes[POLITICAL_PROVINCE] = province.attrib["PoliticalProvince"];
                         if (provinceAttributes[POLITICAL_PROVINCE] == null) provinceAttributes[POLITICAL_PROVINCE] = "";
                         provinceAttributes[TERRAIN] = province.attrib["Terrain"];
@@ -355,6 +345,11 @@ namespace WPM
                                     }
                                     i++;
                                 }
+
+                                //This is a temp fix for provinces that haven't had their political name put in yet
+                                if (neighbor.attrib["PoliticalProvince"] == "")
+                                    neighbor.attrib["PoliticalProvince"] = neighbor.name;
+
                                 if (mergeNeighbor)
                                 {
                                     //Merge provinces
@@ -363,9 +358,12 @@ namespace WPM
                                     provinceList.Remove(neighbor);
                                     provinces = provinceList.ToArray();
                                     //Clear unused attributes
-                                    if (loadedMapSettings.provinces) neighbor.attrib["PoliticalProvince"] = "";
-                                    if (loadedMapSettings.terrain) neighbor.attrib["Terrain"] = "";
-                                    if (loadedMapSettings.climate) neighbor.attrib["Climate"] = "";
+                                    if (!loadedMapSettings.provinces)
+                                        neighbor.attrib["PoliticalProvince"] = "";
+                                    if (!loadedMapSettings.terrain) 
+                                        neighbor.attrib["Terrain"] = "";
+                                    if (!loadedMapSettings.climate) 
+                                        neighbor.attrib["Climate"] = "";
                                 }
                             }
                         }
