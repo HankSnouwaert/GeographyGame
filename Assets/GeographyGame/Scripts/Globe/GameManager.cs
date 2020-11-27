@@ -398,8 +398,9 @@ namespace WPM
                     if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
                     {
                         string mountPointName = mountPoint.name;
-                        mountPointName = mountPointName.Replace(" ", "");
-                        var model = Resources.Load<GameObject>("Prefabs/Landmarks/" + mountPointName);
+                        string tempName = mountPointName.Replace("The", "");
+                        tempName = tempName.Replace(" ", "");
+                        var model = Resources.Load<GameObject>("Prefabs/Landmarks/" + tempName);
                         var modelClone = Instantiate(model);
                         Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                         landmarkComponent.mountPoint = mountPoint;

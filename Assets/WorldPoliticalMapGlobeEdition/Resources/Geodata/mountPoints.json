@@ -1,6 +1,6 @@
 ﻿[
 	{
-		"Name":"Statue Of Liberty",
+		"Name":"The Statue Of Liberty",
 		"Country":"United States of America",
 		"Province":3915,
 		"Type":2,
@@ -10,7 +10,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"Washington Monument",
+		"Name":"The Washington Monument",
 		"Country":"United States of America",
 		"Province":3913,
 		"Type":2,
@@ -20,7 +20,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"HooverDam",
+		"Name":"The Hoover Dam",
 		"Country":"United States of America",
 		"Province":3879,
 		"Type":2,
@@ -30,7 +30,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"GoldenGateBridge",
+		"Name":"The Golden Gate Bridge",
 		"Country":"United States of America",
 		"Province":3877,
 		"Type":2,
@@ -40,7 +40,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"MountRushmore",
+		"Name":"Mount Rushmore",
 		"Country":"United States of America",
 		"Province":3890,
 		"Type":2,
@@ -60,7 +60,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"SpaceNeedle",
+		"Name":"The Space Needle",
 		"Country":"United States of America",
 		"Province":3875,
 		"Type":2,
@@ -70,7 +70,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"GatewayArch",
+		"Name":"The Gateway Arch",
 		"Country":"United States of America",
 		"Province":3887,
 		"Type":2,
