@@ -173,13 +173,24 @@ namespace WPM
             {
                 Province province = worldGlobeMap.provinceHighlighted;
                 Country country = worldGlobeMap.countryHighlighted;
+                string displayText;
                 if (province != null)
                 {
                     string name = province.name;
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["ClimateGroup"];
+                    displayText = " Province: " + name; // + System.Environment.NewLine + "Climate: " + climate;
+                    if (worldGlobeMap.cells[index].tag != null)
+                    {
+                        if (worldGlobeMap.cells[index].index != player.cellLocation)
+                        {
+                            string landmarkName = mappedObjects[worldGlobeMap.cells[index].tag].objectName;
+                            displayText = displayText + System.Environment.NewLine + "Landmark: " + landmarkName;
+                        }
+                    }
+
                     hexInfoPanel.SetActive(true);
-                    hexInfo.text =  " Province: " + name + System.Environment.NewLine + "Climate: " + climate;
+                    hexInfo.text = displayText;
                 }
 
                 if (selectedObject != null)
@@ -392,7 +403,7 @@ namespace WPM
                         var modelClone = Instantiate(model);
                         Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                         landmarkComponent.mountPoint = mountPoint;
-                        landmarkComponent.landmarkName = mountPointName;
+                        landmarkComponent.objectName = mountPointName;
                         landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                         landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
                         landmarkComponent.cell.canCross = false;

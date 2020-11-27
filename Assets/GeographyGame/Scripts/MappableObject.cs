@@ -6,6 +6,7 @@ namespace WPM
 {
     public class MappableObject : SelectableObject
     {
+        public string objectName;
         public int cellLocation;
         public Vector3 vectorLocation;
         public Vector2[] latlon;

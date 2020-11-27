@@ -45,7 +45,7 @@ namespace WPM
                 destinationType = LANDMARK;
                 int landmarkIndex = Random.Range(0, gameManager.culturalLandmarks.Count);
                 landmarkDestination = gameManager.culturalLandmarks[landmarkIndex];
-                destinationName = landmarkDestination.landmarkName;
+                destinationName = landmarkDestination.objectName;
             }
         }
 
