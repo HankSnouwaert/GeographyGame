@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WPM
@@ -68,6 +69,8 @@ namespace WPM
 
         public void DropOff()
         {
+            //Clear the Event System so that it gets updated with the tourist if the drop off fails
+            EventSystem.current.SetSelectedGameObject(null);
             Cell playerCell = gameManager.worldGlobeMap.cells[player.cellLocation];
             switch (destinationType)
             {
