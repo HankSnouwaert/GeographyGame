@@ -13,7 +13,7 @@ namespace WPM
         public InventoryItem[] displayedItems;
         public Button[] displayedItemButtons;
         private GameObject selectedObject;
-        private int selectedItemIndex;
+        private int selectedItemIndex = -1;
         private bool inventorySelected = false;
         private int numberofItems = 0;
         // Start is called before the first frame update
@@ -54,12 +54,26 @@ namespace WPM
 
             }
         }
-        public void AddItem(InventoryItem item)
+        public void AddItem(InventoryItem item, int location)
         {
-            displayedItems[numberofItems] = item;
-            displayedItemButtons[numberofItems].gameObject.SetActive(true);
-            displayedItemButtons[numberofItems].GetComponent<Image>().sprite = item.inventoryIcon;
-            numberofItems++;
+            if(displayedItems[location] != null)
+            {
+                //There's someone in my spot
+                if(location == numberofItems)
+                {
+                    //This spot is the end of the line
+                    //Push out the existing item and replace it with the new one
+                    displayedItems[location] = item;
+                    displayedItemButtons[numberofItems].GetComponent<Image>().sprite = item.inventoryIcon;
+                }
+            }
+            else
+            {
+                displayedItems[numberofItems] = item;
+                displayedItemButtons[numberofItems].gameObject.SetActive(true);
+                displayedItemButtons[numberofItems].GetComponent<Image>().sprite = item.inventoryIcon;
+                numberofItems++;
+            }
         }
 
         public void RemoveItem(int location)
@@ -92,6 +106,37 @@ namespace WPM
                 i++;
             } while (i <= numberofItems);
            
+        }
+
+        public void UpdateInventory(List<InventoryItem> inventory)
+        {
+            int i = 0;
+            //Clear the inventory
+            foreach (InventoryItem item in displayedItems)
+            {
+                if (i == selectedItemIndex)
+                {
+                    item.Deselected();
+                    EventSystem.current.SetSelectedGameObject(null);
+                    inventorySelected = false;
+                    selectedObject = null;
+                }
+                displayedItems[i] = null;
+                displayedItemButtons[i].gameObject.SetActive(false);
+                displayedItemButtons[i].GetComponent<Image>().sprite = null;
+                i++;
+            }
+
+            i = 0;
+            //Update the inventory
+            foreach (InventoryItem item in inventory)
+            {
+                displayedItems[i] = item;
+                displayedItemButtons[i].gameObject.SetActive(true);
+                displayedItemButtons[i].GetComponent<Image>().sprite = item.inventoryIcon;
+                i++;
+            }
+            numberofItems = i;
         }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)

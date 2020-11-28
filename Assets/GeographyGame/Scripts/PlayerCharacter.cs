@@ -259,28 +259,43 @@ namespace WPM
             }
         }
 
-        public bool AddItem(InventoryItem item)
+        public bool AddItem(InventoryItem item, int location)
         {
-            if (inventory.Count >= inventorySize)
-                RemoveItem(0);
-
+            inventory.Insert(location, item);
+        
+            if (inventory.Count > inventorySize)
+                RemoveItem(inventorySize);
+            /*
             if (inventory.Count < inventorySize)
             {
-                item.inventoryLocation = inventory.Count;
+                item.inventoryLocation = 0; //inventory.Count;
                 inventory.Add(item);
-                inventoryGUI.AddItem(item);
+                inventoryGUI.AddItem(item, 0);
                 return true;
             }
             else
             {
                 return false;
             }
+            */
+            //Update inventory item locations
+            foreach(InventoryItem inventoryItem in inventory)
+            {
+                inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
+            }
+            inventoryGUI.UpdateInventory(inventory);
+
+            return true;
         }
 
         public void RemoveItem(int itemLocation)
         {
             inventory.RemoveAt(itemLocation);
-            inventoryGUI.RemoveItem(itemLocation);
+            foreach (InventoryItem inventoryItem in inventory)
+            {
+                inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
+            }
+            inventoryGUI.UpdateInventory(inventory);
         }
     }
 }

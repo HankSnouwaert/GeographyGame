@@ -437,7 +437,7 @@ namespace WPM
             touristImageIndex++;
             if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
                 touristImageIndex = 0;
-            player.AddItem(tourist);
+            player.AddItem(tourist, 0);
         }
 
     }
