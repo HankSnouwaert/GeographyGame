@@ -176,10 +176,14 @@ namespace WPM
                 string displayText;
                 if (province != null)
                 {
-                    string name = province.name;
+                    string nameType;
+                    if (country.name == "United States of America")
+                        nameType = "State: ";
+                    else
+                        nameType = "Province: ";
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["ClimateGroup"];
-                    displayText = " Province: " + politicalProvince; // + System.Environment.NewLine + "Climate: " + climate;
+                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince; // + System.Environment.NewLine + "Climate: " + climate;
                     if (worldGlobeMap.cells[index].tag != null)
                     {
                         if (worldGlobeMap.cells[index].index != player.cellLocation)
@@ -289,132 +293,139 @@ namespace WPM
                 SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
                 bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
                 provinceSettings[POLITICAL_PROVINCE] = loadedMapSettings.provinces;
-                provinceSettings[TERRAIN] =  loadedMapSettings.terrain;
+                provinceSettings[TERRAIN] = loadedMapSettings.terrain;
                 provinceSettings[CLIMATE] = loadedMapSettings.climate;
                 //Add loop for all countries here
-                int countryNameIndex = worldGlobeMap.GetCountryIndex("United States of America");
-                #region Merge Provinces
-                if (countryNameIndex >= 0)
+                foreach (Country country in worldGlobeMap.countries)
                 {
-                    //Get all provinces for country and loop through them
-                    Province[] provinces = worldGlobeMap.countries[countryNameIndex].provinces;
-                    int index = 0;
-                    Province province;
-                    string[] provinceAttributes = new string[NUMBER_OF_PROVINCE_ATTRIBUTES];
-                    while (index < provinces.Length)
+                    if (country.continent == "North America")
                     {
-                        //Get province attributes
-                        province = provinces[index];
-                        provinceAttributes[POLITICAL_PROVINCE] = province.attrib["PoliticalProvince"];
-                        if (provinceAttributes[POLITICAL_PROVINCE] == null) provinceAttributes[POLITICAL_PROVINCE] = "";
-                        provinceAttributes[TERRAIN] = province.attrib["Terrain"];
-                        if (provinceAttributes[TERRAIN] == null) provinceAttributes[TERRAIN] = "";
-                        provinceAttributes[CLIMATE] = province.attrib["Climate"];
-                        if (provinceAttributes[CLIMATE] == null) provinceAttributes[CLIMATE] = "";
-                        //Get all neighbors for province and loop through them
-                        int provinceIndex = worldGlobeMap.GetProvinceIndex(countryNameIndex, province.name);
-                        List<Province> neighbors = worldGlobeMap.ProvinceNeighboursOfMainRegion(provinceIndex);
-                        foreach (Province neighbor in neighbors)
-                        {
-                            //Check that neighbor is in same country
-                            if (neighbor.countryIndex == countryNameIndex)
+                        int countryNameIndex = worldGlobeMap.GetCountryIndex(country.name);
+                        #region Merge Provinces
+                            if (countryNameIndex >= 0)
                             {
-                                //Default to assuming the neighbor will be merged
-                                bool mergeNeighbor = true;
-                                
-                                //Get neighbor attributes
-                                string[] neighborAttributes = new string[NUMBER_OF_PROVINCE_ATTRIBUTES];
-                                neighborAttributes[POLITICAL_PROVINCE] = neighbor.attrib["PoliticalProvince"];
-                                if (neighborAttributes[POLITICAL_PROVINCE] == null) neighborAttributes[POLITICAL_PROVINCE] = "";
-                                neighborAttributes[TERRAIN] = neighbor.attrib["Terrain"];
-                                if (neighborAttributes[TERRAIN] == null) neighborAttributes[TERRAIN] = "";
-                                neighborAttributes[CLIMATE] = neighbor.attrib["Climate"];
-                                if (neighborAttributes[CLIMATE] == null) neighborAttributes[CLIMATE] = "";
-
-                                //Loop through all attributes a province can have
-                                int i = 0;
-                                bool attributeSet;
-                                while (i < NUMBER_OF_PROVINCE_ATTRIBUTES)
+                                //Get all provinces for country and loop through them
+                                Province[] provinces = worldGlobeMap.countries[countryNameIndex].provinces;
+                                int index = 0;
+                                Province province;
+                                string[] provinceAttributes = new string[NUMBER_OF_PROVINCE_ATTRIBUTES];
+                                while (index < provinces.Length)
                                 {
-                                    //If the attribute is being used AND is different between the province and its neighbor, 
-                                    // OR the attributes haven't been set for either province, abort the merge
-                                    attributeSet = provinceAttributes[i] != "" && neighborAttributes[i] != "";
-                                    if ((provinceAttributes[i] != neighborAttributes[i] && provinceSettings[i]) || !attributeSet)
+                                    //Get province attributes
+                                    province = provinces[index];
+                                    provinceAttributes[POLITICAL_PROVINCE] = province.attrib["PoliticalProvince"];
+                                    if (provinceAttributes[POLITICAL_PROVINCE] == null) provinceAttributes[POLITICAL_PROVINCE] = "";
+                                    provinceAttributes[TERRAIN] = province.attrib["Terrain"];
+                                    if (provinceAttributes[TERRAIN] == null) provinceAttributes[TERRAIN] = "";
+                                    provinceAttributes[CLIMATE] = province.attrib["Climate"];
+                                    if (provinceAttributes[CLIMATE] == null) provinceAttributes[CLIMATE] = "";
+                                    //Get all neighbors for province and loop through them
+                                    int provinceIndex = worldGlobeMap.GetProvinceIndex(countryNameIndex, province.name);
+                                    List<Province> neighbors = worldGlobeMap.ProvinceNeighboursOfMainRegion(provinceIndex);
+                                    foreach (Province neighbor in neighbors)
                                     {
-                                        mergeNeighbor = false;
+                                        //Check that neighbor is in same country
+                                        if (neighbor.countryIndex == countryNameIndex)
+                                        {
+                                            //Default to assuming the neighbor will be merged
+                                            bool mergeNeighbor = true;
+
+                                            //Get neighbor attributes
+                                            string[] neighborAttributes = new string[NUMBER_OF_PROVINCE_ATTRIBUTES];
+                                            neighborAttributes[POLITICAL_PROVINCE] = neighbor.attrib["PoliticalProvince"];
+                                            if (neighborAttributes[POLITICAL_PROVINCE] == null) neighborAttributes[POLITICAL_PROVINCE] = "";
+                                            neighborAttributes[TERRAIN] = neighbor.attrib["Terrain"];
+                                            if (neighborAttributes[TERRAIN] == null) neighborAttributes[TERRAIN] = "";
+                                            neighborAttributes[CLIMATE] = neighbor.attrib["Climate"];
+                                            if (neighborAttributes[CLIMATE] == null) neighborAttributes[CLIMATE] = "";
+
+                                            //Loop through all attributes a province can have
+                                            int i = 0;
+                                            bool attributeSet;
+                                            while (i < NUMBER_OF_PROVINCE_ATTRIBUTES)
+                                            {
+                                                //If the attribute is being used AND is different between the province and its neighbor, 
+                                                // OR the attributes haven't been set for either province, abort the merge
+                                                attributeSet = provinceAttributes[i] != "" && neighborAttributes[i] != "";
+                                                if ((provinceAttributes[i] != neighborAttributes[i] && provinceSettings[i]) || !attributeSet)
+                                                {
+                                                    mergeNeighbor = false;
+                                                }
+                                                i++;
+                                            }
+
+                                            //This is a temp fix for provinces that haven't had their political name put in yet
+                                            if (neighbor.attrib["PoliticalProvince"] == "")
+                                                neighbor.attrib["PoliticalProvince"] = neighbor.name;
+
+                                            if (mergeNeighbor)
+                                            {
+                                                //Merge provinces
+                                                worldGlobeMap.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
+                                                List<Province> provinceList = provinces.ToList();
+                                                provinceList.Remove(neighbor);
+                                                provinces = provinceList.ToArray();
+                                                //Clear unused attributes
+                                                if (!loadedMapSettings.provinces)
+                                                    neighbor.attrib["PoliticalProvince"] = "";
+                                                if (!loadedMapSettings.terrain)
+                                                    neighbor.attrib["Terrain"] = "";
+                                                if (!loadedMapSettings.climate)
+                                                    neighbor.attrib["Climate"] = "";
+                                            }
+                                        }
                                     }
-                                    i++;
-                                }
-
-                                //This is a temp fix for provinces that haven't had their political name put in yet
-                                if (neighbor.attrib["PoliticalProvince"] == "")
-                                    neighbor.attrib["PoliticalProvince"] = neighbor.name;
-
-                                if (mergeNeighbor)
-                                {
-                                    //Merge provinces
-                                    worldGlobeMap.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
-                                    List<Province> provinceList = provinces.ToList();
-                                    provinceList.Remove(neighbor);
-                                    provinces = provinceList.ToArray();
-                                    //Clear unused attributes
-                                    if (!loadedMapSettings.provinces)
-                                        neighbor.attrib["PoliticalProvince"] = "";
-                                    if (!loadedMapSettings.terrain) 
-                                        neighbor.attrib["Terrain"] = "";
-                                    if (!loadedMapSettings.climate) 
-                                        neighbor.attrib["Climate"] = "";
+                                    index++;
                                 }
                             }
-                        }
-                        index++;
-                    }   
-                }
-                worldGlobeMap.drawAllProvinces = false;
-                #endregion
-                #region Intantiate Player and Landmarks
-                //worldGlobeMap.ReloadMountPointsData();
-                List<MountPoint> USmountPoints = new List<MountPoint>();
-                int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, USmountPoints);
+                            worldGlobeMap.drawAllProvinces = false;
+                            #endregion
+                        #region Intantiate Player and Landmarks
+                            //worldGlobeMap.ReloadMountPointsData();
+                            List<MountPoint> USmountPoints = new List<MountPoint>();
+                            int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, USmountPoints);
 
-                foreach (MountPoint mountPoint in USmountPoints)
-                {
-                    if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
-                    {
-                        GameObject playerObject = Instantiate(playerPrefab);
-                        playerCharacter = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
-                        int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
-                        playerCharacter.cellLocation = startingCellIndex;
-                        playerCharacter.latlon = worldGlobeMap.cells[startingCellIndex].latlon;
-                        Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
-                        playerCharacter.vectorLocation = startingLocation;
-                        worldGlobeMap.AddMarker(playerObject, startingLocation, playerCharacter.size, false, 0.0f, true, true);
-                        string playerID = playerCharacter.GetInstanceID().ToString();
-                        worldGlobeMap.cells[startingCellIndex].tag = playerID;
-                        mappedObjects.Add(playerID, playerCharacter);
-                    }
-                    if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
-                    {
-                        string mountPointName = mountPoint.name;
-                        string tempName = mountPointName.Replace("The", "");
-                        tempName = tempName.Replace(" ", "");
-                        var model = Resources.Load<GameObject>("Prefabs/Landmarks/" + tempName);
-                        var modelClone = Instantiate(model);
-                        Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
-                        landmarkComponent.mountPoint = mountPoint;
-                        landmarkComponent.objectName = mountPointName;
-                        landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
-                        landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
-                        landmarkComponent.cell.canCross = false;
-                        worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, 0.0f, true, true);
-                        string landmarkID = landmarkComponent.GetInstanceID().ToString();
-                        worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
-                        mappedObjects.Add(landmarkID, landmarkComponent);
-                        culturalLandmarks.Add(landmarkComponent);
-                    }
-                }
+                            foreach (MountPoint mountPoint in USmountPoints)
+                            {
+                                if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
+                                {
+                                    GameObject playerObject = Instantiate(playerPrefab);
+                                    playerCharacter = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
+                                    int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
+                                    playerCharacter.cellLocation = startingCellIndex;
+                                    playerCharacter.latlon = worldGlobeMap.cells[startingCellIndex].latlon;
+                                    Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
+                                    playerCharacter.vectorLocation = startingLocation;
+                                    worldGlobeMap.AddMarker(playerObject, startingLocation, playerCharacter.size, false, 0.0f, true, true);
+                                    string playerID = playerCharacter.GetInstanceID().ToString();
+                                    worldGlobeMap.cells[startingCellIndex].tag = playerID;
+                                    mappedObjects.Add(playerID, playerCharacter);
+                                }
+                                if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
+                                {
+                                    string mountPointName = mountPoint.name;
+                                    string tempName = mountPointName.Replace("The", "");
+                                    tempName = tempName.Replace(" ", "");
+                                    var model = Resources.Load<GameObject>("Prefabs/Landmarks/" + tempName);
+                                    var modelClone = Instantiate(model);
+                                    Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
+                                    landmarkComponent.mountPoint = mountPoint;
+                                    landmarkComponent.objectName = mountPointName;
+                                    landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
+                                    landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
+                                    landmarkComponent.cell.canCross = false;
+                                    worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, 0.0f, true, true);
+                                    string landmarkID = landmarkComponent.GetInstanceID().ToString();
+                                    worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
+                                    mappedObjects.Add(landmarkID, landmarkComponent);
+                                    culturalLandmarks.Add(landmarkComponent);
+                                }
+                            }
 
-                #endregion
+                            #endregion
+                    }
+
+                }
             }
         }
 
