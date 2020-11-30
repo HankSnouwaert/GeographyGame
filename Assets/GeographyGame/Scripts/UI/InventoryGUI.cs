@@ -114,7 +114,7 @@ namespace WPM
             //Clear the inventory
             foreach (InventoryItem item in displayedItems)
             {
-                if (i == selectedItemIndex)
+                if (i == selectedItemIndex && inventorySelected)
                 {
                     item.Deselected();
                     EventSystem.current.SetSelectedGameObject(null);

@@ -83,7 +83,7 @@ namespace WPM
             if (auto)
             {
                 MoveTo(currentProgress);
-                currentProgress += 0.03f;
+                currentProgress += 0.008f;
                 if (currentProgress > 1f)
                 {
                     latlonIndex++;

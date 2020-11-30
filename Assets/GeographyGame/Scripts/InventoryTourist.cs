@@ -13,7 +13,7 @@ namespace WPM
         private Button dropOffButton;
         private string destinationName;
         private int destinationIndex;
-        private Province[] possibleProvinces;
+        //private Province[] possibleProvinces;
         private Province provinceDestination;
         private Landmark landmarkDestination;
         private int destinationType;
@@ -29,6 +29,14 @@ namespace WPM
             Transform dropOffButtonObject = dialogPanel.transform.GetChild(1);
             dropOffButton = dropOffButtonObject.gameObject.GetComponent(typeof(Button)) as Button;
             //Get Random Tourist Destination
+            destinationType = PROVINCE;
+            List<int>[] possibleProvinces = gameManager.GetProvincesInRange(player.cellLocation);
+            List<int> immediateProvinces = possibleProvinces[0];
+            destinationIndex = Random.Range(0, immediateProvinces.Count);
+            provinceDestination = gameManager.worldGlobeMap.provinces[immediateProvinces[destinationIndex]];
+            destinationName = provinceDestination.name;
+
+            /*
             int coinFlip = Random.Range(0, 2);
             if (coinFlip == 0)
             {
@@ -48,6 +56,7 @@ namespace WPM
                 landmarkDestination = gameManager.culturalLandmarks[landmarkIndex];
                 destinationName = landmarkDestination.objectName;
             }
+            */
         }
 
         public override void Selected()
@@ -143,12 +152,12 @@ namespace WPM
             }
         }
 
-
         public override void OnCellClick(int index)
         {
             //player.OnCellClick(index);
             if(index == player.cellLocation)
             {
+
                 player.Selected();
             }
         }

@@ -25,7 +25,7 @@ namespace WPM
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         public bool cursorOverUI = false;
-        private int touristSpawnRate = 10;
+        private int touristSpawnRate = 1;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
@@ -281,6 +281,92 @@ namespace WPM
                 map.cells[cell].canCross = true;
             }
             return cells;
+        }
+
+        public List<int>[] GetProvincesInRange(int startCell, int range = 0)
+        {
+            //NOTE: this function uses the canCross flag of cells to track which cells
+            //it has checked and assumes all cells will start with it false
+
+            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
+            {
+                Debug.LogWarning("Invalid input for GetCellsInRange");
+                return null;
+            }
+
+            int distance = 0;                                          //distance measures how many rings of hexes we've moved out
+            List<int>[] provinces = new List<int>[range + 1];      //provinces is an array of lists with each list the provinces that can be reached at that distance.  
+            provinces[0] = new List<int>();
+            List<int> foundProvinces = new List<int>();
+            List<int> provincesInHex = new List<int>();
+
+            //Create first list--------------------------------------------
+            provincesInHex = GetProvicesInCell(startCell);
+            foreach(int provinceIndex in provincesInHex)
+            {
+                if (!foundProvinces.Contains(provinceIndex))
+                {
+                    foundProvinces.Add(provinceIndex);
+                    provinces[0].Add(provinceIndex);
+                }
+            }
+            
+            //--------------------------------------------------------------------------------------
+            return provinces;   
+        }
+
+        List<int> GetProvicesInCell(int cellIndex)
+        {
+            List<int> provinces = new List<int>();
+            int provinceIndex;
+            int countryIndex;
+            int neighborIndex;
+
+            provinceIndex = worldGlobeMap.GetProvinceIndex(worldGlobeMap.cells[cellIndex].sphereCenter);
+            //Check if hex is centered on a province
+            if (provinceIndex == -1)
+            {
+                //Get closest province if hex is not centered on one
+                provinceIndex = worldGlobeMap.GetProvinceNearPoint(worldGlobeMap.cells[cellIndex].sphereCenter);
+            }
+            //Check country of province
+            countryIndex = worldGlobeMap.provinces[provinceIndex].countryIndex;
+            if (map.countries[countryIndex].name == "United States of America" || map.countries[countryIndex].name == "Canada")
+            {
+                //Add province to list
+                provinces.Add(provinceIndex);
+            }
+            //Check to see if neighbours of province overlap with cell
+            List<Province> provinceNeighbours = worldGlobeMap.ProvinceNeighbours(provinceIndex);
+            bool provinceOverlaps;
+            foreach (Province neighbor in provinceNeighbours)
+            {
+                provinceOverlaps = false;
+                countryIndex = neighbor.countryIndex;
+                if (map.countries[countryIndex].name == "United States of America" || map.countries[countryIndex].name == "Canada")
+                {
+                    foreach (Region region in neighbor.regions)
+                    {
+                        foreach (Vector3 spherePoint in region.spherePoints)
+                        {
+                            if (worldGlobeMap.GetCellIndex(spherePoint) == cellIndex)
+                            {
+                                provinceOverlaps = true;
+                                break;
+                            }
+                        }
+                        if (provinceOverlaps)
+                            break;
+                    }
+                    if (provinceOverlaps)
+                    {
+                        //Check if neighbour has already been found
+                        neighborIndex = worldGlobeMap.GetProvinceIndex(countryIndex, neighbor.name);
+                        provinces.Add(neighborIndex);
+                    }
+                }
+            }
+            return provinces;
         }
 
         void ApplyGlobeSettings()
