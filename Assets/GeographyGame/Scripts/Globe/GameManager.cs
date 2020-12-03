@@ -25,13 +25,12 @@ namespace WPM
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         public bool cursorOverUI = false;
-        private int touristSpawnRate = 1;
+        private int touristSpawnRate = 10;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
-        Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
+        public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
         WorldMapGlobe map;
-        public List<Landmark> culturalLandmarks = null;
-        public List<Landmark> naturalLandmarks = null;
+        public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
@@ -283,10 +282,12 @@ namespace WPM
             return cells;
         }
 
-        public List<int>[] GetProvincesInRange(int startCell, int range = 0)
+        public List<int>[] GetProvincesInRange(int startCell, List<int>[] cellRange)
         {
             //NOTE: this function uses the canCross flag of cells to track which cells
             //it has checked and assumes all cells will start with it false
+
+            int range = cellRange.Length;
 
             if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
             {
@@ -299,20 +300,147 @@ namespace WPM
             provinces[0] = new List<int>();
             List<int> foundProvinces = new List<int>();
             List<int> provincesInHex = new List<int>();
+            List<int> cellsChecked = new List<int>();
+            
 
-            //Create first list--------------------------------------------
+
+            //Get provinces at start hex
             provincesInHex = GetProvicesInCell(startCell);
             foreach(int provinceIndex in provincesInHex)
             {
-                if (!foundProvinces.Contains(provinceIndex))
+                foundProvinces.Add(provinceIndex);
+                provinces[0].Add(provinceIndex);
+            }
+            map.cells[startCell].canCross = false;
+            cellsChecked.Add(startCell);
+
+            if (range > 0)
+            {
+                distance++;
+                provinces[distance] = new List<int>();
+                foreach (int neighbourIndex in map.GetCellNeighboursIndices(startCell))
                 {
-                    foundProvinces.Add(provinceIndex);
-                    provinces[0].Add(provinceIndex);
+                    provincesInHex = GetProvicesInCell(neighbourIndex);
+                    foreach (int provinceIndex in provincesInHex)
+                    {
+                        if (!foundProvinces.Contains(provinceIndex))
+                        {
+                            foundProvinces.Add(provinceIndex);
+                            provinces[distance].Add(provinceIndex);
+                        }
+                    }
+                    worldGlobeMap.cells[neighbourIndex].canCross = false;
+                    cellsChecked.Add(neighbourIndex);
                 }
             }
-            
-            //--------------------------------------------------------------------------------------
+
+            while(distance < range)
+            {
+                distance++;
+                provinces[distance] = new List<int>();
+                foreach (int cell in cellRange[distance - 1])
+                {
+                    foreach (int neighbourIndex in map.GetCellNeighboursIndices(cell))
+                    {
+                        if (worldGlobeMap.cells[neighbourIndex].canCross)
+                        {
+                            provincesInHex = GetProvicesInCell(neighbourIndex);
+                            foreach (int provinceIndex in provincesInHex)
+                            {
+                                if (!foundProvinces.Contains(provinceIndex))
+                                {
+                                    foundProvinces.Add(provinceIndex);
+                                    provinces[distance].Add(provinceIndex);
+                                }
+                            }
+                            worldGlobeMap.cells[neighbourIndex].canCross = false;
+                            cellsChecked.Add(neighbourIndex);
+                        }
+                    }
+                }
+            }
+
+            //Set each hex has traverable again
+            foreach (int cell in cellsChecked)
+            {
+                map.cells[cell].canCross = true;
+            }
+
+            //
             return provinces;   
+        }
+
+        public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
+        {
+            int range = cellRange.Length;
+
+            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
+            {
+                Debug.LogWarning("Invalid input for GetCellsInRange");
+                return null;
+            }
+
+            int distance = 0;
+            List<string>[] landmarks = new List<string>[range + 1];
+            landmarks[0] = new List<string>();
+            string landmarkIndex;
+            List<int> cellsChecked = new List<int>();
+
+            //Get landmark at start hex
+            landmarkIndex = worldGlobeMap.cells[startCell].tag;
+            if(landmarkIndex != null  && startCell != player.cellLocation)
+            {
+                landmarks[0].Add(landmarkIndex);
+            }
+            map.cells[startCell].canCross = false;
+            cellsChecked.Add(startCell);
+
+            if (range > 0)
+            {
+                distance++;
+                landmarks[distance] = new List<string>();
+                foreach (int neighbourIndex in map.GetCellNeighboursIndices(startCell))
+                {
+                    landmarkIndex = worldGlobeMap.cells[neighbourIndex].tag;
+                    if (landmarkIndex != null && neighbourIndex != player.cellLocation)
+                    {
+                        landmarks[distance].Add(landmarkIndex);
+                    }
+                    worldGlobeMap.cells[neighbourIndex].canCross = false;
+                    cellsChecked.Add(neighbourIndex);
+                }
+            }
+
+            while (distance < range)
+            {
+                distance++;
+                landmarks[distance] = new List<string>();
+                foreach (int cell in cellRange[distance - 1])
+                {
+                    foreach (int neighbourIndex in map.GetCellNeighboursIndices(cell))
+                    {
+                        if (worldGlobeMap.cells[neighbourIndex].canCross)
+                        {
+                            landmarkIndex = worldGlobeMap.cells[neighbourIndex].tag;
+                            if (landmarkIndex != null && neighbourIndex != player.cellLocation)
+                            {
+                                landmarks[distance].Add(landmarkIndex);
+                            }
+                            worldGlobeMap.cells[neighbourIndex].canCross = false;
+                            cellsChecked.Add(neighbourIndex);
+                        }
+                    }
+                }
+            }
+
+            //Set each hex has traverable again
+            foreach (int cell in cellsChecked)
+            {
+                map.cells[cell].canCross = true;
+            }
+
+            return landmarks;
+
         }
 
         List<int> GetProvicesInCell(int cellIndex)
@@ -367,6 +495,18 @@ namespace WPM
                 }
             }
             return provinces;
+        }
+
+        Landmark GetLandmarkInCell(int cellIndex)
+        {
+            Landmark landmark = null;
+            string objectInCell = worldGlobeMap.cells[cellIndex].tag;
+            if (objectInCell != null && objectInCell != "")
+            {
+                landmark = culturalLandmarks[objectInCell];
+            }
+
+            return landmark; 
         }
 
         void ApplyGlobeSettings()
@@ -504,7 +644,7 @@ namespace WPM
                                     string landmarkID = landmarkComponent.GetInstanceID().ToString();
                                     worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
                                     mappedObjects.Add(landmarkID, landmarkComponent);
-                                    culturalLandmarks.Add(landmarkComponent);
+                                    culturalLandmarks.Add(landmarkID, landmarkComponent);
                                 }
                             }
 

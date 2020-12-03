@@ -20,6 +20,7 @@ namespace WPM
         int latlonIndex;
         float totalLength;
         float currentProgress = 0;
+        private const float MOVE_SPEED = 0.003f;
 
         void Awake()
         {
@@ -83,7 +84,7 @@ namespace WPM
             if (auto)
             {
                 MoveTo(currentProgress);
-                currentProgress += 0.008f;
+                currentProgress += MOVE_SPEED;
                 if (currentProgress > 1f)
                 {
                     latlonIndex++;

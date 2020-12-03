@@ -9,6 +9,7 @@ namespace WPM
     public class InventoryTourist : InventoryItem
     {
         private GameObject dialogPanel;
+        private GameObject dropOffButtonObject;
         private Text dialog;
         private Button dropOffButton;
         private string destinationName;
@@ -19,6 +20,8 @@ namespace WPM
         private int destinationType;
         private const int PROVINCE = 0;
         private const int LANDMARK = 1;
+        private bool boarding = false;
+        string savedText = null;
 
         public override void Start()
         {
@@ -26,15 +29,22 @@ namespace WPM
             dialogPanel = gameManager.dialogPanel;
             Transform textObject = dialogPanel.transform.GetChild(0);
             dialog = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            Transform dropOffButtonObject = dialogPanel.transform.GetChild(1);
-            dropOffButton = dropOffButtonObject.gameObject.GetComponent(typeof(Button)) as Button;
-            //Get Random Tourist Destination
-            destinationType = PROVINCE;
-            List<int>[] possibleProvinces = gameManager.GetProvincesInRange(player.cellLocation);
-            List<int> immediateProvinces = possibleProvinces[0];
-            destinationIndex = Random.Range(0, immediateProvinces.Count);
-            provinceDestination = gameManager.worldGlobeMap.provinces[immediateProvinces[destinationIndex]];
-            destinationName = provinceDestination.name;
+            Transform dropOffButtonTransfrom = dialogPanel.transform.GetChild(1);
+            dropOffButton = dropOffButtonTransfrom.gameObject.GetComponent(typeof(Button)) as Button;
+
+            dropOffButtonObject = dropOffButtonTransfrom.gameObject;
+            dropOffButtonObject.SetActive(false);
+
+            if (dialogPanel.activeSelf)
+                savedText = dialog.text;
+            else
+                dialogPanel.SetActive(true);
+
+            dialog.text = "Tourist Boarding: Please Wait";
+
+            boarding = true;
+
+            
 
             /*
             int coinFlip = Random.Range(0, 2);
@@ -57,6 +67,66 @@ namespace WPM
                 destinationName = landmarkDestination.objectName;
             }
             */
+        }
+
+        private void Update()
+        {
+            if (boarding)
+            {
+                GetDestination();
+
+                if (savedText != null)
+                    dialog.text = savedText;
+                else
+                    dialogPanel.SetActive(false);
+                boarding = false;
+                dropOffButtonObject.SetActive(true);
+            }
+           
+        }
+
+        private void GetDestination()
+        {
+            //Get Random Tourist Destination
+            List<int>[] cellsInRange = gameManager.GetCellsInRange(player.cellLocation, 10);
+            List<int>[] provincesInRange = gameManager.GetProvincesInRange(player.cellLocation, cellsInRange);
+            List<string>[] landmarksInRange = gameManager.GetLandmarksInRange(player.cellLocation, cellsInRange);
+            List<int> provinceChoices = new List<int>();
+            List<string> landmarkChoices = new List<string>();
+            int i = cellsInRange.Length - 1;
+            while (i >= 0)
+            {
+                if(provincesInRange[i].Count > 0)
+                {
+                    provinceChoices.AddRange(provincesInRange[i]);
+                }
+                if (landmarksInRange[i].Count > 0)
+                {
+                    landmarkChoices.AddRange(landmarksInRange[i]);
+                }
+
+                i--;
+
+                //Avoid adding provinces at the starting location if possible
+                if ((provinceChoices.Count > 0 || landmarkChoices.Count > 0) && i == 0)
+                    break;
+            }
+
+            destinationIndex = Random.Range(0, provinceChoices.Count+landmarkChoices.Count);
+            if(destinationIndex <= provinceChoices.Count)
+            {
+                destinationType = PROVINCE;
+                provinceDestination = gameManager.worldGlobeMap.provinces[provinceChoices[destinationIndex]];
+                destinationName = provinceDestination.name;
+            }
+            else
+            {
+                destinationType = LANDMARK;
+                destinationIndex = destinationIndex - provinceChoices.Count;
+                landmarkDestination = gameManager.culturalLandmarks[landmarkChoices[destinationIndex]];
+                destinationName = landmarkDestination.name;
+            }
+            
         }
 
         public override void Selected()
@@ -162,9 +232,5 @@ namespace WPM
             }
         }
 
-        public override void OnCellEnter(int index)
-        {
-            //player.OnCellEnter(index);
-        }
     }
 }
