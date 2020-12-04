@@ -23,6 +23,9 @@ namespace WPM
         private bool boarding = false;
         string savedText = null;
 
+        private const int PROVINCE_MULTIPLIER = 1;
+        private const int LANDMARK_MULTIPLIER = 10;
+
         public override void Start()
         {
             base.Start();
@@ -73,7 +76,7 @@ namespace WPM
         {
             if (boarding)
             {
-                GetDestination();
+                SetDestination();
 
                 if (savedText != null)
                     dialog.text = savedText;
@@ -85,7 +88,7 @@ namespace WPM
            
         }
 
-        private void GetDestination()
+        private void SetDestination()
         {
             //Get Random Tourist Destination
             List<int>[] cellsInRange = gameManager.GetCellsInRange(player.cellLocation, 10);
@@ -94,15 +97,49 @@ namespace WPM
             List<int> provinceChoices = new List<int>();
             List<string> landmarkChoices = new List<string>();
             int i = cellsInRange.Length - 1;
+            int timeMultiplier;
+            int totalMultiplier;
+
             while (i >= 0)
             {
                 if(provincesInRange[i].Count > 0)
                 {
-                    provinceChoices.AddRange(provincesInRange[i]);
+                    foreach(int province in provincesInRange[i])
+                    {
+                        timeMultiplier = gameManager.recentProvinceDestinations.IndexOf(province);
+                        
+                        //Check if destination is no longer being tracked
+                        if (timeMultiplier < 0)
+                            timeMultiplier = gameManager.trackingTime;
+
+                        totalMultiplier = timeMultiplier * PROVINCE_MULTIPLIER;
+
+                        for (int n = 0; n < totalMultiplier; n++)
+                        {
+                            provinceChoices.Add(province);
+                        }
+
+                    }
+                    
                 }
                 if (landmarksInRange[i].Count > 0)
                 {
-                    landmarkChoices.AddRange(landmarksInRange[i]);
+                    foreach(string landmark in landmarksInRange[i])
+                    {
+                        timeMultiplier = gameManager.recentLandmarkDestinations.IndexOf(landmark);
+                        
+                        //Check if destination is no longer being tracked
+                        if (timeMultiplier < 0)
+                            timeMultiplier = gameManager.trackingTime;
+
+                        totalMultiplier = timeMultiplier * LANDMARK_MULTIPLIER;
+
+                        for (int n = 0; n < totalMultiplier; n++)
+                        {
+                            landmarkChoices.Add(landmark);
+                        }
+                    }
+                    
                 }
 
                 i--;
@@ -118,13 +155,24 @@ namespace WPM
                 destinationType = PROVINCE;
                 provinceDestination = gameManager.worldGlobeMap.provinces[provinceChoices[destinationIndex]];
                 destinationName = provinceDestination.name;
+                gameManager.recentProvinceDestinations.Insert(0, provinceChoices[destinationIndex]);
+                while (gameManager.recentProvinceDestinations.Count >= gameManager.trackingTime)
+                {
+                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime);
+                }
+                    
             }
             else
             {
                 destinationType = LANDMARK;
                 destinationIndex = destinationIndex - provinceChoices.Count;
                 landmarkDestination = gameManager.culturalLandmarks[landmarkChoices[destinationIndex]];
-                destinationName = landmarkDestination.name;
+                destinationName = landmarkDestination.objectName;
+                gameManager.recentLandmarkDestinations.Insert(0, landmarkChoices[destinationIndex]);
+                while (gameManager.recentLandmarkDestinations.Count >= gameManager.trackingTime)
+                {
+                    gameManager.recentLandmarkDestinations.RemoveAt(gameManager.trackingTime);
+                }
             }
             
         }

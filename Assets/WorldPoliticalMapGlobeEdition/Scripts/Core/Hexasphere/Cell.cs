@@ -5,6 +5,14 @@ using System.Collections.Generic;
 namespace WPM {
     public class Cell {
 
+        #region New Properties
+        /// <summary>
+        /// A generic flag that can be used for hex counting algorithms
+        /// </summary>
+        public bool flag;
+
+        #endregion
+
         #region Public properties
 
         /// <summary>

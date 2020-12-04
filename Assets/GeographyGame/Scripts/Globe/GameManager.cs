@@ -29,6 +29,9 @@ namespace WPM
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
         public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
+        public List<int> recentProvinceDestinations = new List<int>();
+        public List<string> recentLandmarkDestinations = new List<string>();
+        public int trackingTime = 10;
         WorldMapGlobe map;
         public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
         string startingCountry = "United States of America";
@@ -45,6 +48,8 @@ namespace WPM
         private string[] touristImageFiles;
         private int touristImageIndex = 0;
         private const int NUMBER_OF_TOURIST_IMAGES = 3;
+
+        private bool debug;
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
 
@@ -182,7 +187,7 @@ namespace WPM
                         nameType = "Province: ";
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["ClimateGroup"];
-                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince; // + System.Environment.NewLine + "Climate: " + climate;
+                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince + System.Environment.NewLine + "Hex Index: " + index.ToString(); // + System.Environment.NewLine + "Climate: " + climate;
                     if (worldGlobeMap.cells[index].tag != null)
                     {
                         if (worldGlobeMap.cells[index].index != player.cellLocation)
@@ -239,7 +244,7 @@ namespace WPM
             //Add the startCell to List0
             cells[0] = new List<int>();
             cells[0].Add(startCell);
-            map.cells[startCell].canCross = false;
+            map.cells[startCell].flag = true;
 
             if(range > 0)
             {
@@ -251,7 +256,7 @@ namespace WPM
                 {
                     cells[0].Add(neighbour.index);
                     cells[distance].Add(neighbour.index);
-                    neighbour.canCross = false;
+                    neighbour.flag = true;
                 }
             }
             while (distance < range)
@@ -265,23 +270,84 @@ namespace WPM
                 {
                     foreach (Cell neighbour in map.GetCellNeighbours(cell))
                     {
-                        if (neighbour.canCross)
+                        if (neighbour.index == 36285)
+                            debug = true;
+
+                        if (!neighbour.flag)
                         {
+                            if (neighbour.index == 36285)
+                                debug = true;
+
                             cells[0].Add(neighbour.index);
                             cells[distance].Add(neighbour.index);
-                            neighbour.canCross = false;
+                            neighbour.flag = true;
                         }
                     }
                 }
             }
-            //Set each hex has traverable again
+            //Lower all cell flags
             foreach (int cell in cells[0])
             {
-                map.cells[cell].canCross = true;
+                map.cells[cell].flag = false;
             }
             return cells;
         }
 
+        public List<int>[] GetProvincesInRange(int startCell, List<int>[] cellRange)
+        {
+            //NOTE: this function uses the canCross flag of cells to track which cells
+            //it has checked and assumes all cells will start with it false
+
+            int range = cellRange.Length;
+
+            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
+            {
+                Debug.LogWarning("Invalid input for GetProvincesInRange");
+                return null;
+            }
+
+            int distance = 0;                                          //distance measures how many rings of hexes we've moved out
+            List<int>[] provinces = new List<int>[range + 1];      //provinces is an array of lists with each list the provinces that can be reached at that distance.  
+            List<int> foundProvinces = new List<int>();
+            List<int> provincesInHex = new List<int>();
+
+            bool startHex = true;
+            foreach( List<int> hexRing in cellRange)
+            {
+                if (startHex)
+                {
+                    //Get provinces at start hex
+                    provinces[0] = new List<int>();
+                    provincesInHex = GetProvicesInCell(startCell);
+                    foreach (int provinceIndex in provincesInHex)
+                    {
+                        foundProvinces.Add(provinceIndex);
+                        provinces[0].Add(provinceIndex);
+                    }
+                    startHex = false;
+                }
+                else
+                {
+                    distance++;
+                    provinces[distance] = new List<int>();
+                    foreach (int cellIndex in hexRing)
+                    {
+                        provincesInHex = GetProvicesInCell(cellIndex);
+                        foreach (int provinceIndex in provincesInHex)
+                        {
+                            if (!foundProvinces.Contains(provinceIndex))
+                            {
+                                foundProvinces.Add(provinceIndex);
+                                provinces[distance].Add(provinceIndex);
+                            }
+                        }
+                    }
+                }
+            }
+            return provinces;
+        }
+
+        /*
         public List<int>[] GetProvincesInRange(int startCell, List<int>[] cellRange)
         {
             //NOTE: this function uses the canCross flag of cells to track which cells
@@ -369,7 +435,9 @@ namespace WPM
             //
             return provinces;   
         }
+        */
 
+        /*
         public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
         {
             int range = cellRange.Length;
@@ -439,6 +507,56 @@ namespace WPM
                 map.cells[cell].canCross = true;
             }
 
+            return landmarks;
+
+        }
+        */
+
+        public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
+        {
+            int range = cellRange.Length;
+
+            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
+            {
+                Debug.LogWarning("Invalid input for GetCellsInRange");
+                return null;
+            }
+
+            int distance = 0;
+            List<string>[] landmarks = new List<string>[range + 1];
+            landmarks[0] = new List<string>();
+            string landmarkIndex;
+
+            bool startHex = true;
+            foreach (List<int> hexRing in cellRange)
+            {
+                if (startHex)
+                {
+                    //Get landmark at start hex
+                    landmarkIndex = worldGlobeMap.cells[startCell].tag;
+                    if (landmarkIndex != null && startCell != player.cellLocation)
+                    {
+                        landmarks[0].Add(landmarkIndex);
+                    }
+                    startHex = false;
+                }
+                else
+                {
+                    distance++;
+                    landmarks[distance] = new List<string>();
+                    foreach(int cellIndex in hexRing)
+                    {
+                        if (cellIndex == 36285)
+                            debug = true;
+
+                        landmarkIndex = worldGlobeMap.cells[cellIndex].tag;
+                        if (landmarkIndex != null && cellIndex != player.cellLocation)
+                        {
+                            landmarks[distance].Add(landmarkIndex);
+                        }
+                    }
+                }
+            }
             return landmarks;
 
         }
