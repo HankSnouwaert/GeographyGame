@@ -17,14 +17,17 @@ namespace WPM
         //private Province[] possibleProvinces;
         private Province provinceDestination;
         private Landmark landmarkDestination;
+        private Country countryDestination;
         private int destinationType;
         private const int PROVINCE = 0;
         private const int LANDMARK = 1;
+        private const int COUNTRY = 2;
         private bool boarding = false;
         string savedText = null;
 
         private const int PROVINCE_MULTIPLIER = 1;
         private const int LANDMARK_MULTIPLIER = 10;
+        private const int COUNTRY_MULTIPLIER = 1;
 
         public override void Start()
         {
@@ -96,27 +99,51 @@ namespace WPM
             List<string>[] landmarksInRange = gameManager.GetLandmarksInRange(player.cellLocation, cellsInRange);
             List<int> provinceChoices = new List<int>();
             List<string> landmarkChoices = new List<string>();
-            int i = cellsInRange.Length - 1;
+            List<int> countryChoices = new List<int>();
+            int i = 1;  //Initialize to 1 rather than 0 to avoid requesting a destination at the player's location
             int timeMultiplier;
             int totalMultiplier;
 
-            while (i >= 0)
+            while (i < cellsInRange.Length)
             {
                 if(provincesInRange[i].Count > 0)
                 {
                     foreach(int province in provincesInRange[i])
                     {
-                        timeMultiplier = gameManager.recentProvinceDestinations.IndexOf(province);
-                        
-                        //Check if destination is no longer being tracked
-                        if (timeMultiplier < 0)
-                            timeMultiplier = gameManager.trackingTime;
-
-                        totalMultiplier = timeMultiplier * PROVINCE_MULTIPLIER;
-
-                        for (int n = 0; n < totalMultiplier; n++)
+                        int country = gameManager.worldGlobeMap.provinces[province].countryIndex;
+                        string countryName = gameManager.worldGlobeMap.countries[country].name;
+                        if (countryName == "United States of America" || countryName == "Canada")
                         {
-                            provinceChoices.Add(province);
+                            timeMultiplier = gameManager.recentProvinceDestinations.IndexOf(province);
+
+                            //Check if destination is no longer being tracked
+                            if (timeMultiplier < 0)
+                                timeMultiplier = gameManager.trackingTime;
+
+                            totalMultiplier = timeMultiplier * PROVINCE_MULTIPLIER;
+
+                            for (int n = 0; n < totalMultiplier; n++)
+                            {
+                                provinceChoices.Add(province);
+                            }
+                        }
+                        else
+                        {
+                            if (!countryChoices.Contains(country))
+                            {
+                                timeMultiplier = gameManager.recentCountryDestinations.IndexOf(country);
+
+                                //Check if destination is no longer being tracked
+                                if (timeMultiplier < 0)
+                                    timeMultiplier = gameManager.trackingTime;
+
+                                totalMultiplier = timeMultiplier * COUNTRY_MULTIPLIER;
+
+                                for (int n = 0; n < totalMultiplier; n++)
+                                {
+                                    countryChoices.Add(country);
+                                }
+                            }
                         }
 
                     }
@@ -142,15 +169,15 @@ namespace WPM
                     
                 }
 
-                i--;
+                i++;
 
                 //Avoid adding provinces at the starting location if possible
-                if ((provinceChoices.Count > 0 || landmarkChoices.Count > 0) && i == 0)
-                    break;
+                //if ((provinceChoices.Count > 0 || landmarkChoices.Count > 0  || countryChoices.Count > 0) && i == 0)
+                //    break;
             }
 
-            destinationIndex = Random.Range(0, provinceChoices.Count+landmarkChoices.Count);
-            if(destinationIndex <= provinceChoices.Count)
+            destinationIndex = Random.Range(0, provinceChoices.Count+landmarkChoices.Count+countryChoices.Count);
+            if(destinationIndex < provinceChoices.Count)
             {
                 destinationType = PROVINCE;
                 provinceDestination = gameManager.worldGlobeMap.provinces[provinceChoices[destinationIndex]];
@@ -162,7 +189,7 @@ namespace WPM
                 }
                     
             }
-            else
+            else if((destinationIndex > provinceChoices.Count) && (destinationIndex < (landmarkChoices.Count+provinceChoices.Count)))
             {
                 destinationType = LANDMARK;
                 destinationIndex = destinationIndex - provinceChoices.Count;
@@ -172,6 +199,18 @@ namespace WPM
                 while (gameManager.recentLandmarkDestinations.Count >= gameManager.trackingTime)
                 {
                     gameManager.recentLandmarkDestinations.RemoveAt(gameManager.trackingTime);
+                }
+            }
+            else
+            {
+                destinationType = COUNTRY;
+                destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
+                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]];
+                destinationName = countryDestination.name;
+                gameManager.recentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
+                while (gameManager.recentCountryDestinations.Count >= gameManager.trackingTime)
+                {
+                    gameManager.recentCountryDestinations.RemoveAt(gameManager.trackingTime);
                 }
             }
             
@@ -261,6 +300,44 @@ namespace WPM
                                 player.RemoveItem(inventoryLocation);
                                 gameManager.cursorOverUI = false;
                             }
+                        }
+                    }
+                    break;
+                case COUNTRY:
+                    int selectedCountryIndex = gameManager.worldGlobeMap.GetCountryIndex(playerCell.sphereCenter);
+                    if (gameManager.worldGlobeMap.countries[selectedCountryIndex] == countryDestination)
+                    {
+                        Deselected();
+                        //Remove Tourist from Inventory
+                        player.RemoveItem(inventoryLocation);
+                        gameManager.cursorOverUI = false;
+                    }
+                    else
+                    {
+                        bool countryOverlaps = false;
+                        foreach (Region region in countryDestination.regions)
+                        {
+                            foreach (Vector3 spherePoint in region.spherePoints)
+                            {
+                                if (gameManager.worldGlobeMap.GetCellIndex(spherePoint) == player.cellLocation)
+                                {
+                                    countryOverlaps = true;
+                                    break;
+                                }
+                            }
+                            if (countryOverlaps)
+                                break;
+                        }
+                        if (countryOverlaps)
+                        {
+                            Deselected();
+                            //Remove Tourist from Inventory
+                            player.RemoveItem(inventoryLocation);
+                            gameManager.cursorOverUI = false;
+                        }
+                        else
+                        {
+                            Debug.Log("Incorrect Location");
                         }
                     }
                     break;

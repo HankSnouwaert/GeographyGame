@@ -31,6 +31,7 @@ namespace WPM
         public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
         public List<int> recentProvinceDestinations = new List<int>();
         public List<string> recentLandmarkDestinations = new List<string>();
+        public List<int> recentCountryDestinations = new List<int>();
         public int trackingTime = 10;
         WorldMapGlobe map;
         public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
@@ -347,171 +348,6 @@ namespace WPM
             return provinces;
         }
 
-        /*
-        public List<int>[] GetProvincesInRange(int startCell, List<int>[] cellRange)
-        {
-            //NOTE: this function uses the canCross flag of cells to track which cells
-            //it has checked and assumes all cells will start with it false
-
-            int range = cellRange.Length;
-
-            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
-            {
-                Debug.LogWarning("Invalid input for GetCellsInRange");
-                return null;
-            }
-
-            int distance = 0;                                          //distance measures how many rings of hexes we've moved out
-            List<int>[] provinces = new List<int>[range + 1];      //provinces is an array of lists with each list the provinces that can be reached at that distance.  
-            provinces[0] = new List<int>();
-            List<int> foundProvinces = new List<int>();
-            List<int> provincesInHex = new List<int>();
-            List<int> cellsChecked = new List<int>();
-            
-
-
-            //Get provinces at start hex
-            provincesInHex = GetProvicesInCell(startCell);
-            foreach(int provinceIndex in provincesInHex)
-            {
-                foundProvinces.Add(provinceIndex);
-                provinces[0].Add(provinceIndex);
-            }
-            map.cells[startCell].canCross = false;
-            cellsChecked.Add(startCell);
-
-            if (range > 0)
-            {
-                distance++;
-                provinces[distance] = new List<int>();
-                foreach (int neighbourIndex in map.GetCellNeighboursIndices(startCell))
-                {
-                    provincesInHex = GetProvicesInCell(neighbourIndex);
-                    foreach (int provinceIndex in provincesInHex)
-                    {
-                        if (!foundProvinces.Contains(provinceIndex))
-                        {
-                            foundProvinces.Add(provinceIndex);
-                            provinces[distance].Add(provinceIndex);
-                        }
-                    }
-                    worldGlobeMap.cells[neighbourIndex].canCross = false;
-                    cellsChecked.Add(neighbourIndex);
-                }
-            }
-
-            while(distance < range)
-            {
-                distance++;
-                provinces[distance] = new List<int>();
-                foreach (int cell in cellRange[distance - 1])
-                {
-                    foreach (int neighbourIndex in map.GetCellNeighboursIndices(cell))
-                    {
-                        if (worldGlobeMap.cells[neighbourIndex].canCross)
-                        {
-                            provincesInHex = GetProvicesInCell(neighbourIndex);
-                            foreach (int provinceIndex in provincesInHex)
-                            {
-                                if (!foundProvinces.Contains(provinceIndex))
-                                {
-                                    foundProvinces.Add(provinceIndex);
-                                    provinces[distance].Add(provinceIndex);
-                                }
-                            }
-                            worldGlobeMap.cells[neighbourIndex].canCross = false;
-                            cellsChecked.Add(neighbourIndex);
-                        }
-                    }
-                }
-            }
-
-            //Set each hex has traverable again
-            foreach (int cell in cellsChecked)
-            {
-                map.cells[cell].canCross = true;
-            }
-
-            //
-            return provinces;   
-        }
-        */
-
-        /*
-        public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
-        {
-            int range = cellRange.Length;
-
-            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
-            {
-                Debug.LogWarning("Invalid input for GetCellsInRange");
-                return null;
-            }
-
-            int distance = 0;
-            List<string>[] landmarks = new List<string>[range + 1];
-            landmarks[0] = new List<string>();
-            string landmarkIndex;
-            List<int> cellsChecked = new List<int>();
-
-            //Get landmark at start hex
-            landmarkIndex = worldGlobeMap.cells[startCell].tag;
-            if(landmarkIndex != null  && startCell != player.cellLocation)
-            {
-                landmarks[0].Add(landmarkIndex);
-            }
-            map.cells[startCell].canCross = false;
-            cellsChecked.Add(startCell);
-
-            if (range > 0)
-            {
-                distance++;
-                landmarks[distance] = new List<string>();
-                foreach (int neighbourIndex in map.GetCellNeighboursIndices(startCell))
-                {
-                    landmarkIndex = worldGlobeMap.cells[neighbourIndex].tag;
-                    if (landmarkIndex != null && neighbourIndex != player.cellLocation)
-                    {
-                        landmarks[distance].Add(landmarkIndex);
-                    }
-                    worldGlobeMap.cells[neighbourIndex].canCross = false;
-                    cellsChecked.Add(neighbourIndex);
-                }
-            }
-
-            while (distance < range)
-            {
-                distance++;
-                landmarks[distance] = new List<string>();
-                foreach (int cell in cellRange[distance - 1])
-                {
-                    foreach (int neighbourIndex in map.GetCellNeighboursIndices(cell))
-                    {
-                        if (worldGlobeMap.cells[neighbourIndex].canCross)
-                        {
-                            landmarkIndex = worldGlobeMap.cells[neighbourIndex].tag;
-                            if (landmarkIndex != null && neighbourIndex != player.cellLocation)
-                            {
-                                landmarks[distance].Add(landmarkIndex);
-                            }
-                            worldGlobeMap.cells[neighbourIndex].canCross = false;
-                            cellsChecked.Add(neighbourIndex);
-                        }
-                    }
-                }
-            }
-
-            //Set each hex has traverable again
-            foreach (int cell in cellsChecked)
-            {
-                map.cells[cell].canCross = true;
-            }
-
-            return landmarks;
-
-        }
-        */
-
         public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
         {
             int range = cellRange.Length;
@@ -576,12 +412,12 @@ namespace WPM
                 provinceIndex = worldGlobeMap.GetProvinceNearPoint(worldGlobeMap.cells[cellIndex].sphereCenter);
             }
             //Check country of province
-            countryIndex = worldGlobeMap.provinces[provinceIndex].countryIndex;
-            if (map.countries[countryIndex].name == "United States of America" || map.countries[countryIndex].name == "Canada")
-            {
+            //countryIndex = worldGlobeMap.provinces[provinceIndex].countryIndex;
+            //if (map.countries[countryIndex].name == "United States of America" || map.countries[countryIndex].name == "Canada")
+           // {
                 //Add province to list
                 provinces.Add(provinceIndex);
-            }
+           // }
             //Check to see if neighbours of province overlap with cell
             List<Province> provinceNeighbours = worldGlobeMap.ProvinceNeighbours(provinceIndex);
             bool provinceOverlaps;
