@@ -333,15 +333,21 @@ namespace WPM
                     provinces[distance] = new List<int>();
                     foreach (int cellIndex in hexRing)
                     {
-                        provincesInHex = GetProvicesInCell(cellIndex);
-                        foreach (int provinceIndex in provincesInHex)
+                        //Check if there is a path from the start cell to this one
+                        if (map.FindPath(startCell, cellIndex) != null)
                         {
-                            if (!foundProvinces.Contains(provinceIndex))
+                            provincesInHex = GetProvicesInCell(cellIndex);
+                            foreach (int provinceIndex in provincesInHex)
                             {
-                                foundProvinces.Add(provinceIndex);
-                                provinces[distance].Add(provinceIndex);
+                                //Check that this province hasn't already been added
+                                if (!foundProvinces.Contains(provinceIndex))
+                                {
+                                    foundProvinces.Add(provinceIndex);
+                                    provinces[distance].Add(provinceIndex);
+                                }
                             }
                         }
+                        
                     }
                 }
             }
@@ -397,7 +403,7 @@ namespace WPM
 
         }
 
-        List<int> GetProvicesInCell(int cellIndex)
+        public List<int> GetProvicesInCell(int cellIndex)
         {
             List<int> provinces = new List<int>();
             int provinceIndex;

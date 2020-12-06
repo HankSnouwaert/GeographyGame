@@ -150,7 +150,6 @@ namespace WPM
                 }
             }
 
-            //if (pathCost > remainingMovement)
             if (pathCost > travelRange)
                 return null;   //Path costs more movement than is available
 

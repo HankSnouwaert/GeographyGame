@@ -185,7 +185,7 @@ namespace WPM
                 gameManager.recentProvinceDestinations.Insert(0, provinceChoices[destinationIndex]);
                 while (gameManager.recentProvinceDestinations.Count >= gameManager.trackingTime)
                 {
-                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime);
+                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime-1); //ERROR: Index was out of range
                 }
                     
             }
@@ -240,8 +240,26 @@ namespace WPM
             Cell playerCell = gameManager.worldGlobeMap.cells[player.cellLocation];
             switch (destinationType)
             {
+
                 case PROVINCE:
+                    List<int> selectedProvinces = gameManager.GetProvicesInCell(player.cellLocation);
+                    foreach(int province in selectedProvinces)
+                    {
+                        if(gameManager.worldGlobeMap.provinces[province] == provinceDestination)
+                        {
+                            Deselected();
+                            //Remove Tourist from Inventory
+                            player.RemoveItem(inventoryLocation);
+                            gameManager.cursorOverUI = false;
+                        }
+                    }
+                    /*
                     int selectedProvinceIndex = gameManager.worldGlobeMap.GetProvinceIndex(playerCell.sphereCenter);
+                    //Check for cases where hex center is not on a province
+                    if (selectedProvinceIndex < 0)
+                    {
+
+                    }
                     if (gameManager.worldGlobeMap.provinces[selectedProvinceIndex] == provinceDestination)
                     {
                         Deselected();
@@ -277,7 +295,7 @@ namespace WPM
                             Debug.Log("Incorrect Location");
                         }
                     }
-
+                    */
                     break;
 
                 case LANDMARK:
