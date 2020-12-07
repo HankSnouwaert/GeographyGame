@@ -636,7 +636,7 @@ namespace WPM
             northAmericaNorthEast.provinces.Add(490); //Ontario
             northAmericaNorthEast.provinces.Add(493); //Nova Scotia
             northAmericaNorthEast.provinces.Add(492); //New Brunswick
-            //Prince Edward Island (495) Not being included due to size
+            //Prince Edward Island (495) Not being included due to small size
             northAmericaNorthEast.provinces.Add(3917); //Maine
             northAmericaNorthEast.provinces.Add(3894); //New Hampshire
             northAmericaNorthEast.provinces.Add(3896); //Vermont
@@ -645,10 +645,38 @@ namespace WPM
             northAmericaNorthEast.provinces.Add(3893); //Connecticut
             northAmericaNorthEast.provinces.Add(3915); //New York
             //Landmarks
-
             northAmericaNorthEast.landmarks.Add("The Statue Of Liberty");
             #endregion
-            currentRegion = northAmericaNorthEast;
+
+            #region Create US East Cost Region
+            TouristRegion northAmericaUSEastCoast = new TouristRegion();
+            touristRegions.Add(northAmericaUSEastCoast);
+            northAmericaUSEastCoast.regionName = "North America: US East Coast";
+            //Provinces
+            northAmericaUSEastCoast.provinces.Add(3915); //New York
+            northAmericaUSEastCoast.provinces.Add(3914); //New Jersey
+            northAmericaUSEastCoast.provinces.Add(3916); //Pennsylvania
+            northAmericaUSEastCoast.provinces.Add(3911); //Delaware
+            northAmericaUSEastCoast.provinces.Add(3913); //Maryland
+            northAmericaUSEastCoast.provinces.Add(3906); //Ohio
+            northAmericaUSEastCoast.provinces.Add(3910); //West Virginia
+            northAmericaUSEastCoast.provinces.Add(3908); //Virginia
+            northAmericaUSEastCoast.provinces.Add(3904); //Kentucky
+            northAmericaUSEastCoast.provinces.Add(3905); //North Carolina
+            northAmericaUSEastCoast.provinces.Add(3907); //Tennessee
+            northAmericaUSEastCoast.provinces.Add(3901); //South Carolina
+            northAmericaUSEastCoast.provinces.Add(3899); //Georgia
+            northAmericaUSEastCoast.provinces.Add(3897); //Alabama
+            northAmericaUSEastCoast.provinces.Add(3898); //Florida
+            //Landmarks
+            northAmericaUSEastCoast.landmarks.Add("The Statue Of Liberty");
+            northAmericaUSEastCoast.landmarks.Add("The Washington Monument");
+            #endregion
+
+            #region Set Tourist Region Neighbours
+
+            #endregion
+            currentRegion = northAmericaUSEastCoast;
         }
 
         public void GenerateTourist()
