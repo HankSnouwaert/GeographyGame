@@ -33,8 +33,13 @@ namespace WPM
         public List<string> recentLandmarkDestinations = new List<string>();
         public List<int> recentCountryDestinations = new List<int>();
         public int trackingTime = 10;
+        private List<TouristRegion> touristRegions = new List<TouristRegion>();
+        public TouristRegion currentRegion;
+        public List<TouristRegion> regionsVisited = new List<TouristRegion>();
+        public int roundsInCurrentRegion = 0;
         WorldMapGlobe map;
         public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
+        public Dictionary<string, Landmark> culturalLandmarksByName = new Dictionary<string, Landmark>();
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
@@ -103,6 +108,9 @@ namespace WPM
 
             // Get map instance to Globe API methods
             map = WorldMapGlobe.instance;
+
+            // Initialize Tourist Regions
+            InitTouristRegions();
 
             // Setup grid events
             map.OnCellEnter += HandleOnCellEnter;
@@ -605,6 +613,7 @@ namespace WPM
                                     worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
                                     mappedObjects.Add(landmarkID, landmarkComponent);
                                     culturalLandmarks.Add(landmarkID, landmarkComponent);
+                                    culturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);
                                 }
                             }
 
@@ -613,6 +622,33 @@ namespace WPM
 
                 }
             }
+        }
+
+        void InitTouristRegions()
+        {
+            #region Create North East Region
+            TouristRegion northAmericaNorthEast = new TouristRegion();
+            touristRegions.Add(northAmericaNorthEast);
+            northAmericaNorthEast.regionName = "North America: North East";
+            //Provinces
+            northAmericaNorthEast.provinces.Add(494); //Newfoundland and Labrador
+            northAmericaNorthEast.provinces.Add(491); //Québec
+            northAmericaNorthEast.provinces.Add(490); //Ontario
+            northAmericaNorthEast.provinces.Add(493); //Nova Scotia
+            northAmericaNorthEast.provinces.Add(492); //New Brunswick
+            //Prince Edward Island (495) Not being included due to size
+            northAmericaNorthEast.provinces.Add(3917); //Maine
+            northAmericaNorthEast.provinces.Add(3894); //New Hampshire
+            northAmericaNorthEast.provinces.Add(3896); //Vermont
+            northAmericaNorthEast.provinces.Add(3869); //Massachusetts
+            northAmericaNorthEast.provinces.Add(3895); //Rhode Island
+            northAmericaNorthEast.provinces.Add(3893); //Connecticut
+            northAmericaNorthEast.provinces.Add(3915); //New York
+            //Landmarks
+
+            northAmericaNorthEast.landmarks.Add("The Statue Of Liberty");
+            #endregion
+            currentRegion = northAmericaNorthEast;
         }
 
         public void GenerateTourist()

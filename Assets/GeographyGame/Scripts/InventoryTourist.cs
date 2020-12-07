@@ -49,30 +49,6 @@ namespace WPM
             dialog.text = "Tourist Boarding: Please Wait";
 
             boarding = true;
-
-            
-
-            /*
-            int coinFlip = Random.Range(0, 2);
-            if (coinFlip == 0)
-            {
-                //Province
-                destinationType = PROVINCE;
-                int countryIndex = gameManager.worldGlobeMap.GetCountryIndex("United States of America");
-                possibleProvinces = gameManager.worldGlobeMap.countries[countryIndex].provinces;
-                destinationIndex = Random.Range(0, possibleProvinces.Length);
-                provinceDestination = possibleProvinces[destinationIndex];
-                destinationName = possibleProvinces[destinationIndex].name;
-            }
-            else
-            {
-                //Landmark
-                destinationType = LANDMARK;
-                int landmarkIndex = Random.Range(0, gameManager.culturalLandmarks.Count);
-                landmarkDestination = gameManager.culturalLandmarks[landmarkIndex];
-                destinationName = landmarkDestination.objectName;
-            }
-            */
         }
 
         private void Update()
@@ -91,6 +67,103 @@ namespace WPM
            
         }
 
+        private void SetDestination()
+        {
+            List<int> provinceChoices = new List<int>();
+            List<string> landmarkChoices = new List<string>();
+            List<int> countryChoices = new List<int>();
+            int timeMultiplier;
+            int totalMultiplier;
+            //Get possible Provinces
+            foreach (int province in gameManager.currentRegion.provinces)
+            {
+                timeMultiplier = gameManager.recentProvinceDestinations.IndexOf(province);
+
+                //Check if destination is no longer being tracked
+                if (timeMultiplier < 0)
+                    timeMultiplier = gameManager.trackingTime;
+
+                totalMultiplier = timeMultiplier * PROVINCE_MULTIPLIER;
+
+                for (int n = 0; n < totalMultiplier; n++)
+                {
+                    provinceChoices.Add(province);
+                }
+            }
+            //Get possible Landmarks
+            foreach (string landmark in gameManager.currentRegion.landmarks)
+            {
+                timeMultiplier = gameManager.recentLandmarkDestinations.IndexOf(landmark);
+
+                //Check if destination is no longer being tracked
+                if (timeMultiplier < 0)
+                    timeMultiplier = gameManager.trackingTime;
+
+                totalMultiplier = timeMultiplier * LANDMARK_MULTIPLIER;
+
+                for (int n = 0; n < totalMultiplier; n++)
+                {
+                    landmarkChoices.Add(landmark);
+                }
+            }
+            //Get possible Landmarks
+            foreach (int country in gameManager.currentRegion.countries)
+            {
+                timeMultiplier = gameManager.recentCountryDestinations.IndexOf(country);
+
+                //Check if destination is no longer being tracked
+                if (timeMultiplier < 0)
+                    timeMultiplier = gameManager.trackingTime;
+
+                totalMultiplier = timeMultiplier * COUNTRY_MULTIPLIER;
+
+                for (int n = 0; n < totalMultiplier; n++)
+                {
+                    countryChoices.Add(country);
+                }
+            }
+
+            //Treat all three lists as a combined list and get a random number that points to an element from one of them
+            destinationIndex = Random.Range(0, provinceChoices.Count + landmarkChoices.Count + countryChoices.Count);
+            if (destinationIndex < provinceChoices.Count)
+            {
+                destinationType = PROVINCE;
+                provinceDestination = gameManager.worldGlobeMap.provinces[provinceChoices[destinationIndex]];
+                destinationName = provinceDestination.name;
+                gameManager.recentProvinceDestinations.Insert(0, provinceChoices[destinationIndex]);
+                while (gameManager.recentProvinceDestinations.Count >= gameManager.trackingTime)
+                {
+                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime - 1);
+                }
+
+            }
+            else if ((destinationIndex > provinceChoices.Count) && (destinationIndex < (landmarkChoices.Count + provinceChoices.Count)))
+            {
+                destinationType = LANDMARK;
+                destinationIndex = destinationIndex - provinceChoices.Count;
+                landmarkDestination = gameManager.culturalLandmarksByName[landmarkChoices[destinationIndex]];
+                destinationName = landmarkDestination.objectName;
+                gameManager.recentLandmarkDestinations.Insert(0, landmarkChoices[destinationIndex]);
+                while (gameManager.recentLandmarkDestinations.Count >= gameManager.trackingTime)
+                {
+                    gameManager.recentLandmarkDestinations.RemoveAt(gameManager.trackingTime);
+                }
+            }
+            else
+            {
+                destinationType = COUNTRY;
+                destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
+                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; //ERROR: Index was out of range
+                destinationName = countryDestination.name;
+                gameManager.recentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
+                while (gameManager.recentCountryDestinations.Count >= gameManager.trackingTime)
+                {
+                    gameManager.recentCountryDestinations.RemoveAt(gameManager.trackingTime);
+                }
+            }
+        }
+        #region Old SetDestination
+        /*
         private void SetDestination()
         {
             //Get Random Tourist Destination
@@ -185,7 +258,7 @@ namespace WPM
                 gameManager.recentProvinceDestinations.Insert(0, provinceChoices[destinationIndex]);
                 while (gameManager.recentProvinceDestinations.Count >= gameManager.trackingTime)
                 {
-                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime-1); //ERROR: Index was out of range
+                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime-1); 
                 }
                     
             }
@@ -205,7 +278,7 @@ namespace WPM
             {
                 destinationType = COUNTRY;
                 destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
-                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]];
+                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; //ERROR: Index was out of range
                 destinationName = countryDestination.name;
                 gameManager.recentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
                 while (gameManager.recentCountryDestinations.Count >= gameManager.trackingTime)
@@ -215,6 +288,8 @@ namespace WPM
             }
             
         }
+        */
+        #endregion
 
         public override void Selected()
         {
