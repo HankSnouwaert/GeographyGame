@@ -295,6 +295,10 @@ namespace WPM
                 inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
             }
             inventoryGUI.UpdateInventory(inventory);
+            if(inventory.Count == 0)
+            {
+                gameManager.GenerateTourist();
+            }
         }
     }
 }

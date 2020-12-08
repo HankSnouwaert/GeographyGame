@@ -7,6 +7,7 @@ using SpeedTutorMainMenuSystem;
 using System.Linq;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace WPM
 {
@@ -16,14 +17,19 @@ namespace WPM
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
         public EventSystem eventSystem;
+        public GameObject inventoryPanel;
         public GameObject dialogPanel;
         public GameObject hexInfoPanel;
+        public GameObject scorePanel;
+        public GameObject gameOverPanel;
         private Text hexInfo;
+        private Text scoreInfo;
         private InventoryGUI inventoryGUI;
         private InventoryTourist touristPrefab;
         private PlayerCharacter player;
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
+        private int score = 0;
         public bool cursorOverUI = false;
         private int touristSpawnRate = 10;
         PlayerCharacter playerCharacter;
@@ -37,13 +43,14 @@ namespace WPM
         public TouristRegion currentRegion;
         public List<TouristRegion> regionsVisited = new List<TouristRegion>();
         public int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
-        public const int MIN_TIME_IN_REGION = 2;
-        public const int MAX_TIME_IN_REGION = 5;
+        public const int MIN_TIME_IN_REGION = 5;
+        public const int MAX_TIME_IN_REGION = 10;
         WorldMapGlobe map;
         public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
         public Dictionary<string, Landmark> culturalLandmarksByName = new Dictionary<string, Landmark>();
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
+        private int turnsRemaining = 1;
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         public const int POLITICAL_PROVINCE = 0;
         public const int TERRAIN = 1;
@@ -125,12 +132,23 @@ namespace WPM
             //Get scene objects
             inventoryGUI = FindObjectOfType<InventoryGUI>();
             player = FindObjectOfType<PlayerCharacter>();
+            //Dialog Panel
             dialogPanel = GameObject.Find("/Canvas/DialogPanel");
             dialogPanel.SetActive(false);
+            //Hex Info Panel
             hexInfoPanel = GameObject.Find("/Canvas/HexInfoPanel");
             hexInfoPanel.SetActive(false);
             Transform textObject = hexInfoPanel.transform.GetChild(0);
             hexInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            hexInfoPanel.SetActive(false);
+            //Score Panel
+            scorePanel = GameObject.Find("/Canvas/ScorePanel");
+            textObject = scorePanel.transform.GetChild(0);
+            scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Remaining Movement: " + turnsRemaining;
+
+            //GameOver Panel
+            gameOverPanel.SetActive(false);
 
             //Set Tourist Images
             touristImageFiles = new string[3];
@@ -143,6 +161,7 @@ namespace WPM
         {
             globalTurnCounter = globalTurnCounter + turns;
             touristCounter = touristCounter + turns;
+            UpdateTurns(turns*-1);
             SelectableObject []
             selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
@@ -725,7 +744,6 @@ namespace WPM
             //Landmarks
             northAmericaSouthWest.landmarks.Add("The Hoover Dam");
             northAmericaSouthWest.landmarks.Add("The Golden Gate Bridge");
-            northAmericaSouthWest.landmarks.Add("The Angel of Mexican Independence");
             //Countries
             northAmericaSouthWest.countries.Add(165); //Mexico
             #endregion
@@ -833,7 +851,7 @@ namespace WPM
 
             #endregion
 
-            currentRegion = northAmericaCentralAmerica;
+            currentRegion = northAmericaUSSouthEast;
         }
 
         public void GenerateTourist()
@@ -856,5 +874,36 @@ namespace WPM
             }
         }
 
+        public void UpdateScore(int scoreModification)
+        {
+            score = score + scoreModification;
+            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Remaining Movement: " + turnsRemaining;
+        }
+
+        public void UpdateTurns(int turnModification)
+        {
+            turnsRemaining = turnsRemaining + turnModification;
+            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Remaining Movement: " + turnsRemaining;
+            if (turnsRemaining <= 0)
+                GameOver();
+        }
+
+        public void GameOver()
+        {
+            gameOverPanel.SetActive(true);
+            inventoryPanel.SetActive(false);
+            dialogPanel.SetActive(false);
+            cursorOverUI = true;
+        }
+
+        public void GameReset()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        public void ExitGame()
+        {
+            Application.Quit();
+        }
     }
 }

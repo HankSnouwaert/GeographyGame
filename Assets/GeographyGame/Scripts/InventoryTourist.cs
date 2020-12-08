@@ -28,6 +28,7 @@ namespace WPM
         private const int PROVINCE_MULTIPLIER = 1;
         private const int LANDMARK_MULTIPLIER = 10;
         private const int COUNTRY_MULTIPLIER = 1;
+        private const int TOURIST_DROP_OFF_SCORE = 100;
 
         public override void Start()
         {
@@ -146,19 +147,19 @@ namespace WPM
                 gameManager.recentLandmarkDestinations.Insert(0, landmarkChoices[destinationIndex]);
                 while (gameManager.recentLandmarkDestinations.Count >= gameManager.trackingTime)
                 {
-                    gameManager.recentLandmarkDestinations.RemoveAt(gameManager.trackingTime);
+                    gameManager.recentLandmarkDestinations.RemoveAt(gameManager.trackingTime - 1);
                 }
             }
             else
             {
                 destinationType = COUNTRY;
                 destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
-                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; //ERROR: Index was out of range
+                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; 
                 destinationName = countryDestination.name;
                 gameManager.recentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
                 while (gameManager.recentCountryDestinations.Count >= gameManager.trackingTime)
                 {
-                    gameManager.recentCountryDestinations.RemoveAt(gameManager.trackingTime);
+                    gameManager.recentCountryDestinations.RemoveAt(gameManager.trackingTime - 1);
                 }
             }
         }
@@ -325,52 +326,10 @@ namespace WPM
                             Deselected();
                             //Remove Tourist from Inventory
                             player.RemoveItem(inventoryLocation);
+                            gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             gameManager.cursorOverUI = false;
                         }
                     }
-                    /*
-                    int selectedProvinceIndex = gameManager.worldGlobeMap.GetProvinceIndex(playerCell.sphereCenter);
-                    //Check for cases where hex center is not on a province
-                    if (selectedProvinceIndex < 0)
-                    {
-
-                    }
-                    if (gameManager.worldGlobeMap.provinces[selectedProvinceIndex] == provinceDestination)
-                    {
-                        Deselected();
-                        //Remove Tourist from Inventory
-                        player.RemoveItem(inventoryLocation);
-                        gameManager.cursorOverUI = false;
-                    }
-                    else
-                    {
-                        bool provinceOverlaps = false;
-                        foreach (Region region in provinceDestination.regions)
-                        {
-                            foreach (Vector3 spherePoint in region.spherePoints)
-                            {
-                                if(gameManager.worldGlobeMap.GetCellIndex(spherePoint) == player.cellLocation)
-                                {
-                                    provinceOverlaps = true;
-                                    break;
-                                }
-                            }
-                            if (provinceOverlaps)
-                                break;
-                        }
-                        if (provinceOverlaps)
-                        {
-                            Deselected();
-                            //Remove Tourist from Inventory
-                            player.RemoveItem(inventoryLocation);
-                            gameManager.cursorOverUI = false;
-                        }
-                        else
-                        {
-                            Debug.Log("Incorrect Location");
-                        }
-                    }
-                    */
                     break;
 
                 case LANDMARK:
@@ -391,6 +350,7 @@ namespace WPM
                                 Deselected();
                                 //Remove Tourist from Inventory
                                 player.RemoveItem(inventoryLocation);
+                                gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                                 gameManager.cursorOverUI = false;
                             }
                         }
@@ -426,6 +386,7 @@ namespace WPM
                             Deselected();
                             //Remove Tourist from Inventory
                             player.RemoveItem(inventoryLocation);
+                            gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             gameManager.cursorOverUI = false;
                         }
                         else
