@@ -578,10 +578,10 @@ namespace WPM
                             #endregion
                         #region Intantiate Player and Landmarks
                             //worldGlobeMap.ReloadMountPointsData();
-                            List<MountPoint> USmountPoints = new List<MountPoint>();
-                            int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, USmountPoints);
+                            List<MountPoint> countryMountPoints = new List<MountPoint>();
+                            int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, countryMountPoints);
 
-                            foreach (MountPoint mountPoint in USmountPoints)
+                            foreach (MountPoint mountPoint in countryMountPoints)
                             {
                                 if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
                                 {
@@ -648,6 +648,9 @@ namespace WPM
             northAmericaNorthEast.provinces.Add(3915); //New York
             //Landmarks
             northAmericaNorthEast.landmarks.Add("The Statue Of Liberty");
+            northAmericaNorthEast.landmarks.Add("The CN Tower");
+            northAmericaNorthEast.landmarks.Add("Parliament Hill");
+            northAmericaNorthEast.landmarks.Add("The Fairmont Le Château Frontenac");
             #endregion
 
             #region Create US Mid West Regions
@@ -676,6 +679,8 @@ namespace WPM
             northAmericaUSMidWestMidAtlantic.landmarks.Add("The Statue Of Liberty");
             northAmericaUSMidWestMidAtlantic.landmarks.Add("The Washington Monument");
             northAmericaUSMidWestMidAtlantic.landmarks.Add("The Gateway Arch");
+            northAmericaUSMidWestMidAtlantic.landmarks.Add("The CN Tower");
+            northAmericaUSMidWestMidAtlantic.landmarks.Add("Parliament Hill");
             #endregion
 
             #region Create US South East
@@ -720,6 +725,7 @@ namespace WPM
             //Landmarks
             northAmericaSouthWest.landmarks.Add("The Hoover Dam");
             northAmericaSouthWest.landmarks.Add("The Golden Gate Bridge");
+            northAmericaSouthWest.landmarks.Add("The Angel of Mexican Independence");
             //Countries
             northAmericaSouthWest.countries.Add(165); //Mexico
             #endregion
@@ -770,8 +776,13 @@ namespace WPM
             northAmericaCentralAmerica.regionName = "North America: Central America";
             //Provinces
             northAmericaCentralAmerica.provinces.Add(3892); //Texas
+            //Landmarks
+            northAmericaCentralAmerica.landmarks.Add("El Castillo of Chichen Itza");
+            northAmericaCentralAmerica.landmarks.Add("The Ruins of Tikal");
+            northAmericaCentralAmerica.landmarks.Add("The Angel of Mexican Independence");
+            northAmericaCentralAmerica.landmarks.Add("The Panama Canal");
             //Contries
-            northAmericaCentralAmerica.countries.Add(165); //Mexico
+            northAmericaCentralAmerica.countries.Add(165);//Mexico
             northAmericaCentralAmerica.countries.Add(21); //Belize
             northAmericaCentralAmerica.countries.Add(58); //Guatemala
             northAmericaCentralAmerica.countries.Add(23); //El Salvador

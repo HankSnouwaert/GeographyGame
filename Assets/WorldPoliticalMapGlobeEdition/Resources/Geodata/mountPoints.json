@@ -78,5 +78,75 @@
 		"Y":1561263,
 		"Z":-11795,
 		"Attrib":null
+	},
+	{
+		"Name":"El Castillo of Chichen Itza",
+		"Country":"Mexico",
+		"Province":2307,
+		"Type":2,
+		"X":2332793,
+		"Y":896748,
+		"Z":62579,
+		"Attrib":null
+	},
+	{
+		"Name":"The CN Tower",
+		"Country":"Canada",
+		"Province":490,
+		"Type":2,
+		"X":1775871,
+		"Y":1728796,
+		"Z":327936,
+		"Attrib":null
+	},
+	{
+		"Name":"The Fairmont Le Château Frontenac",
+		"Country":"Canada",
+		"Province":491,
+		"Type":2,
+		"X":1620368,
+		"Y":1823271,
+		"Z":547798,
+		"Attrib":null
+	},
+	{
+		"Name":"Parliament Hill",
+		"Country":"Canada",
+		"Province":490,
+		"Type":2,
+		"X":1700080,
+		"Y":1780788,
+		"Z":434186,
+		"Attrib":null
+	},
+	{
+		"Name":"The Ruins of Tikal",
+		"Country":"Guatemala",
+		"Province":1391,
+		"Type":2,
+		"X":2386807,
+		"Y":743634,
+		"Z":12435,
+		"Attrib":null
+	},
+	{
+		"Name":"The Angel of Mexican Independence",
+		"Country":"Mexico",
+		"Province":2297,
+		"Type":2,
+		"X":2327872,
+		"Y":831004,
+		"Z":-374744,
+		"Attrib":null
+	},
+	{
+		"Name":"The Panama Canal",
+		"Country":"Panama",
+		"Province":2695,
+		"Type":2,
+		"X":2429085,
+		"Y":402943,
+		"Z":432642,
+		"Attrib":null
 	}
 ]
