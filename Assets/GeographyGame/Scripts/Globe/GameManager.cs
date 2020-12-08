@@ -22,6 +22,7 @@ namespace WPM
         public GameObject hexInfoPanel;
         public GameObject scorePanel;
         public GameObject gameOverPanel;
+        public GameObject gameMenuPanel;
         private Text hexInfo;
         private Text scoreInfo;
         private Text gameOverMessage;
@@ -154,11 +155,22 @@ namespace WPM
             textObject = gameOverPanel.transform.GetChild(0);
             gameOverMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
 
+            //GameMenu Panel
+            gameMenuPanel.SetActive(false);
+
             //Set Tourist Images
             touristImageFiles = new string[3];
             touristImageFiles[0] = "Images/Tourist1";
             touristImageFiles[1] = "Images/Tourist2";
             touristImageFiles[2] = "Images/Tourist3";
+        }
+
+        void Update()
+        {
+            if (Input.GetKeyDown("escape"))
+            {
+                OpenGameMenu();
+            }
         }
 
         public void NextTurn(int turns)
@@ -910,6 +922,18 @@ namespace WPM
         public void ExitGame()
         {
             Application.Quit();
+        }
+
+        public void OpenGameMenu()
+        {
+            gameMenuPanel.SetActive(true);
+            menuOpen = true;
+        }
+
+        public void CloseGameMenu()
+        {
+            gameMenuPanel.SetActive(false);
+            menuOpen = false;
         }
     }
 }
