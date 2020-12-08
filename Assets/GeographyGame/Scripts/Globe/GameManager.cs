@@ -24,6 +24,7 @@ namespace WPM
         public GameObject gameOverPanel;
         private Text hexInfo;
         private Text scoreInfo;
+        private Text gameOverMessage;
         private InventoryGUI inventoryGUI;
         private InventoryTourist touristPrefab;
         private PlayerCharacter player;
@@ -31,6 +32,7 @@ namespace WPM
         private int touristCounter = 0;
         private int score = 0;
         public bool cursorOverUI = false;
+        private bool menuOpen = false;
         private int touristSpawnRate = 10;
         PlayerCharacter playerCharacter;
         public SelectableObject selectedObject = null;
@@ -149,6 +151,8 @@ namespace WPM
 
             //GameOver Panel
             gameOverPanel.SetActive(false);
+            textObject = gameOverPanel.transform.GetChild(0);
+            gameOverMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
 
             //Set Tourist Images
             touristImageFiles = new string[3];
@@ -177,7 +181,7 @@ namespace WPM
 
         void HandleOnCellClick(int cellIndex)
         {
-            if (!cursorOverUI)
+            if (!cursorOverUI  && !menuOpen)
             {
                 Debug.Log("Clicked cell: " + cellIndex);
                 if (selectedObject == null)
@@ -203,7 +207,7 @@ namespace WPM
 
         void HandleOnCellEnter(int index)
         {
-            if (!cursorOverUI && worldGlobeMap.lastHighlightedCellIndex >= 0)
+            if (!cursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
                 Province province = worldGlobeMap.provinceHighlighted;
                 Country country = worldGlobeMap.countryHighlighted;
@@ -894,6 +898,8 @@ namespace WPM
             inventoryPanel.SetActive(false);
             dialogPanel.SetActive(false);
             cursorOverUI = true;
+            menuOpen = true;
+            gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
         }
 
         public void GameReset()
