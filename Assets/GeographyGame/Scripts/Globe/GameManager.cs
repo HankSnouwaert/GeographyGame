@@ -53,7 +53,7 @@ namespace WPM
         public Dictionary<string, Landmark> culturalLandmarksByName = new Dictionary<string, Landmark>();
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
-        private int turnsRemaining = 1;
+        private int turnsRemaining = 300;
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         public const int POLITICAL_PROVINCE = 0;
         public const int TERRAIN = 1;
@@ -160,9 +160,9 @@ namespace WPM
 
             //Set Tourist Images
             touristImageFiles = new string[3];
-            touristImageFiles[0] = "Images/Tourist1";
-            touristImageFiles[1] = "Images/Tourist2";
-            touristImageFiles[2] = "Images/Tourist3";
+            touristImageFiles[0] = "Images/TouristSketch1";
+            touristImageFiles[1] = "Images/TouristSketch2";
+            touristImageFiles[2] = "Images/TouristSketch3";
         }
 
         void Update()
@@ -514,20 +514,33 @@ namespace WPM
             return landmark; 
         }
 
+        public void OrientOnLocation(Vector3 vectorLocation)
+        {
+            map.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
+            map.pitch = 0;
+        }
+
         void ApplyGlobeSettings()
         {
             Debug.Log("Applying Globe Settings");
-            if (File.Exists(Application.dataPath + "/student.txt"))
-            {
-                //Load Settings
-                string savedMapSettings = File.ReadAllText(Application.dataPath + "/student.txt");
-                SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
-                bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
-                provinceSettings[POLITICAL_PROVINCE] = loadedMapSettings.provinces;
-                provinceSettings[TERRAIN] = loadedMapSettings.terrain;
-                provinceSettings[CLIMATE] = loadedMapSettings.climate;
-                //Add loop for all countries here
-                foreach (Country country in worldGlobeMap.countries)
+            //if (File.Exists(Application.dataPath + "/student.txt"))
+            //{
+            //Load Settings
+            /*
+            string savedMapSettings = File.ReadAllText(Application.dataPath + "/student.txt");
+            SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
+            bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
+            provinceSettings[POLITICAL_PROVINCE] = loadedMapSettings.provinces;
+            provinceSettings[TERRAIN] = loadedMapSettings.terrain;
+            provinceSettings[CLIMATE] = loadedMapSettings.climate;
+            */
+            bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
+            provinceSettings[POLITICAL_PROVINCE] = true;
+            provinceSettings[TERRAIN] = false;
+            provinceSettings[CLIMATE] = false;
+
+            //Add loop for all countries here
+            foreach (Country country in worldGlobeMap.countries)
                 {
                     if (country.continent == "North America")
                     {
@@ -597,11 +610,11 @@ namespace WPM
                                                 provinceList.Remove(neighbor);
                                                 provinces = provinceList.ToArray();
                                                 //Clear unused attributes
-                                                if (!loadedMapSettings.provinces)
-                                                    neighbor.attrib["PoliticalProvince"] = "";
-                                                if (!loadedMapSettings.terrain)
+                                                //if (!loadedMapSettings.provinces)
+                                                //    neighbor.attrib["PoliticalProvince"] = "";
+                                                //if (!loadedMapSettings.terrain)
                                                     neighbor.attrib["Terrain"] = "";
-                                                if (!loadedMapSettings.climate)
+                                                //if (!loadedMapSettings.climate)
                                                     neighbor.attrib["Climate"] = "";
                                             }
                                         }
@@ -632,7 +645,7 @@ namespace WPM
                                     worldGlobeMap.cells[startingCellIndex].tag = playerID;
                                     mappedObjects.Add(playerID, playerCharacter);
                                 }
-                                if (mountPoint.type == CULTURAL_POINT && loadedMapSettings.culturalLandmarks)
+                                if (mountPoint.type == CULTURAL_POINT ) //&& loadedMapSettings.culturalLandmarks)
                                 {
                                     string mountPointName = mountPoint.name;
                                     string tempName = mountPointName.Replace("The", "");
@@ -658,7 +671,7 @@ namespace WPM
                     }
 
                 }
-            }
+            //}
         }
 
         void InitTouristRegions()

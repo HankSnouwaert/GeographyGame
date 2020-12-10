@@ -154,7 +154,7 @@ namespace WPM
             {
                 destinationType = COUNTRY;
                 destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
-                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; 
+                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; //ERROR: Index Out of Range Exception
                 destinationName = countryDestination.name;
                 gameManager.recentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
                 while (gameManager.recentCountryDestinations.Count >= gameManager.trackingTime)

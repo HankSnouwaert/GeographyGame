@@ -20,7 +20,7 @@ namespace WPM
         int latlonIndex;
         float totalLength;
         float currentProgress = 0;
-        private const float MOVE_SPEED = 0.009f;
+        private const float MOVE_SPEED = 0.03f;  //For Build
 
         void Awake()
         {

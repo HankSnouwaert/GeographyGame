@@ -38,7 +38,7 @@ namespace WPM
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
-            map.FlyToLocation(vectorLocation);
+            gameManager.OrientOnLocation(vectorLocation);
 
             //Generate Initial Tourists
             for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
@@ -52,8 +52,7 @@ namespace WPM
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("Enter key was pressed.");
-                map.FlyToLocation(vectorLocation);
+                gameManager.OrientOnLocation(vectorLocation);
             }
         }
 
