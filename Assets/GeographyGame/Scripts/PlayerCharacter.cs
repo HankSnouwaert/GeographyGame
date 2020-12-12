@@ -154,9 +154,13 @@ namespace WPM
 
             //Path Successful
             // Color starting cell, end cell and path
-            map.SetCellColor(cellIndices, Color.gray, true);
+            if (pathCost == travelRange)
+                map.SetCellColor(cellIndices, Color.red, true);
+            else
+                map.SetCellColor(cellIndices, Color.grey, true);
             map.SetCellColor(startCellIndex, Color.green, true);
-            map.SetCellColor(endCellIndex, Color.red, true);
+            
+          //map.SetCellColor(endCellIndex, Color.red, true);
 
             return cellIndices;
         }

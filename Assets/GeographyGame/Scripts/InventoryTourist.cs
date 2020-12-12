@@ -319,7 +319,8 @@ namespace WPM
 
                 case PROVINCE:
                     List<int> selectedProvinces = gameManager.GetProvicesInCell(player.cellLocation);
-                    foreach(int province in selectedProvinces)
+                    bool correctProvince = false;
+                    foreach (int province in selectedProvinces)
                     {
                         if(gameManager.worldGlobeMap.provinces[province] == provinceDestination)
                         {
@@ -328,17 +329,26 @@ namespace WPM
                             player.RemoveItem(inventoryLocation);
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             gameManager.cursorOverUI = false;
+                            correctProvince = true;
+                            gameManager.DisplayPopUp("Exactly where I wanted to go!");
                         }
                     }
+                    if(correctProvince == false)
+                        gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+
                     break;
 
                 case LANDMARK:
+                    bool landmarkReached = false;
                     if (playerCell == landmarkDestination.cell)
                     {
                         Deselected();
                         //Remove Tourist from Inventory
                         player.RemoveItem(inventoryLocation);
+                        gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                         gameManager.cursorOverUI = false;
+                        landmarkReached = true;
+                        gameManager.DisplayPopUp("Exactly where I wanted to go!");
                     }
                     else
                     {
@@ -352,9 +362,15 @@ namespace WPM
                                 player.RemoveItem(inventoryLocation);
                                 gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                                 gameManager.cursorOverUI = false;
+                                landmarkReached = true;
+                                gameManager.DisplayPopUp("Exactly where I wanted to go!");
                             }
                         }
                     }
+
+                    if(landmarkReached == false)
+                        gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+
                     break;
                 case COUNTRY:
                     int selectedCountryIndex = gameManager.worldGlobeMap.GetCountryIndex(playerCell.sphereCenter);
@@ -388,10 +404,11 @@ namespace WPM
                             player.RemoveItem(inventoryLocation);
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             gameManager.cursorOverUI = false;
+                            gameManager.DisplayPopUp("Exactly where I wanted to go!");
                         }
                         else
                         {
-                            Debug.Log("Incorrect Location");
+                            gameManager.DisplayPopUp("Well this doesn't look right. . . .");
                         }
                     }
                     break;

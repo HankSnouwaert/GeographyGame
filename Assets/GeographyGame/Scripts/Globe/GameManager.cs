@@ -23,9 +23,11 @@ namespace WPM
         public GameObject scorePanel;
         public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
+        public GameObject popUpPanel;
         private Text hexInfo;
         private Text scoreInfo;
         private Text gameOverMessage;
+        private Text popUpMessage;
         private InventoryGUI inventoryGUI;
         private InventoryTourist touristPrefab;
         private PlayerCharacter player;
@@ -158,6 +160,11 @@ namespace WPM
             //GameMenu Panel
             gameMenuPanel.SetActive(false);
 
+            //PopUp Panel
+            popUpPanel.SetActive(false);
+            textObject = popUpPanel.transform.GetChild(0);
+            popUpMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+
             //Set Tourist Images
             touristImageFiles = new string[3];
             touristImageFiles[0] = "Images/TouristSketch1";
@@ -169,8 +176,13 @@ namespace WPM
         {
             if (Input.GetKeyDown("escape"))
             {
-                OpenGameMenu();
+                if (popUpPanel.activeSelf)
+                    popUpPanel.SetActive(false);
+                else
+                    OpenGameMenu();
             }
+            if (Input.GetMouseButtonDown(0) && popUpPanel.activeSelf)
+                popUpPanel.SetActive(false);
         }
 
         public void NextTurn(int turns)
@@ -518,6 +530,7 @@ namespace WPM
         {
             map.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
             map.pitch = 0;
+            map.yaw = 0;
         }
 
         void ApplyGlobeSettings()
@@ -947,6 +960,12 @@ namespace WPM
         {
             gameMenuPanel.SetActive(false);
             menuOpen = false;
+        }
+
+        public void DisplayPopUp(string displayText)
+        {
+            popUpPanel.SetActive(true);
+            popUpMessage.text = displayText;
         }
     }
 }
