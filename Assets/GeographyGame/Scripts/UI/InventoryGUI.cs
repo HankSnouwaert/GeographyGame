@@ -174,5 +174,22 @@ namespace WPM
             selectedItemIndex = inventoryNumber;
             selectedObject = EventSystem.current.currentSelectedGameObject;
         }
+
+        /// <summary>
+        /// This function is called when the mouse goes over an item in the inventory
+        /// </summary>
+        /// <param name="inventoryNumber">What position in the inventory the item is in.</param>
+        public void ItemMouseEnter(int inventoryNumber)
+        {
+            if (inventoryNumber <= numberofItems && inventoryNumber >= 0)
+            {
+                displayedItems[inventoryNumber].MouseEnter();
+            }
+        }
+
+        public void ItemMouseExit()
+        {
+            gameManager.ClosePopUp();
+        }
     }
 }

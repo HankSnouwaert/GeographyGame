@@ -46,5 +46,10 @@ namespace WPM
             
             //spriteRenderer.color = normalColor;
         }
+
+        public override void MouseEnter()
+        {
+            base.MouseEnter();
+        }
     }
 }

@@ -37,6 +37,11 @@ namespace WPM
             selected = false;
         }
 
+        public virtual void MouseEnter()
+        {
+
+        }
+
         public virtual void OnCellEnter(int index)
         {
 
@@ -51,5 +56,6 @@ namespace WPM
         {
 
         }
+
     }
 }

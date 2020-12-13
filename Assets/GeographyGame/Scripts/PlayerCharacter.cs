@@ -45,7 +45,6 @@ namespace WPM
             {
                 gameManager.GenerateTourist();
             }
-
         }
 
         private void Update()

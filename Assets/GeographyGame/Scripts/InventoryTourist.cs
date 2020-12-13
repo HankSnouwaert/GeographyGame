@@ -22,7 +22,6 @@ namespace WPM
         private const int PROVINCE = 0;
         private const int LANDMARK = 1;
         private const int COUNTRY = 2;
-        private bool boarding = false;
         string savedText = null;
 
         private const int PROVINCE_MULTIPLIER = 1;
@@ -40,32 +39,14 @@ namespace WPM
             dropOffButton = dropOffButtonTransfrom.gameObject.GetComponent(typeof(Button)) as Button;
 
             dropOffButtonObject = dropOffButtonTransfrom.gameObject;
-            dropOffButtonObject.SetActive(false);
 
-            if (dialogPanel.activeSelf)
-                savedText = dialog.text;
-            else
-                dialogPanel.SetActive(true);
+            SetDestination();
 
-            dialog.text = "Tourist Boarding: Please Wait";
+            gameManager.DisplayPopUp("Hey there!  I want to see " + destinationName + "!");
 
-            boarding = true;
-        }
 
-        private void Update()
-        {
-            if (boarding)
-            {
-                SetDestination();
+            dropOffButtonObject.SetActive(true);
 
-                if (savedText != null)
-                    dialog.text = savedText;
-                else
-                    dialogPanel.SetActive(false);
-                boarding = false;
-                dropOffButtonObject.SetActive(true);
-            }
-           
         }
 
         private void SetDestination()
@@ -163,134 +144,6 @@ namespace WPM
                 }
             }
         }
-        #region Old SetDestination
-        /*
-        private void SetDestination()
-        {
-            //Get Random Tourist Destination
-            List<int>[] cellsInRange = gameManager.GetCellsInRange(player.cellLocation, 10);
-            List<int>[] provincesInRange = gameManager.GetProvincesInRange(player.cellLocation, cellsInRange);
-            List<string>[] landmarksInRange = gameManager.GetLandmarksInRange(player.cellLocation, cellsInRange);
-            List<int> provinceChoices = new List<int>();
-            List<string> landmarkChoices = new List<string>();
-            List<int> countryChoices = new List<int>();
-            int i = 1;  //Initialize to 1 rather than 0 to avoid requesting a destination at the player's location
-            int timeMultiplier;
-            int totalMultiplier;
-
-            while (i < cellsInRange.Length)
-            {
-                if(provincesInRange[i].Count > 0)
-                {
-                    foreach(int province in provincesInRange[i])
-                    {
-                        int country = gameManager.worldGlobeMap.provinces[province].countryIndex;
-                        string countryName = gameManager.worldGlobeMap.countries[country].name;
-                        if (countryName == "United States of America" || countryName == "Canada")
-                        {
-                            timeMultiplier = gameManager.recentProvinceDestinations.IndexOf(province);
-
-                            //Check if destination is no longer being tracked
-                            if (timeMultiplier < 0)
-                                timeMultiplier = gameManager.trackingTime;
-
-                            totalMultiplier = timeMultiplier * PROVINCE_MULTIPLIER;
-
-                            for (int n = 0; n < totalMultiplier; n++)
-                            {
-                                provinceChoices.Add(province);
-                            }
-                        }
-                        else
-                        {
-                            if (!countryChoices.Contains(country))
-                            {
-                                timeMultiplier = gameManager.recentCountryDestinations.IndexOf(country);
-
-                                //Check if destination is no longer being tracked
-                                if (timeMultiplier < 0)
-                                    timeMultiplier = gameManager.trackingTime;
-
-                                totalMultiplier = timeMultiplier * COUNTRY_MULTIPLIER;
-
-                                for (int n = 0; n < totalMultiplier; n++)
-                                {
-                                    countryChoices.Add(country);
-                                }
-                            }
-                        }
-
-                    }
-                    
-                }
-                if (landmarksInRange[i].Count > 0)
-                {
-                    foreach(string landmark in landmarksInRange[i])
-                    {
-                        timeMultiplier = gameManager.recentLandmarkDestinations.IndexOf(landmark);
-                        
-                        //Check if destination is no longer being tracked
-                        if (timeMultiplier < 0)
-                            timeMultiplier = gameManager.trackingTime;
-
-                        totalMultiplier = timeMultiplier * LANDMARK_MULTIPLIER;
-
-                        for (int n = 0; n < totalMultiplier; n++)
-                        {
-                            landmarkChoices.Add(landmark);
-                        }
-                    }
-                    
-                }
-
-                i++;
-
-                //Avoid adding provinces at the starting location if possible
-                //if ((provinceChoices.Count > 0 || landmarkChoices.Count > 0  || countryChoices.Count > 0) && i == 0)
-                //    break;
-            }
-
-            destinationIndex = Random.Range(0, provinceChoices.Count+landmarkChoices.Count+countryChoices.Count);
-            if(destinationIndex < provinceChoices.Count)
-            {
-                destinationType = PROVINCE;
-                provinceDestination = gameManager.worldGlobeMap.provinces[provinceChoices[destinationIndex]];
-                destinationName = provinceDestination.name;
-                gameManager.recentProvinceDestinations.Insert(0, provinceChoices[destinationIndex]);
-                while (gameManager.recentProvinceDestinations.Count >= gameManager.trackingTime)
-                {
-                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime-1); 
-                }
-                    
-            }
-            else if((destinationIndex > provinceChoices.Count) && (destinationIndex < (landmarkChoices.Count+provinceChoices.Count)))
-            {
-                destinationType = LANDMARK;
-                destinationIndex = destinationIndex - provinceChoices.Count;
-                landmarkDestination = gameManager.culturalLandmarks[landmarkChoices[destinationIndex]];
-                destinationName = landmarkDestination.objectName;
-                gameManager.recentLandmarkDestinations.Insert(0, landmarkChoices[destinationIndex]);
-                while (gameManager.recentLandmarkDestinations.Count >= gameManager.trackingTime)
-                {
-                    gameManager.recentLandmarkDestinations.RemoveAt(gameManager.trackingTime);
-                }
-            }
-            else
-            {
-                destinationType = COUNTRY;
-                destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
-                countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; //ERROR: Index was out of range
-                destinationName = countryDestination.name;
-                gameManager.recentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
-                while (gameManager.recentCountryDestinations.Count >= gameManager.trackingTime)
-                {
-                    gameManager.recentCountryDestinations.RemoveAt(gameManager.trackingTime);
-                }
-            }
-            
-        }
-        */
-        #endregion
 
         public override void Selected()
         {
@@ -307,6 +160,12 @@ namespace WPM
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             dialogPanel.SetActive(false);
             dropOffButton.onClick.RemoveAllListeners();
+        }
+
+        public override void MouseEnter()
+        {
+            base.MouseEnter();
+            gameManager.DisplayPopUp("I want to see " + destinationName + "!");
         }
 
         public void DropOff()

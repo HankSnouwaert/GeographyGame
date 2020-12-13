@@ -70,6 +70,7 @@ namespace WPM
         private const int NUMBER_OF_TOURIST_IMAGES = 3;
 
         private bool debug;
+        private bool gameStart = true;
 
         GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
 
@@ -174,6 +175,14 @@ namespace WPM
 
         void Update()
         {
+            //Code that needs to be run after the first step of the game
+            if (gameStart)
+            {
+                gameStart = false;
+                ClosePopUp();
+            }
+
+
             if (Input.GetKeyDown("escape"))
             {
                 if (popUpPanel.activeSelf)
@@ -938,6 +947,7 @@ namespace WPM
             cursorOverUI = true;
             menuOpen = true;
             gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
+            popUpPanel.SetActive(false);
         }
 
         public void GameReset()
@@ -966,6 +976,11 @@ namespace WPM
         {
             popUpPanel.SetActive(true);
             popUpMessage.text = displayText;
+        }
+
+        public void ClosePopUp()
+        {
+            popUpPanel.SetActive(false);
         }
     }
 }
