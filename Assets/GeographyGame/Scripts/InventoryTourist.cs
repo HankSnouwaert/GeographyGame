@@ -190,10 +190,15 @@ namespace WPM
                             gameManager.cursorOverUI = false;
                             correctProvince = true;
                             gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                            gameManager.DropOff(true);
                         }
                     }
                     if(correctProvince == false)
+                    {
                         gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+                        gameManager.DropOff(false);
+                    }
+                        
 
                     break;
 
@@ -208,6 +213,7 @@ namespace WPM
                         gameManager.cursorOverUI = false;
                         landmarkReached = true;
                         gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                        gameManager.DropOff(true);
                     }
                     else
                     {
@@ -223,13 +229,17 @@ namespace WPM
                                 gameManager.cursorOverUI = false;
                                 landmarkReached = true;
                                 gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                                gameManager.DropOff(true);
                             }
                         }
                     }
 
                     if(landmarkReached == false)
+                    {
                         gameManager.DisplayPopUp("Well this doesn't look right. . . .");
-
+                        gameManager.DropOff(false);
+                    }
+                       
                     break;
                 case COUNTRY:
                     int selectedCountryIndex = gameManager.worldGlobeMap.GetCountryIndex(playerCell.sphereCenter);
@@ -264,10 +274,12 @@ namespace WPM
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             gameManager.cursorOverUI = false;
                             gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                            gameManager.DropOff(true);
                         }
                         else
                         {
                             gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+                            gameManager.DropOff(false);
                         }
                     }
                     break;

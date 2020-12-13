@@ -24,6 +24,8 @@ namespace WPM
         public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
         public GameObject popUpPanel;
+        public AudioSource dropOffSuccess;
+        public AudioSource dropOffFailure;
         private Text hexInfo;
         private Text scoreInfo;
         private Text gameOverMessage;
@@ -981,6 +983,16 @@ namespace WPM
         public void ClosePopUp()
         {
             popUpPanel.SetActive(false);
+        }
+
+        public void DropOff(bool success)
+        {
+            /*
+            if (success)
+                dropOffSuccess.Play();
+            else
+                dropOffFailure.Play();
+                */
         }
     }
 }
