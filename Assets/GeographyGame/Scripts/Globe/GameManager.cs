@@ -57,7 +57,7 @@ namespace WPM
         public Dictionary<string, Landmark> culturalLandmarksByName = new Dictionary<string, Landmark>();
         string startingCountry = "United States of America";
         string startingProvince = "North Carolina";
-        private int turnsRemaining = 300;
+        private int turnsRemaining = 250;
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         public const int POLITICAL_PROVINCE = 0;
         public const int TERRAIN = 1;
@@ -153,7 +153,7 @@ namespace WPM
             scorePanel = GameObject.Find("/Canvas/ScorePanel");
             textObject = scorePanel.transform.GetChild(0);
             scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Remaining Movement: " + turnsRemaining;
+            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
 
             //GameOver Panel
             gameOverPanel.SetActive(false);
@@ -935,13 +935,13 @@ namespace WPM
         public void UpdateScore(int scoreModification)
         {
             score = score + scoreModification;
-            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Remaining Movement: " + turnsRemaining;
+            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
         public void UpdateTurns(int turnModification)
         {
             turnsRemaining = turnsRemaining + turnModification;
-            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Remaining Movement: " + turnsRemaining;
+            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
             if (turnsRemaining <= 0)
                 GameOver();
         }
