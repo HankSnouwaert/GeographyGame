@@ -69,7 +69,7 @@ namespace WPM
 
         private string[] touristImageFiles;
         private int touristImageIndex = 0;
-        private const int NUMBER_OF_TOURIST_IMAGES = 3;
+        private const int NUMBER_OF_TOURIST_IMAGES = 8;
 
         private bool debug;
         private bool gameStart = true;
@@ -169,10 +169,15 @@ namespace WPM
             popUpMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
 
             //Set Tourist Images
-            touristImageFiles = new string[3];
-            touristImageFiles[0] = "Images/TouristSketch1";
-            touristImageFiles[1] = "Images/TouristSketch2";
-            touristImageFiles[2] = "Images/TouristSketch3";
+            touristImageFiles = new string[8];
+            touristImageFiles[0] = "Images/Tourist1";
+            touristImageFiles[1] = "Images/Tourist2";
+            touristImageFiles[2] = "Images/Tourist3";
+            touristImageFiles[3] = "Images/Tourist4";
+            touristImageFiles[4] = "Images/Tourist5";
+            touristImageFiles[5] = "Images/Tourist6";
+            touristImageFiles[6] = "Images/Tourist7";
+            touristImageFiles[7] = "Images/Tourist8";
         }
 
         void Update()
