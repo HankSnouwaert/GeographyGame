@@ -189,7 +189,6 @@ namespace WPM
                 ClosePopUp();
             }
 
-
             if (Input.GetKeyDown("escape"))
             {
                 if (popUpPanel.activeSelf)
@@ -197,7 +196,18 @@ namespace WPM
                 else
                     OpenGameMenu();
             }
-            if (Input.GetMouseButtonDown(0) && popUpPanel.activeSelf)
+
+            if (Input.GetKey(KeyCode.UpArrow))
+                worldGlobeMap.DragTowards(Vector2.up);
+            if (Input.GetKey(KeyCode.DownArrow))
+                worldGlobeMap.DragTowards(Vector2.down);
+            if (Input.GetKey(KeyCode.LeftArrow))
+                worldGlobeMap.DragTowards(Vector2.left);
+            if (Input.GetKey(KeyCode.RightArrow))
+                worldGlobeMap.DragTowards(Vector2.right);
+
+
+            if (Input.GetMouseButton(0) && popUpPanel.activeSelf)
                 popUpPanel.SetActive(false);
         }
 
