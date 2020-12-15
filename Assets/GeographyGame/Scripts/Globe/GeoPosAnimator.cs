@@ -20,8 +20,8 @@ namespace WPM
         int latlonIndex;
         float totalLength;
         float currentProgress = 0;
-        //private const float MOVE_SPEED = 0.06f;  //For Build
-        private const float MOVE_SPEED = 0.005f;  //For Development
+        private const float MOVE_SPEED = 0.06f;  //For Build
+        //private const float MOVE_SPEED = 0.01f;  //For Development
 
         void Awake()
         {
@@ -92,7 +92,7 @@ namespace WPM
                     int newCell = map.GetCellIndex(latLon[latlonIndex]);
                     playerCharacter.UpdateLocation(newCell);
                     currentProgress = 0;
-                    if(latlonIndex >= latLon.Count - 1)
+                    if(latlonIndex >= latLon.Count - 1  || playerCharacter.stop)
                     {
                         latlonIndex = 0;
                         latLon.Clear();

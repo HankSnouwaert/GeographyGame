@@ -8,7 +8,7 @@ namespace WPM
 {
     public class PlayerCharacter : MappableObject
     {
-        int travelRange = 10;
+        int travelRange = 30;
         //int distanceTraveled = 0;
         public int destination = 0;
         bool moving = false;
@@ -16,6 +16,7 @@ namespace WPM
         public float size = 0.005f;
         public List<InventoryItem> inventory = new List<InventoryItem>();
         private int inventorySize = 7;
+        public bool stop = false;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         //GameManager gameManager;
@@ -52,6 +53,10 @@ namespace WPM
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 gameManager.OrientOnLocation(vectorLocation);
+            }
+            if (Input.GetKeyDown(KeyCode.Backspace))
+            {
+                stop = true;
             }
         }
 
@@ -90,7 +95,10 @@ namespace WPM
         {
             if (index == cellLocation)
             {
-                Deselected();
+                if (moving)
+                    stop = true;
+                else
+                    Deselected();
             }
             //Attempt to move to new location
             else 
@@ -108,6 +116,7 @@ namespace WPM
 
         public override void EndOfTurn(int turns)
         {
+            /*
             // distanceTraveled = 0;
             //if (selected) 
             ClearCellCosts();
@@ -115,6 +124,7 @@ namespace WPM
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
             //if (selected) 
             SetCellCosts();
+            */
         }
 
         /// <summary>
@@ -199,7 +209,14 @@ namespace WPM
                     OnCellEnter(gameManager.worldGlobeMap.lastHighlightedCellIndex);
                 }
             }
+
+            ClearCellCosts();
+            Array.Clear(cellsInRange, 0, travelRange);
+            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange + 1);
+            SetCellCosts();
+
             moving = false;
+            stop = false;
         }
 
         /// <summary>
