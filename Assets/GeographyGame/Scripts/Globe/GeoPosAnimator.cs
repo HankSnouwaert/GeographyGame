@@ -20,8 +20,8 @@ namespace WPM
         int latlonIndex;
         float totalLength;
         float currentProgress = 0;
-        private const float MOVE_SPEED = 0.06f;  //For Build
-        //private const float MOVE_SPEED = 0.01f;  //For Development
+        //private const float MOVE_SPEED = 0.06f;  //For Build
+        private const float MOVE_SPEED = 0.01f;  //For Development
 
         void Awake()
         {
@@ -60,7 +60,8 @@ namespace WPM
             Vector3 pos1 = Conversion.GetSpherePointFromLatLon(latLon[latlonIndex + 1]);
             Vector3 pos = Vector3.Lerp(pos0, pos1, progress);
             pos = pos.normalized * 0.5f;
-            map.AddMarker(gameObject, pos, playerCharacter.size, false);
+            float playerSize = playerCharacter.GetSize();
+            map.AddMarker(gameObject, pos, playerSize, false);
 
             // Make it look towards destination
             Vector3 dir = (pos0 - pos1).normalized;

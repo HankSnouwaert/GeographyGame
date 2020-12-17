@@ -679,7 +679,8 @@ namespace WPM
                                     playerCharacter.latlon = worldGlobeMap.cells[startingCellIndex].latlon;
                                     Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
                                     playerCharacter.vectorLocation = startingLocation;
-                                    worldGlobeMap.AddMarker(playerObject, startingLocation, playerCharacter.size, false, 0.0f, true, true);
+                                    float playerSize = playerCharacter.GetSize();
+                                    worldGlobeMap.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
                                     string playerID = playerCharacter.GetInstanceID().ToString();
                                     worldGlobeMap.cells[startingCellIndex].tag = playerID;
                                     mappedObjects.Add(playerID, playerCharacter);

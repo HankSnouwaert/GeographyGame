@@ -13,7 +13,7 @@ namespace WPM
         public int destination = 0;
         bool moving = false;
         public List<int> pathIndices = null;
-        public float size = 0.005f;
+        private float size = 0.0003f;
         public List<InventoryItem> inventory = new List<InventoryItem>();
         private int inventorySize = 7;
         public bool stop = false;
@@ -46,6 +46,11 @@ namespace WPM
             {
                 gameManager.GenerateTourist();
             }
+        }
+
+        public float GetSize()
+        {
+            return size;
         }
 
         private void Update()
