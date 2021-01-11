@@ -6,7 +6,6 @@ namespace WPM
 {
     public class Landmark : MappableObject
     {
-        public string landmarkName;
         public MountPoint mountPoint;
         public int cellIndex;
         public Cell cell;

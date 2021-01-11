@@ -8,14 +8,15 @@ namespace WPM
 {
     public class PlayerCharacter : MappableObject
     {
-        int travelRange = 8;
+        int travelRange = 30;
         //int distanceTraveled = 0;
         public int destination = 0;
         bool moving = false;
         public List<int> pathIndices = null;
-        public float size = 0.005f;
+        private float size = 0.0003f;
         public List<InventoryItem> inventory = new List<InventoryItem>();
-        public int inventorySize = 8;
+        private int inventorySize = 7;
+        public bool stop = false;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         //GameManager gameManager;
@@ -25,6 +26,7 @@ namespace WPM
         Dictionary<string, int> climateCosts = new Dictionary<string, int>();
         Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
+        private const int STARTING_NUMBER_OF_TOURISTS = 2;
 
         public override void Start()
         {
@@ -37,31 +39,29 @@ namespace WPM
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
-            //Create Starting Resort (THIS NEEDS TO BE CLEANED UP)
-            /*
-            InventoryResort resortPrefab = Resources.Load<InventoryResort>("Prefabs/Inventory/InventoryResort");
-            InventoryResort startingResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            startingResort.transform.parent = gameObject.transform.Find("Inventory");
-            startingResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
-            startingResort.inventoryLocation = 0;
-            inventory.Add(startingResort);
-            inventoryGUI.AddItem(startingResort);
+            gameManager.OrientOnLocation(vectorLocation);
 
-            InventoryResort secondResort = Instantiate(resortPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            secondResort.transform.parent = gameObject.transform.Find("Inventory");
-            secondResort.inventoryIcon = Resources.Load<Sprite>("Images/Resort");
-            secondResort.inventoryLocation = 1;
-            inventory.Add(secondResort);
-            inventoryGUI.AddItem(secondResort);
-            */
+            //Generate Initial Tourists
+            for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
+            {
+                gameManager.GenerateTourist();
+            }
+        }
+
+        public float GetSize()
+        {
+            return size;
         }
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("Enter key was pressed.");
-                map.FlyToLocation(vectorLocation);
+                gameManager.OrientOnLocation(vectorLocation);
+            }
+            if (Input.GetKeyDown(KeyCode.Backspace))
+            {
+                stop = true;
             }
         }
 
@@ -100,10 +100,14 @@ namespace WPM
         {
             if (index == cellLocation)
             {
-                Deselected();
+                if (moving)
+                    stop = true;
+                else
+                    Deselected();
             }
             //Attempt to move to new location
-            else if (pathIndices != null && moving == false)
+            else 
+            if (pathIndices != null && moving == false)
             {
                 destination = index;
                 //Add latlon of each hex in path to animator's path
@@ -117,11 +121,15 @@ namespace WPM
 
         public override void EndOfTurn(int turns)
         {
-           // distanceTraveled = 0;
-            if (selected) ClearCellCosts();
+            /*
+            // distanceTraveled = 0;
+            //if (selected) 
+            ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
-            if (selected) SetCellCosts();
+            //if (selected) 
+            SetCellCosts();
+            */
         }
 
         /// <summary>
@@ -133,21 +141,6 @@ namespace WPM
         List<int> DrawPath(int startCellIndex, int endCellIndex)
         {
             List<int> cellIndices;
-            /*
-            int remainingMovement = travelRange - distanceTraveled;
-            
-            //Get path to location
-            if (remainingMovement > 0)
-            {
-                cellIndices = map.FindPath(startCellIndex, endCellIndex);
-                map.ClearCells(true, false, false);
-            }
-            else
-            {
-                cellIndices = null;
-            }
-            */
-
             cellIndices = map.FindPath(startCellIndex, endCellIndex);
             map.ClearCells(true, false, false);
 
@@ -170,15 +163,18 @@ namespace WPM
                 }
             }
 
-            //if (pathCost > remainingMovement)
             if (pathCost > travelRange)
                 return null;   //Path costs more movement than is available
 
             //Path Successful
             // Color starting cell, end cell and path
-            map.SetCellColor(cellIndices, Color.gray, true);
+            if (pathCost == travelRange)
+                map.SetCellColor(cellIndices, Color.red, true);
+            else
+                map.SetCellColor(cellIndices, Color.grey, true);
             map.SetCellColor(startCellIndex, Color.green, true);
-            map.SetCellColor(endCellIndex, Color.red, true);
+            
+          //map.SetCellColor(endCellIndex, Color.red, true);
 
             return cellIndices;
         }
@@ -209,11 +205,23 @@ namespace WPM
         public void FinishedPathFinding()
         {
             pathIndices.Clear();
+            map.ClearCells(true, false, false);
             if (selected)
             {
                 map.SetCellColor(cellLocation, Color.green, true);
+                if (!gameManager.cursorOverUI && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0)
+                {
+                    OnCellEnter(gameManager.worldGlobeMap.lastHighlightedCellIndex);
+                }
             }
+
+            ClearCellCosts();
+            Array.Clear(cellsInRange, 0, travelRange);
+            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange + 1);
+            SetCellCosts();
+
             moving = false;
+            stop = false;
         }
 
         /// <summary>
@@ -231,8 +239,18 @@ namespace WPM
                 string climateAttribute = province.attrib["ClimateGroup"];
                 if (climateAttribute != "")
                 {
+                    bool cellOccupied = false;
+                    //Check if cell is occupied
+                    if (map.cells[cell].tag != null)
+                    {
+                       //Check if cell is occupied by something other than the player
+                       if(map.cells[cell].tag != GetInstanceID().ToString())
+                       {
+                            cellOccupied = true;
+                       }
+                    }
                     int cost = climateCosts[climateAttribute];
-                    if (cost == IMPASSABLE)  
+                    if (cost == IMPASSABLE || cellOccupied)  
                     {
                         map.SetCellCanCross(cell, false);
                     }
@@ -264,25 +282,47 @@ namespace WPM
             }
         }
 
-        public bool AddItem(InventoryItem item)
+        public bool AddItem(InventoryItem item, int location)
         {
-            if(inventory.Count < inventorySize)
+            inventory.Insert(location, item);
+        
+            if (inventory.Count > inventorySize)
+                RemoveItem(inventorySize);
+            /*
+            if (inventory.Count < inventorySize)
             {
-                item.inventoryLocation = inventory.Count;
+                item.inventoryLocation = 0; //inventory.Count;
                 inventory.Add(item);
-                inventoryGUI.AddItem(item);
+                inventoryGUI.AddItem(item, 0);
                 return true;
             }
             else
             {
                 return false;
             }
+            */
+            //Update inventory item locations
+            foreach(InventoryItem inventoryItem in inventory)
+            {
+                inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
+            }
+            inventoryGUI.UpdateInventory(inventory);
+
+            return true;
         }
 
         public void RemoveItem(int itemLocation)
         {
             inventory.RemoveAt(itemLocation);
-            inventoryGUI.RemoveItem(itemLocation);
+            foreach (InventoryItem inventoryItem in inventory)
+            {
+                inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
+            }
+            inventoryGUI.UpdateInventory(inventory);
+            if(inventory.Count == 0)
+            {
+                gameManager.GenerateTourist();
+            }
         }
     }
 }
