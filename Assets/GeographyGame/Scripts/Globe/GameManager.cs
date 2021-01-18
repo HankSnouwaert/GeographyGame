@@ -210,6 +210,8 @@ namespace WPM
 
         /// <summary>
         /// Called whenever a hex cell is clicked
+        /// Inputs:
+        ///     cellIndex: index of cell clicked
         /// </summary>
         void HandleOnCellClick(int cellIndex)
         {
@@ -238,8 +240,10 @@ namespace WPM
 
         /// <summary>
         /// Called whenever a hex cell is moused over
+        /// Inputs:
+        ///     cellIndex: index of cell entered
         /// </summary>
-        void HandleOnCellEnter(int index)
+        void HandleOnCellEnter(int cellIndex)
         {
             if (!cursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
@@ -259,12 +263,12 @@ namespace WPM
                     string climate = province.attrib["ClimateGroup"];
                     displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;// + System.Environment.NewLine + "Hex Index: " + index.ToString(); // + System.Environment.NewLine + "Climate: " + climate;
                     //Check if the hex is occpied by anything other than the player
-                    if (worldGlobeMap.cells[index].tag != null)
+                    if (worldGlobeMap.cells[cellIndex].tag != null)
                     {
-                        if (worldGlobeMap.cells[index].index != player.cellLocation)
+                        if (worldGlobeMap.cells[cellIndex].index != player.cellLocation)
                         {
                             //Add the landmark to the string
-                            string landmarkName = mappedObjects[worldGlobeMap.cells[index].tag].objectName;
+                            string landmarkName = mappedObjects[worldGlobeMap.cells[cellIndex].tag].objectName;
                             displayText = displayText + System.Environment.NewLine + "Landmark: " + landmarkName;
                         }
                     }
@@ -275,21 +279,26 @@ namespace WPM
                 //Run any on cell enter method for the selected object
                 if (selectedObject != null)
                 {
-                    selectedObject.OnCellEnter(index);
+                    selectedObject.OnCellEnter(cellIndex);
                 }
             } 
         }
 
         /// <summary>
         /// Called whenever the curser moves out of a hex
+        /// Inputs:
+        ///     cellIndex: index of cell clicked (Not currently used)
         /// </summary>
-        void HandleOnCellExit(int index)
+        void HandleOnCellExit(int cellIndex)
         {
             Province province = worldGlobeMap.provinceHighlighted;
             if (province == null || cursorOverUI)
                 hexInfoPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Called whenever the selected object needs to be cleared
+        /// </summary>
         public void DeselectObject()
         {
             selectedObject = null;
