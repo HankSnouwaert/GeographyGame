@@ -188,18 +188,23 @@ namespace WPM
         public void NextTurn(int turns)
         {
             globalTurnCounter = globalTurnCounter + turns;
-            touristCounter = touristCounter + turns;
             UpdateRemainingTurns(turns*-1);
+            //Run any end of turn scripts for the rest of the game's objects
             SelectableObject []
             selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
                 {
                     selectableObject.EndOfTurn(turns);
                 }
-            if(touristCounter >= touristSpawnRate)
+            //Check if a new tourist needs to appear
+            for(int i = 0; i < turns; i++)
             {
-                touristCounter = 0;
-                GenerateTourist();
+                touristCounter++;
+                if (touristCounter >= touristSpawnRate)
+                {
+                    touristCounter = 0;
+                    GenerateTourist();
+                }
             }
         }
 
@@ -888,20 +893,27 @@ namespace WPM
             currentRegion = northAmericaUSSouthEast;
         }
 
+        /// <summary> 
+        /// Called when a tourist needs to be generated and added to the palyer's inventory
+        /// </summary>
         public void GenerateTourist()
         {
+            //Intantiate tourist
             InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             tourist.transform.parent = gameObject.transform.Find("Canvas/InventoryPanel");
+            //Give tourist its image
             tourist.inventoryIcon = Resources.Load<Sprite>(touristImageFiles[touristImageIndex]);
             touristImageIndex++;
             if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
                 touristImageIndex = 0;
+            //Add tourist to player's inventory
             player.AddItem(tourist, 0);
             //Check if a region switch is needed
             touristsInCurrentRegion++;
             int rand = Random.Range(MIN_TIME_IN_REGION, MAX_TIME_IN_REGION);
             if(touristsInCurrentRegion >= rand)
             {
+                //Switch regions
                 int newRegionNeighbourIndex = Random.Range(0, currentRegion.neighbouringRegions.Count - 1);
                 currentRegion = currentRegion.neighbouringRegions[newRegionNeighbourIndex];
                 touristsInCurrentRegion = 0;
@@ -914,6 +926,9 @@ namespace WPM
             scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
+        /// <summary> 
+        /// Update the turns remaining until the game ends and check if game has ended
+        /// </summary>
         public void UpdateRemainingTurns(int turnModification)
         {
             turnsRemaining = turnsRemaining + turnModification;
@@ -925,8 +940,12 @@ namespace WPM
             scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
+        /// <summary> 
+        /// Called when game ends
+        /// </summary>
         public void GameOver()
         {
+            //Setup U.I. panels and flags
             gameOverPanel.SetActive(true);
             inventoryPanel.SetActive(false);
             dialogPanel.SetActive(false);
