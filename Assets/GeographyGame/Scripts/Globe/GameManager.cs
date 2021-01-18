@@ -38,12 +38,17 @@ namespace WPM
         private int touristCounter = 0;
         private int score = 0;
         public int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
+        private int turnsRemaining = 250;
+        private int touristImageIndex = 0;
         //Flags
         public bool cursorOverUI = false;
         private bool menuOpen = false;
+        private bool gameStart = true;
         //Game Settings
         private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn
         public int trackingTime = 10; //Number of rounds a location is remembered
+        string startingCountry = "United States of America";
+        string startingProvince = "North Carolina";
         public const int MIN_TIME_IN_REGION = 5;
         public const int MAX_TIME_IN_REGION = 10;
         //In-Game Objects
@@ -58,12 +63,10 @@ namespace WPM
         private List<TouristRegion> touristRegions = new List<TouristRegion>();
         public TouristRegion currentRegion;
         public List<TouristRegion> regionsVisited = new List<TouristRegion>();
-        
+        //Landmark Lists
         public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
         public Dictionary<string, Landmark> culturalLandmarksByName = new Dictionary<string, Landmark>();
-        string startingCountry = "United States of America";
-        string startingProvince = "North Carolina";
-        private int turnsRemaining = 250;
+        //MACROS
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         public const int POLITICAL_PROVINCE = 0;
         public const int TERRAIN = 1;
@@ -72,15 +75,9 @@ namespace WPM
         public const int NATURAL_POINT = 1;
         public const int CULTURAL_POINT = 2;
         public const string CELL_PLAYER = "Player";
-
+        //Tourist Image Management
         private string[] touristImageFiles;
-        private int touristImageIndex = 0;
         private const int NUMBER_OF_TOURIST_IMAGES = 8;
-
-        private bool debug;
-        private bool gameStart = true;
-
-        GUIStyle labelStyle, labelStyleShadow, buttonStyle, sliderStyle, sliderThumbStyle;
 
         static GameManager _instance;
 
@@ -107,27 +104,6 @@ namespace WPM
         {
             Debug.Log("Globe Loaded");
             ApplyGlobeSettings();
-            // UI Setup - non-important, only for this demo
-            labelStyle = new GUIStyle();
-            labelStyle.alignment = TextAnchor.MiddleLeft;
-            labelStyle.normal.textColor = Color.white;
-            labelStyleShadow = new GUIStyle(labelStyle);
-            labelStyleShadow.normal.textColor = Color.black;
-            buttonStyle = new GUIStyle(labelStyle);
-            buttonStyle.alignment = TextAnchor.MiddleLeft;
-            buttonStyle.normal.background = Texture2D.whiteTexture;
-            buttonStyle.normal.textColor = Color.white;
-            sliderStyle = new GUIStyle();
-            sliderStyle.normal.background = Texture2D.whiteTexture;
-            sliderStyle.fixedHeight = 4.0f;
-            sliderThumbStyle = new GUIStyle();
-            sliderThumbStyle.normal.background = Resources.Load<Texture2D>("thumb");
-            sliderThumbStyle.overflow = new RectOffset(0, 0, 8, 0);
-            sliderThumbStyle.fixedWidth = 20.0f;
-            sliderThumbStyle.fixedHeight = 12.0f;
-
-            // setup GUI resizer - only for the demo
-            GUIResizer.Init(800, 500);
 
             // Initialize Tourist Regions
             InitTouristRegions();
@@ -349,14 +325,8 @@ namespace WPM
                 {
                     foreach (Cell neighbour in worldGlobeMap.GetCellNeighbours(cell))
                     {
-                        if (neighbour.index == 36285)
-                            debug = true;
-
                         if (!neighbour.flag)
                         {
-                            if (neighbour.index == 36285)
-                                debug = true;
-
                             cells[0].Add(neighbour.index);
                             cells[distance].Add(neighbour.index);
                             neighbour.flag = true;
@@ -466,9 +436,6 @@ namespace WPM
                     landmarks[distance] = new List<string>();
                     foreach(int cellIndex in hexRing)
                     {
-                        if (cellIndex == 36285)
-                            debug = true;
-
                         landmarkIndex = worldGlobeMap.cells[cellIndex].tag;
                         if (landmarkIndex != null && cellIndex != player.cellLocation)
                         {
