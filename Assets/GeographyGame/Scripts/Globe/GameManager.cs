@@ -16,7 +16,6 @@ namespace WPM
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
-        public EventSystem eventSystem;
         public GameObject inventoryPanel;
         public GameObject dialogPanel;
         public GameObject hexInfoPanel;
@@ -24,35 +23,42 @@ namespace WPM
         public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
         public GameObject popUpPanel;
+        public InventoryGUI inventoryGUI;
         public AudioSource dropOffSuccess;
         public AudioSource dropOffFailure;
+        //Panel Messages
         private Text hexInfo;
         private Text scoreInfo;
         private Text gameOverMessage;
         private Text popUpMessage;
-        private InventoryGUI inventoryGUI;
+        //Prefabs
         private InventoryTourist touristPrefab;
-        private PlayerCharacter player;
+        //Counters
         public int globalTurnCounter = 0;
         private int touristCounter = 0;
         private int score = 0;
+        public int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
+        //Flags
         public bool cursorOverUI = false;
         private bool menuOpen = false;
-        private int touristSpawnRate = 10;
-        PlayerCharacter playerCharacter;
+        //Game Settings
+        private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn
+        public int trackingTime = 10; //Number of rounds a location is remembered
+        public const int MIN_TIME_IN_REGION = 5;
+        public const int MAX_TIME_IN_REGION = 10;
+        //In-Game Objects
+        private PlayerCharacter player;
         public SelectableObject selectedObject = null;
         public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
+        //Recent Destination Lists
         public List<int> recentProvinceDestinations = new List<int>();
         public List<string> recentLandmarkDestinations = new List<string>();
         public List<int> recentCountryDestinations = new List<int>();
-        public int trackingTime = 10;
+        //Map Regions
         private List<TouristRegion> touristRegions = new List<TouristRegion>();
         public TouristRegion currentRegion;
         public List<TouristRegion> regionsVisited = new List<TouristRegion>();
-        public int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
-        public const int MIN_TIME_IN_REGION = 5;
-        public const int MAX_TIME_IN_REGION = 10;
-        WorldMapGlobe map;
+        
         public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
         public Dictionary<string, Landmark> culturalLandmarksByName = new Dictionary<string, Landmark>();
         string startingCountry = "United States of America";
@@ -123,46 +129,35 @@ namespace WPM
             // setup GUI resizer - only for the demo
             GUIResizer.Init(800, 500);
 
-            // Get map instance to Globe API methods
-            map = WorldMapGlobe.instance;
-
             // Initialize Tourist Regions
             InitTouristRegions();
 
             // Setup grid events
-            map.OnCellEnter += HandleOnCellEnter;
-            map.OnCellExit += HandleOnCellExit;
-            map.OnCellClick += HandleOnCellClick;
+            worldGlobeMap.OnCellEnter += HandleOnCellEnter;
+            worldGlobeMap.OnCellExit += HandleOnCellExit;
+            worldGlobeMap.OnCellClick += HandleOnCellClick;
 
             //Get Prefabs
             touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
-
-            //Get scene objects
-            inventoryGUI = FindObjectOfType<InventoryGUI>();
-            player = FindObjectOfType<PlayerCharacter>();
+            
+            //Hide U.I. Panels and Get Their Text Objects
             //Dialog Panel
-            dialogPanel = GameObject.Find("/Canvas/DialogPanel");
             dialogPanel.SetActive(false);
             //Hex Info Panel
-            hexInfoPanel = GameObject.Find("/Canvas/HexInfoPanel");
             hexInfoPanel.SetActive(false);
             Transform textObject = hexInfoPanel.transform.GetChild(0);
             hexInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             hexInfoPanel.SetActive(false);
             //Score Panel
-            scorePanel = GameObject.Find("/Canvas/ScorePanel");
             textObject = scorePanel.transform.GetChild(0);
             scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
-
             //GameOver Panel
             gameOverPanel.SetActive(false);
             textObject = gameOverPanel.transform.GetChild(0);
             gameOverMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-
             //GameMenu Panel
             gameMenuPanel.SetActive(false);
-
             //PopUp Panel
             popUpPanel.SetActive(false);
             textObject = popUpPanel.transform.GetChild(0);
@@ -314,7 +309,7 @@ namespace WPM
             //NOTE: this function uses the canCross flag of cells to track which cells
             //it has checked and assumes all cells will start with it false
 
-            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
+            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
             {
                 Debug.LogWarning("Invalid input for GetCellsInRange");
                 return null;
@@ -328,7 +323,7 @@ namespace WPM
             //Add the startCell to List0
             cells[0] = new List<int>();
             cells[0].Add(startCell);
-            map.cells[startCell].flag = true;
+            worldGlobeMap.cells[startCell].flag = true;
 
             if(range > 0)
             {
@@ -336,7 +331,7 @@ namespace WPM
                 //And add them to List0
                 distance++;
                 cells[distance] = new List<int>();
-                foreach (Cell neighbour in map.GetCellNeighbours(startCell))
+                foreach (Cell neighbour in worldGlobeMap.GetCellNeighbours(startCell))
                 {
                     cells[0].Add(neighbour.index);
                     cells[distance].Add(neighbour.index);
@@ -352,7 +347,7 @@ namespace WPM
                 cells[distance] = new List<int>();
                 foreach (int cell in cells[distance - 1])
                 {
-                    foreach (Cell neighbour in map.GetCellNeighbours(cell))
+                    foreach (Cell neighbour in worldGlobeMap.GetCellNeighbours(cell))
                     {
                         if (neighbour.index == 36285)
                             debug = true;
@@ -372,7 +367,7 @@ namespace WPM
             //Lower all cell flags
             foreach (int cell in cells[0])
             {
-                map.cells[cell].flag = false;
+                worldGlobeMap.cells[cell].flag = false;
             }
             return cells;
         }
@@ -384,7 +379,7 @@ namespace WPM
 
             int range = cellRange.Length;
 
-            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
+            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
             {
                 Debug.LogWarning("Invalid input for GetProvincesInRange");
                 return null;
@@ -417,7 +412,7 @@ namespace WPM
                     foreach (int cellIndex in hexRing)
                     {
                         //Check if there is a path from the start cell to this one
-                        if (map.FindPath(startCell, cellIndex) != null)
+                        if (worldGlobeMap.FindPath(startCell, cellIndex) != null)
                         {
                             provincesInHex = GetProvicesInCell(cellIndex);
                             foreach (int provinceIndex in provincesInHex)
@@ -441,7 +436,7 @@ namespace WPM
         {
             int range = cellRange.Length;
 
-            if (range < 0 || startCell < 0 || map.cells.Count() < startCell)
+            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
             {
                 Debug.LogWarning("Invalid input for GetCellsInRange");
                 return null;
@@ -514,7 +509,7 @@ namespace WPM
             {
                 provinceOverlaps = false;
                 countryIndex = neighbor.countryIndex;
-                if (map.countries[countryIndex].name == "United States of America" || map.countries[countryIndex].name == "Canada")
+                if (worldGlobeMap.countries[countryIndex].name == "United States of America" || worldGlobeMap.countries[countryIndex].name == "Canada")
                 {
                     foreach (Region region in neighbor.regions)
                     {
@@ -554,9 +549,9 @@ namespace WPM
 
         public void OrientOnLocation(Vector3 vectorLocation)
         {
-            map.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
-            map.pitch = 0;
-            map.yaw = 0;
+            worldGlobeMap.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
+            worldGlobeMap.pitch = 0;
+            worldGlobeMap.yaw = 0;
         }
 
         void ApplyGlobeSettings()
@@ -673,17 +668,17 @@ namespace WPM
                                 if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
                                 {
                                     GameObject playerObject = Instantiate(playerPrefab);
-                                    playerCharacter = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
+                                    player = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
                                     int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
-                                    playerCharacter.cellLocation = startingCellIndex;
-                                    playerCharacter.latlon = worldGlobeMap.cells[startingCellIndex].latlon;
+                                    player.cellLocation = startingCellIndex;
+                                    player.latlon = worldGlobeMap.cells[startingCellIndex].latlon;
                                     Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
-                                    playerCharacter.vectorLocation = startingLocation;
-                                    float playerSize = playerCharacter.GetSize();
+                                    player.vectorLocation = startingLocation;
+                                    float playerSize = player.GetSize();
                                     worldGlobeMap.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
-                                    string playerID = playerCharacter.GetInstanceID().ToString();
+                                    string playerID = player.GetInstanceID().ToString();
                                     worldGlobeMap.cells[startingCellIndex].tag = playerID;
-                                    mappedObjects.Add(playerID, playerCharacter);
+                                    mappedObjects.Add(playerID, player);
                                 }
                                 if (mountPoint.type == CULTURAL_POINT ) //&& loadedMapSettings.culturalLandmarks)
                                 {
