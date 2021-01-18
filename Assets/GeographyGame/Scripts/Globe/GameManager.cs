@@ -156,16 +156,16 @@ namespace WPM
                 gameStart = false;
                 ClosePopUp();
             }
-
+            //Open and close in game menu
             if (Input.GetKeyDown("escape"))
             {
                 if (gameMenuPanel.activeSelf)
                     CloseGameMenu();
-                //popUpPanel.SetActive(false);
                 else
                     OpenGameMenu();
             }
 
+            //Check for camera movement
             if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
                 worldGlobeMap.DragTowards(Vector2.up);
             if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
@@ -175,16 +175,21 @@ namespace WPM
             if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
                 worldGlobeMap.DragTowards(Vector2.right);
 
-
+            //Check if player is clicking out of a popup
             if (Input.GetMouseButton(0) && popUpPanel.activeSelf)
                 popUpPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Called whenever a new turn happens in game. Multiple turns can pass at once.
+        /// Inputs:
+        ///     turns: How many turns are passing
+        /// </summary>
         public void NextTurn(int turns)
         {
             globalTurnCounter = globalTurnCounter + turns;
             touristCounter = touristCounter + turns;
-            UpdateTurns(turns*-1);
+            UpdateRemainingTurns(turns*-1);
             SelectableObject []
             selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
@@ -909,12 +914,15 @@ namespace WPM
             scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
-        public void UpdateTurns(int turnModification)
+        public void UpdateRemainingTurns(int turnModification)
         {
             turnsRemaining = turnsRemaining + turnModification;
-            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
             if (turnsRemaining <= 0)
+            {
+                turnsRemaining = 0;
                 GameOver();
+            }
+            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
         public void GameOver()
