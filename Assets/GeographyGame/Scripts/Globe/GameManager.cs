@@ -102,10 +102,7 @@ namespace WPM
 
         void Start()
         {
-            Debug.Log("Globe Loaded");
             ApplyGlobeSettings();
-
-            // Initialize Tourist Regions
             InitTouristRegions();
 
             // Setup grid events
@@ -153,7 +150,7 @@ namespace WPM
 
         void Update()
         {
-            //Code that needs to be run after the first step of the game
+            //This is where you run code that needs to be run after the first step of the game
             if (gameStart)
             {
                 gameStart = false;
@@ -162,8 +159,9 @@ namespace WPM
 
             if (Input.GetKeyDown("escape"))
             {
-                if (popUpPanel.activeSelf)
-                    popUpPanel.SetActive(false);
+                if (gameMenuPanel.activeSelf)
+                    CloseGameMenu();
+                //popUpPanel.SetActive(false);
                 else
                     OpenGameMenu();
             }
