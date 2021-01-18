@@ -208,11 +208,13 @@ namespace WPM
             }
         }
 
+        /// <summary>
+        /// Called whenever a hex cell is clicked
+        /// </summary>
         void HandleOnCellClick(int cellIndex)
         {
-            if (!cursorOverUI  && !menuOpen)
+            if (!cursorOverUI && !menuOpen)
             {
-                Debug.Log("Clicked cell: " + cellIndex);
                 if (selectedObject == null)
                 {
                     if (worldGlobeMap.cells[cellIndex].tag != null)
@@ -234,15 +236,20 @@ namespace WPM
             }
         }
 
+        /// <summary>
+        /// Called whenever a hex cell is moused over
+        /// </summary>
         void HandleOnCellEnter(int index)
         {
             if (!cursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
+                //Get the hex's province and country
                 Province province = worldGlobeMap.provinceHighlighted;
                 Country country = worldGlobeMap.countryHighlighted;
                 string displayText;
                 if (province != null)
                 {
+                    //Create the string of the hex's info
                     string nameType;
                     if (country.name == "United States of America")
                         nameType = "State: ";
@@ -250,20 +257,22 @@ namespace WPM
                         nameType = "Province: ";
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["ClimateGroup"];
-                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince + System.Environment.NewLine + "Hex Index: " + index.ToString(); // + System.Environment.NewLine + "Climate: " + climate;
+                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;// + System.Environment.NewLine + "Hex Index: " + index.ToString(); // + System.Environment.NewLine + "Climate: " + climate;
+                    //Check if the hex is occpied by anything other than the player
                     if (worldGlobeMap.cells[index].tag != null)
                     {
                         if (worldGlobeMap.cells[index].index != player.cellLocation)
                         {
+                            //Add the landmark to the string
                             string landmarkName = mappedObjects[worldGlobeMap.cells[index].tag].objectName;
                             displayText = displayText + System.Environment.NewLine + "Landmark: " + landmarkName;
                         }
                     }
-
+                    //Display the string
                     hexInfoPanel.SetActive(true);
                     hexInfo.text = displayText;
                 }
-
+                //Run any on cell enter method for the selected object
                 if (selectedObject != null)
                 {
                     selectedObject.OnCellEnter(index);
@@ -271,6 +280,9 @@ namespace WPM
             } 
         }
 
+        /// <summary>
+        /// Called whenever the curser moves out of a hex
+        /// </summary>
         void HandleOnCellExit(int index)
         {
             Province province = worldGlobeMap.provinceHighlighted;
