@@ -306,16 +306,18 @@ namespace WPM
 
         /// <summary> 
         /// Get all cells within a certain range (measured in cells) of a target cell
-        /// Returns an array of lists, with List0 containing all cells within range
-        /// and ListX containing the cells X number of cells away from the target cell
+        /// Inputs:
+        ///     startCell:  Target cell the range is being measured from
+        ///     range:      The range (in cells) out from startCell that the method increments through
+        /// Outputs:
+        ///     cells:  An array of lists, with List0 containing all cells within range
+        ///             and ListX containing the cells X number of cells away from the target cell
         /// </summary>
         public List<int>[] GetCellsInRange(int startCell, int range = 0)
         {
-            //NOTE: this function uses the canCross flag of cells to track which cells
-            //it has checked and assumes all cells will start with it false
-
             if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
             {
+                //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetCellsInRange");
                 return null;
             }
@@ -324,7 +326,6 @@ namespace WPM
             List<int>[] cells = new List<int>[range+1]; //cells is an array of lists with each list other than 0 containing 
                                                         //the ring of hexes at that distance.  List 0 contains
                                                         //all hexes at every distance
-
             //Add the startCell to List0
             cells[0] = new List<int>();
             cells[0].Add(startCell);
@@ -371,22 +372,29 @@ namespace WPM
             return cells;
         }
 
+        /// <summary> 
+        /// Get all provinces within a certain range (measured in cells) of a target cell
+        /// Inputs:
+        ///     startCell:  Target cell the range is being measured from
+        ///     range:      The range (in cells) out from startCell that the method increments through
+        /// Outputs:
+        ///     provinces:  An array of lists, with ListX containing the provinces reachable within
+        ///                 X number of cells away from the target cell
+        /// </summary>
         public List<int>[] GetProvincesInRange(int startCell, List<int>[] cellRange)
         {
-            //NOTE: this function uses the canCross flag of cells to track which cells
-            //it has checked and assumes all cells will start with it false
-
             int range = cellRange.Length;
 
             if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
             {
+                //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetProvincesInRange");
                 return null;
             }
 
-            int distance = 0;                                          //distance measures how many rings of hexes we've moved out
-            List<int>[] provinces = new List<int>[range + 1];      //provinces is an array of lists with each list the provinces that can be reached at that distance.  
-            List<int> foundProvinces = new List<int>();
+            int distance = 0;                                      //distance measures how many rings of hexes we've moved out
+            List<int>[] provinces = new List<int>[range + 1];      //provinces is an array of lists with each list containing 
+            List<int> foundProvinces = new List<int>();             //the provinces that can be reached at that distance.  
             List<int> provincesInHex = new List<int>();
 
             bool startHex = true;
@@ -423,27 +431,36 @@ namespace WPM
                                     provinces[distance].Add(provinceIndex);
                                 }
                             }
-                        }
-                        
+                        } 
                     }
                 }
             }
             return provinces;
         }
 
+        /// <summary> 
+        /// Get all landmarks within a certain range (measured in cells) of a target cell
+        /// Inputs:
+        ///     startCell:  Target cell the range is being measured from
+        ///     range:      The range (in cells) out from startCell that the method increments through
+        /// Outputs:
+        ///     landmarks:  An array of lists, with ListX containing the landmarks within
+        ///                 X number of cells from the target cell
+        /// </summary>
         public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
         {
             int range = cellRange.Length;
 
             if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
             {
+                //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetCellsInRange");
                 return null;
             }
 
-            int distance = 0;
-            List<string>[] landmarks = new List<string>[range + 1];
-            landmarks[0] = new List<string>();
+            int distance = 0;                                           //distance measures how many rings of hexes we've moved out
+            List<string>[] landmarks = new List<string>[range + 1];     //landmarks is an array of lists with each list containing 
+            landmarks[0] = new List<string>();                          //the landmarks that can be reached at that distance.  
             string landmarkIndex;
 
             bool startHex = true;
@@ -477,6 +494,13 @@ namespace WPM
 
         }
 
+        /// <summary> 
+        /// Get all provinces that overlap with a given cell
+        /// Inputs:
+        ///     cellIndex:  Index of the cell in question
+        /// Outputs:
+        ///     provinces:  An array of provinces that overlap with the cell in quesiton
+        /// </summary>
         public List<int> GetProvicesInCell(int cellIndex)
         {
             List<int> provinces = new List<int>();
@@ -491,13 +515,7 @@ namespace WPM
                 //Get closest province if hex is not centered on one
                 provinceIndex = worldGlobeMap.GetProvinceNearPoint(worldGlobeMap.cells[cellIndex].sphereCenter);
             }
-            //Check country of province
-            //countryIndex = worldGlobeMap.provinces[provinceIndex].countryIndex;
-            //if (map.countries[countryIndex].name == "United States of America" || map.countries[countryIndex].name == "Canada")
-           // {
-                //Add province to list
-                provinces.Add(provinceIndex);
-           // }
+            provinces.Add(provinceIndex);
             //Check to see if neighbours of province overlap with cell
             List<Province> provinceNeighbours = worldGlobeMap.ProvinceNeighbours(provinceIndex);
             bool provinceOverlaps;
@@ -505,6 +523,7 @@ namespace WPM
             {
                 provinceOverlaps = false;
                 countryIndex = neighbor.countryIndex;
+                //Right now we are only looking for provinces for the US and Canada
                 if (worldGlobeMap.countries[countryIndex].name == "United States of America" || worldGlobeMap.countries[countryIndex].name == "Canada")
                 {
                     foreach (Region region in neighbor.regions)
@@ -949,6 +968,8 @@ namespace WPM
 
         /// <summary> 
         /// Update the turns remaining until the game ends and check if game has ended
+        /// Inputs:
+        ///     turnModification: The number of turns the remaining turns are being updated by
         /// </summary>
         public void UpdateRemainingTurns(int turnModification)
         {
