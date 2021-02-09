@@ -458,6 +458,17 @@ namespace WPM
                 return null;
             }
 
+            List<int>[] countryIndexes = new List<int>[range + 1];      //provinces is an array of lists with each list containing 
+            List<int> foundCountryIndexes = new List<int>();            //the provinces that can be reached at that distance. 
+
+            List<int>[] provinceIndexes = GetProvincesInRange(startCell, cellRange);
+
+            //Create lists of the countries within range based off of the provinces in range
+            int i = 0;
+            Province province;
+            foreach(List<int> indexList in countryIndexes)
+            {
+                foreach(int provinceIndex in provinceIndexes[i])
                 {
                     province = worldGlobeMap.provinces[provinceIndex];
                     if (!foundCountryIndexes.Contains(province.countryIndex))
