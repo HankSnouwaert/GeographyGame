@@ -439,14 +439,48 @@ namespace WPM
         }
 
         /// <summary> 
-        /// Get all landmarks within a certain range (measured in cells) of a target cell
+        /// Get all countries within a certain range (measured in cells) of a target cell
         /// Inputs:
         ///     startCell:  Target cell the range is being measured from
         ///     range:      The range (in cells) out from startCell that the method increments through
         /// Outputs:
-        ///     landmarks:  An array of lists, with ListX containing the landmarks within
-        ///                 X number of cells from the target cell
+        ///     countryIndexes:  An array of lists, with ListX containing the countries reachable within
+        ///                 X number of cells away from the target cell
         /// </summary>
+        public List<int>[] GetCountriesInRange(int startCell, List<int>[] cellRange)
+        {
+            int range = cellRange.Length;
+
+            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
+            {
+                //This will need to be replaced with an error message
+                Debug.LogWarning("Invalid input for GetProvincesInRange");
+                return null;
+            }
+
+                {
+                    province = worldGlobeMap.provinces[provinceIndex];
+                    if (!foundCountryIndexes.Contains(province.countryIndex))
+                    {
+                        foundCountryIndexes.Add(province.countryIndex);
+                        countryIndexes[i].Add(province.countryIndex);
+                    }
+                }
+                i++;
+            }
+
+            return countryIndexes;
+        }
+
+        /// <summary> 
+            /// Get all landmarks within a certain range (measured in cells) of a target cell
+            /// Inputs:
+            ///     startCell:  Target cell the range is being measured from
+            ///     range:      The range (in cells) out from startCell that the method increments through
+            /// Outputs:
+            ///     landmarks:  An array of lists, with ListX containing the landmarks within
+            ///                 X number of cells from the target cell
+            /// </summary>
         public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
         {
             int range = cellRange.Length;
@@ -503,54 +537,89 @@ namespace WPM
         /// </summary>
         public List<int> GetProvicesInCell(int cellIndex)
         {
-            List<int> provinces = new List<int>();
+            List<int> foundProvinceIndexes = new List<int>();
+            List<int> checkedProvinceIndexes = new List<int>();
             int provinceIndex;
             int countryIndex;
             int neighborIndex;
 
-            provinceIndex = worldGlobeMap.GetProvinceIndex(worldGlobeMap.cells[cellIndex].sphereCenter);
-            //Check if hex is centered on a province
-            if (provinceIndex == -1)
+            //Create a list of points including each vertex of the cell and its center point
+            List<Vector3> cellPoints = worldGlobeMap.cells[cellIndex].vertices.ToList();
+            cellPoints.Add(worldGlobeMap.cells[cellIndex].sphereCenter);
+
+            foreach(Vector3 cellPoint in cellPoints)
             {
-                //Get closest province if hex is not centered on one
-                provinceIndex = worldGlobeMap.GetProvinceNearPoint(worldGlobeMap.cells[cellIndex].sphereCenter);
-            }
-            provinces.Add(provinceIndex);
-            //Check to see if neighbours of province overlap with cell
-            List<Province> provinceNeighbours = worldGlobeMap.ProvinceNeighbours(provinceIndex);
-            bool provinceOverlaps;
-            foreach (Province neighbor in provinceNeighbours)
-            {
-                provinceOverlaps = false;
-                countryIndex = neighbor.countryIndex;
-                //Right now we are only looking for provinces for the US and Canada
-                if (worldGlobeMap.countries[countryIndex].name == "United States of America" || worldGlobeMap.countries[countryIndex].name == "Canada")
+                provinceIndex = worldGlobeMap.GetProvinceIndex(cellPoint);
+                //Check if cell point is on a province
+                if (provinceIndex == -1)
                 {
-                    foreach (Region region in neighbor.regions)
+                    //Get closest province to point if it is not centered on one
+                    provinceIndex = worldGlobeMap.GetProvinceNearPoint(cellPoint);
+                }
+                //Add the province, if it is not already in the province list
+                if (!foundProvinceIndexes.Contains(provinceIndex))
+                    foundProvinceIndexes.Add(provinceIndex);
+
+                //Check to see if neighbours of province overlap with cell
+                List<Province> provinceNeighbours = worldGlobeMap.ProvinceNeighbours(provinceIndex);
+                bool provinceOverlaps;
+                foreach (Province neighbor in provinceNeighbours)
+                {
+                    countryIndex = neighbor.countryIndex;
+                    neighborIndex = worldGlobeMap.GetProvinceIndex(countryIndex, neighbor.name);
+                    //Make sure you haven't already checked the province, this saves time
+                    if (!checkedProvinceIndexes.Contains(neighborIndex))
                     {
-                        foreach (Vector3 spherePoint in region.spherePoints)
+                        checkedProvinceIndexes.Add(neighborIndex);
+                        provinceOverlaps = false;
+
+                        foreach (Region region in neighbor.regions)
                         {
-                            if (worldGlobeMap.GetCellIndex(spherePoint) == cellIndex)
+                            foreach (Vector3 spherePoint in region.spherePoints)
                             {
-                                provinceOverlaps = true;
-                                break;
+                                if (worldGlobeMap.GetCellIndex(spherePoint) == cellIndex)
+                                {
+                                    provinceOverlaps = true;
+                                    break;
+                                }
                             }
+                            if (provinceOverlaps)
+                                break;
                         }
                         if (provinceOverlaps)
-                            break;
-                    }
-                    if (provinceOverlaps)
-                    {
-                        //Check if neighbour has already been found
-                        neighborIndex = worldGlobeMap.GetProvinceIndex(countryIndex, neighbor.name);
-                        provinces.Add(neighborIndex);
+                        {
+                            foundProvinceIndexes.Add(neighborIndex);
+                        }
                     }
                 }
             }
-            return provinces;
+           
+            return foundProvinceIndexes;
         }
 
-        Landmark GetLandmarkInCell(int cellIndex)
+        /// <summary> 
+        /// Get all countries that overlap with a given cell
+        /// Inputs:
+        ///     cellIndex:  Index of the cell in question
+        /// Outputs:
+        ///     countryIndexes:  An array of countries that overlap with the cell in quesiton
+        /// </summary>
+        public List<int> GetCountriesInCell(int cellIndex)
+        {
+            List<int> provinceIndexes = GetProvicesInCell(cellIndex);
+            List<int> countryIndexes = GetCountriesFromProvinces(provinceIndexes);
+
+            return countryIndexes;
+        }
+
+        /// <summary> 
+        /// Get any landmark that exists in a given cell
+        /// Inputs:
+        ///     cellIndex: Index of the cell in question
+        /// Outputs:
+        ///     landmark: The landmark in the cell in question
+        /// </summary>
+        public Landmark GetLandmarkInCell(int cellIndex)
         {
             Landmark landmark = null;
             string objectInCell = worldGlobeMap.cells[cellIndex].tag;
@@ -558,8 +627,29 @@ namespace WPM
             {
                 landmark = culturalLandmarks[objectInCell];
             }
-
             return landmark; 
+        }
+
+        /// <summary>
+        ///  Given a list of province indexes, find all the countries they contain
+        /// </summary>
+        /// <param name="provinceIndexes"></param> The list of province indexes>
+        /// <returns></returns> 
+        public List<int> GetCountriesFromProvinces(List<int> provinceIndexes)
+        {
+            List<int> countryIndexes = new List<int>();
+            int countryIndex;
+            Province province;
+            foreach (int provinceIndex in provinceIndexes)
+            {
+                province = worldGlobeMap.provinces[provinceIndex];
+                countryIndex = province.countryIndex;
+                if (!countryIndexes.Contains(countryIndex))
+                {
+                    countryIndexes.Add(countryIndex);
+                }
+            }
+            return countryIndexes;
         }
 
         public void OrientOnLocation(Vector3 vectorLocation)
@@ -930,7 +1020,7 @@ namespace WPM
 
             #endregion
 
-            currentRegion = northAmericaUSSouthEast;
+            currentRegion = northAmericaCentralAmerica; //northAmericaUSSouthEast;
         }
 
         /// <summary> 

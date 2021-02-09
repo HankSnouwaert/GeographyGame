@@ -88,7 +88,7 @@ namespace WPM
                     landmarkChoices.Add(landmark);
                 }
             }
-            //Get possible Landmarks
+            //Get possible Countries
             foreach (int country in gameManager.currentRegion.countries)
             {
                 timeMultiplier = gameManager.recentCountryDestinations.IndexOf(country);
@@ -175,7 +175,6 @@ namespace WPM
             Cell playerCell = gameManager.worldGlobeMap.cells[player.cellLocation];
             switch (destinationType)
             {
-
                 case PROVINCE:
                     List<int> selectedProvinces = gameManager.GetProvicesInCell(player.cellLocation);
                     bool correctProvince = false;
@@ -199,7 +198,6 @@ namespace WPM
                         gameManager.DropOff(false);
                     }
                         
-
                     break;
 
                 case LANDMARK:
@@ -242,6 +240,29 @@ namespace WPM
                        
                     break;
                 case COUNTRY:
+                    List<int> selectedCountries = gameManager.GetCountriesInCell(player.cellLocation);
+                    bool correctCountry = false;
+                    foreach (int countryIndex in selectedCountries)
+                    {
+                        if (gameManager.worldGlobeMap.countries[countryIndex] == countryDestination)
+                        {
+                            Deselected();
+                            //Remove Tourist from Inventory
+                            player.RemoveItem(inventoryLocation);
+                            gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
+                            gameManager.cursorOverUI = false;
+                            correctCountry = true;
+                            gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                            gameManager.DropOff(true);
+                        }
+                    }
+                    if (correctCountry == false)
+                    {
+                        gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+                        gameManager.DropOff(false);
+                    }
+                    break;
+                    /*
                     int selectedCountryIndex = gameManager.worldGlobeMap.GetCountryIndex(playerCell.sphereCenter);
                     if (gameManager.worldGlobeMap.countries[selectedCountryIndex] == countryDestination)
                     {
@@ -283,7 +304,7 @@ namespace WPM
                         }
                     }
                     break;
-
+                    */
                 default:
                     break;
             }
