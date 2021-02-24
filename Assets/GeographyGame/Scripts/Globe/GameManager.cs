@@ -42,6 +42,7 @@ namespace WPM
         private int touristImageIndex = 0;
         //Flags
         public bool cursorOverUI = false;
+        public bool cursorOverSelectable = false;
         private bool menuOpen = false;
         private bool gameStart = true;
         //Game Settings
@@ -219,6 +220,7 @@ namespace WPM
             {
                 if (selectedObject == null)
                 {
+                    /*
                     if (worldGlobeMap.cells[cellIndex].tag != null)
                     {
                         //A new mappable object is being selected
@@ -229,6 +231,8 @@ namespace WPM
                     {
                         //Nothing is selected, and an empty hex is being clicked
                     }
+                    */
+                    //Nothing needs be done, if there is an object it will select itself
                 }
                 else
                 {
@@ -245,7 +249,7 @@ namespace WPM
         /// </summary>
         void HandleOnCellEnter(int cellIndex)
         {
-            if (!cursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
+            if (!cursorOverUI && !cursorOverSelectable && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
                 //Get the hex's province and country
                 Province province = worldGlobeMap.provinceHighlighted;
@@ -811,7 +815,10 @@ namespace WPM
                                     landmarkComponent.cell.canCross = false;
                                     worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, 0.0f, true, true);
                                     string landmarkID = landmarkComponent.GetInstanceID().ToString();
-                                    worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
+                                    if (worldGlobeMap.cells[landmarkComponent.cellIndex].tag == null)
+                                        worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
+                                    else
+                                        worldGlobeMap.cells[landmarkComponent.cellIndex].tag = worldGlobeMap.cells[landmarkComponent.cellIndex].tag + "," + landmarkID;
                                     mappedObjects.Add(landmarkID, landmarkComponent);
                                     culturalLandmarks.Add(landmarkID, landmarkComponent);
                                     culturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);

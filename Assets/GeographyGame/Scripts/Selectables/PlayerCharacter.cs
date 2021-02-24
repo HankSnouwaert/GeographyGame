@@ -65,6 +65,11 @@ namespace WPM
             }
         }
 
+        public override void OnMouseUpAsButton()
+        {
+            base.OnMouseUpAsButton();
+        }
+
         public override void Selected()
         {
             base.Selected();
@@ -102,8 +107,8 @@ namespace WPM
             {
                 if (moving)
                     stop = true;
-                else
-                    Deselected();
+               // else
+                   // Deselected();
             }
             //Attempt to move to new location
             else 

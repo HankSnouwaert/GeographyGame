@@ -20,6 +20,29 @@ namespace WPM
             player = FindObjectOfType<PlayerCharacter>();
         }
 
+        public virtual void OnMouseUpAsButton()
+        {
+            if (gameManager.selectedObject == null)
+                Selected();
+            else
+            {
+                if (gameManager.selectedObject == this)
+                    Deselected();
+                else
+                    gameManager.selectedObject.ObjectSelected(this);
+            }   
+        }
+
+        public virtual void OnMouseEnter()
+        {
+            gameManager.cursorOverSelectable = true;
+        }
+
+        public virtual void OnMouseExit()
+        {
+            gameManager.cursorOverSelectable = false;
+        }
+
         public virtual void Selected()
         {
             if (gameManager.selectedObject != null)
@@ -35,6 +58,11 @@ namespace WPM
             if (gameManager.selectedObject == this)
                 gameManager.selectedObject = null;
             selected = false;
+        }
+
+        public virtual void ObjectSelected(SelectableObject selectedObject)
+        {
+            
         }
 
         public virtual void MouseEnter()
