@@ -159,6 +159,7 @@ namespace WPM
                 gameStart = false;
                 ClosePopUp();
             }
+            UpdateHexInfoPanel();
             //Open and close in game menu
             if (Input.GetKeyDown("escape"))
             {
@@ -253,8 +254,7 @@ namespace WPM
         ///     cellIndex: index of cell entered
         /// </summary>
         void HandleOnCellEnter(int cellIndex)
-        {
-            UpdateHexInfoPanel();  
+        { 
             //Run any on cell enter method for the selected object
             if (selectedObject != null)
             {
