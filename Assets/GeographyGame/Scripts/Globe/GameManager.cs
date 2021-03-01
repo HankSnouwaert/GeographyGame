@@ -43,6 +43,7 @@ namespace WPM
         //Flags
         public bool cursorOverUI = false;
         public bool cursorOverSelectable = false;
+        public bool newObjectSelected = false;
         private bool menuOpen = false;
         private bool gameStart = true;
         //Game Settings
@@ -55,6 +56,7 @@ namespace WPM
         //In-Game Objects
         private PlayerCharacter player;
         public SelectableObject selectedObject = null;
+        public SelectableObject highlighedObject = null;
         public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
         //Recent Destination Lists
         public List<int> recentProvinceDestinations = new List<int>();
@@ -237,7 +239,10 @@ namespace WPM
                 else
                 {
                     //A hex is being clicked while an object is selected
-                    selectedObject.OnCellClick(cellIndex);
+                    if (newObjectSelected)
+                        newObjectSelected = false;  //Make sure your not clicking on a new object
+                    else
+                        selectedObject.OnCellClick(cellIndex);
                 }
             }
         }
@@ -249,7 +254,32 @@ namespace WPM
         /// </summary>
         void HandleOnCellEnter(int cellIndex)
         {
-            if (!cursorOverUI && !cursorOverSelectable && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
+            UpdateHexInfoPanel();  
+            //Run any on cell enter method for the selected object
+            if (selectedObject != null)
+            {
+                if (cursorOverSelectable)
+                    selectedObject.OnSelectableEnter(highlighedObject);
+                else
+                    selectedObject.OnCellEnter(cellIndex);
+            }
+        }
+
+        /// <summary>
+        /// Called whenever the curser moves out of a hex
+        /// Inputs:
+        ///     cellIndex: index of cell clicked (Not currently used)
+        /// </summary>
+        void HandleOnCellExit(int cellIndex)
+        {
+            Province province = worldGlobeMap.provinceHighlighted;
+            if (province == null || cursorOverUI)
+                hexInfoPanel.SetActive(false);
+        }
+
+        public void UpdateHexInfoPanel()
+        {
+            if (!cursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
                 //Get the hex's province and country
                 Province province = worldGlobeMap.provinceHighlighted;
@@ -265,39 +295,22 @@ namespace WPM
                         nameType = "Province: ";
                     string politicalProvince = province.attrib["PoliticalProvince"];
                     string climate = province.attrib["ClimateGroup"];
-                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;// + System.Environment.NewLine + "Hex Index: " + index.ToString(); // + System.Environment.NewLine + "Climate: " + climate;
-                    //Check if the hex is occpied by anything other than the player
-                    if (worldGlobeMap.cells[cellIndex].tag != null)
+                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;
+
+                    //Check to see if cursor is over a landmark
+                    if (highlighedObject != null && highlighedObject != player)
                     {
-                        if (worldGlobeMap.cells[cellIndex].index != player.cellLocation)
+                        if (highlighedObject.objectName != null)
                         {
                             //Add the landmark to the string
-                            string landmarkName = mappedObjects[worldGlobeMap.cells[cellIndex].tag].objectName;
-                            displayText = displayText + System.Environment.NewLine + "Landmark: " + landmarkName;
+                            displayText = displayText + System.Environment.NewLine + "Landmark: " + highlighedObject.objectName;
                         }
                     }
                     //Display the string
                     hexInfoPanel.SetActive(true);
                     hexInfo.text = displayText;
                 }
-                //Run any on cell enter method for the selected object
-                if (selectedObject != null)
-                {
-                    selectedObject.OnCellEnter(cellIndex);
-                }
-            } 
-        }
-
-        /// <summary>
-        /// Called whenever the curser moves out of a hex
-        /// Inputs:
-        ///     cellIndex: index of cell clicked (Not currently used)
-        /// </summary>
-        void HandleOnCellExit(int cellIndex)
-        {
-            Province province = worldGlobeMap.provinceHighlighted;
-            if (province == null || cursorOverUI)
-                hexInfoPanel.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -496,7 +509,7 @@ namespace WPM
             ///     landmarks:  An array of lists, with ListX containing the landmarks within
             ///                 X number of cells from the target cell
             /// </summary>
-        public List<string>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
+        public List<Landmark>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
         {
             int range = cellRange.Length;
 
@@ -507,34 +520,33 @@ namespace WPM
                 return null;
             }
 
+            List<Landmark> landmarksFound = new List<Landmark>();
+            List<Landmark> landmarksInCell;
             int distance = 0;                                           //distance measures how many rings of hexes we've moved out
-            List<string>[] landmarks = new List<string>[range + 1];     //landmarks is an array of lists with each list containing 
-            landmarks[0] = new List<string>();                          //the landmarks that can be reached at that distance.  
-            string landmarkIndex;
+            List<Landmark>[] landmarks = new List<Landmark>[range + 1];     //landmarks is an array of lists with each list containing 
+            landmarks[0] = new List<Landmark>();                          //the landmarks that can be reached at that distance.  
 
             bool startHex = true;
             foreach (List<int> hexRing in cellRange)
             {
                 if (startHex)
                 {
-                    //Get landmark at start hex
-                    landmarkIndex = worldGlobeMap.cells[startCell].tag;
-                    if (landmarkIndex != null && startCell != player.cellLocation)
-                    {
-                        landmarks[0].Add(landmarkIndex);
-                    }
+                    //Get landmarks at start hex
+                    landmarksInCell = GetLandmarksInCell(startCell);
                     startHex = false;
+                    landmarks[0] = landmarksInCell;
                 }
                 else
                 {
                     distance++;
-                    landmarks[distance] = new List<string>();
+                    landmarks[distance] = new List<Landmark>();
                     foreach(int cellIndex in hexRing)
                     {
-                        landmarkIndex = worldGlobeMap.cells[cellIndex].tag;
-                        if (landmarkIndex != null && cellIndex != player.cellLocation)
+                        landmarksInCell = GetLandmarksInCell(cellIndex);
+                        foreach(Landmark landmark in landmarksInCell)
                         {
-                            landmarks[distance].Add(landmarkIndex);
+                            if (!landmarksFound.Contains(landmark))
+                                landmarks[distance].Add(landmark);
                         }
                     }
                 }
@@ -628,21 +640,40 @@ namespace WPM
         }
 
         /// <summary> 
-        /// Get any landmark that exists in a given cell
+        /// Get all landmarks located in a given cell
         /// Inputs:
         ///     cellIndex: Index of the cell in question
         /// Outputs:
-        ///     landmark: The landmark in the cell in question
+        ///     landmarks: The landmarks in the cell in question
         /// </summary>
-        public Landmark GetLandmarkInCell(int cellIndex)
+        public List<Landmark> GetLandmarksInCell(int cellIndex)
         {
-            Landmark landmark = null;
-            string objectInCell = worldGlobeMap.cells[cellIndex].tag;
-            if (objectInCell != null && objectInCell != "")
+            List<Landmark> landmarks = new List<Landmark>();
+            foreach (MappableObject mappableObject in worldGlobeMap.cells[cellIndex].occupants)
             {
-                landmark = culturalLandmarks[objectInCell];
+                if(mappableObject is Landmark)
+                {
+                    Landmark castedLandmark = mappableObject as Landmark;
+                    landmarks.Add(castedLandmark);
+                }
             }
-            return landmark; 
+            
+            /*
+            string objectsInCell = worldGlobeMap.cells[cellIndex].tag;
+            if (objectsInCell != null && objectsInCell != "")
+            {
+                if (objectsInCell.Contains(","))
+                {
+
+                }
+                else
+                {
+                    landmarks[0] = culturalLandmarks[objectsInCell];
+                }
+                
+            }
+            */
+            return landmarks; 
         }
 
         /// <summary>
@@ -672,6 +703,15 @@ namespace WPM
             worldGlobeMap.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
             worldGlobeMap.pitch = 0;
             worldGlobeMap.yaw = 0;
+        }
+
+        public void SetHighlightedObject(SelectableObject selectableObject)
+        {
+            highlighedObject = selectableObject;
+            if (selectableObject != null)
+                cursorOverSelectable = true;
+            else
+                cursorOverSelectable = false;
         }
 
         void ApplyGlobeSettings()
@@ -797,7 +837,8 @@ namespace WPM
                                     float playerSize = player.GetSize();
                                     worldGlobeMap.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
                                     string playerID = player.GetInstanceID().ToString();
-                                    worldGlobeMap.cells[startingCellIndex].tag = playerID;
+                                    //worldGlobeMap.cells[startingCellIndex].tag = playerID;
+                                    worldGlobeMap.cells[startingCellIndex].occupants.Add(player);
                                     mappedObjects.Add(playerID, player);
                                 }
                                 if (mountPoint.type == CULTURAL_POINT ) //&& loadedMapSettings.culturalLandmarks)
@@ -813,12 +854,16 @@ namespace WPM
                                     landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                                     landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
                                     landmarkComponent.cell.canCross = false;
-                                    worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, 0.0f, true, true);
+                                    worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
+                                    
                                     string landmarkID = landmarkComponent.GetInstanceID().ToString();
+                                    /*
                                     if (worldGlobeMap.cells[landmarkComponent.cellIndex].tag == null)
                                         worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
                                     else
                                         worldGlobeMap.cells[landmarkComponent.cellIndex].tag = worldGlobeMap.cells[landmarkComponent.cellIndex].tag + "," + landmarkID;
+                                    */
+                                    worldGlobeMap.cells[landmarkComponent.cellIndex].occupants.Add(landmarkComponent);
                                     mappedObjects.Add(landmarkID, landmarkComponent);
                                     culturalLandmarks.Add(landmarkID, landmarkComponent);
                                     culturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);
@@ -1038,7 +1083,7 @@ namespace WPM
 
             #endregion
 
-            currentRegion = northAmericaCentralAmerica; //northAmericaUSSouthEast;
+            currentRegion = northAmericaUSSouthEast;
         }
 
         /// <summary> 

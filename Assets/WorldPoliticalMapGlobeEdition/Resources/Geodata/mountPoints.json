@@ -14,9 +14,9 @@
 		"Country":"United States of America",
 		"Province":3913,
 		"Type":2,
-		"X":1892457,
-		"Y":1572729,
-		"Z":441722,
+		"X":1903613,
+		"Y":1559776,
+		"Z":439714,
 		"Attrib":null
 	},
 	{
@@ -144,9 +144,59 @@
 		"Country":"Panama",
 		"Province":2695,
 		"Type":2,
-		"X":2429085,
+		"X":2429084,
 		"Y":402943,
-		"Z":432642,
+		"Z":432640,
+		"Attrib":null
+	},
+	{
+		"Name":"MesaVerdeNationalPark",
+		"Country":"United States of America",
+		"Province":3878,
+		"Type":2,
+		"X":1887346,
+		"Y":1511722,
+		"Z":-634509,
+		"Attrib":null
+	},
+	{
+		"Name":"UrosFloatingIslands",
+		"Country":"Peru",
+		"Province":2713,
+		"Type":2,
+		"X":2256684,
+		"Y":-687389,
+		"Z":827568,
+		"Attrib":null
+	},
+	{
+		"Name":"NazcaLines",
+		"Country":"Peru",
+		"Province":2728,
+		"Type":0,
+		"X":2335312,
+		"Y":-638604,
+		"Z":623290,
+		"Attrib":null
+	},
+	{
+		"Name":"LincolnMemorial",
+		"Country":"United States of America",
+		"Province":3912,
+		"Type":2,
+		"X":1885744,
+		"Y":1583205,
+		"Z":432928,
+		"Attrib":null
+	},
+	{
+		"Name":"PearlHarborNationalMonument",
+		"Country":"United States of America",
+		"Province":-1,
+		"Type":2,
+		"X":873350,
+		"Y":910861,
+		"Z":-2158145,
 		"Attrib":null
 	}
 ]

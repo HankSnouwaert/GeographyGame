@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +32,7 @@ namespace WPM
         public override void Start()
         {
             base.Start();
+            objectName = "player";
             //gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
@@ -65,9 +67,9 @@ namespace WPM
             }
         }
 
-        public override void OnMouseUpAsButton()
+        public override void OnMouseDown()
         {
-            base.OnMouseUpAsButton();
+            base.OnMouseDown();
         }
 
         public override void Selected()
@@ -195,9 +197,14 @@ namespace WPM
             int neighborIndex = map.GetCellNeighbourIndex(cellLocation, newCellIndex);
             //distanceTraveled = distanceTraveled + map.GetCellNeighbourCost(cellLocation, neighborIndex);
             //Update cell tags and player character location
-            map.cells[cellLocation].tag = null;
+
+            //map.cells[cellLocation].tag = null;
+            map.cells[cellLocation].occupants.Remove(this);
             cellLocation = newCellIndex;
-            map.cells[cellLocation].tag = GetInstanceID().ToString();
+
+            //map.cells[cellLocation].tag = GetInstanceID().ToString();
+            map.cells[cellLocation].occupants.Add(this);
+
             vectorLocation = map.cells[cellLocation].sphereCenter;
             //Update Turns
             int turns = map.GetCellNeighbourCost(cellLocation, neighborIndex);
@@ -246,14 +253,16 @@ namespace WPM
                 {
                     bool cellOccupied = false;
                     //Check if cell is occupied
-                    if (map.cells[cell].tag != null)
+                    //if (map.cells[cell].tag != null)
+                    if(map.cells[cell].occupants.Any() || map.cells[cell].occupants == null)
                     {
                        //Check if cell is occupied by something other than the player
-                       if(map.cells[cell].tag != GetInstanceID().ToString())
+                       //if(map.cells[cell].tag != GetInstanceID().ToString())
+                       if(!map.cells[cell].occupants.Contains(this))
                        {
                             cellOccupied = true;
                        }
-                    }
+                    }             
                     int cost = climateCosts[climateAttribute];
                     if (cost == IMPASSABLE || cellOccupied)  
                     {

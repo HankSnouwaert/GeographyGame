@@ -7,6 +7,7 @@ namespace WPM
 {
     public class SelectableObject : MonoBehaviour
     {
+        public string objectName;
         public bool selected;
         protected WorldMapGlobe map;
         protected GameManager gameManager;
@@ -20,7 +21,7 @@ namespace WPM
             player = FindObjectOfType<PlayerCharacter>();
         }
 
-        public virtual void OnMouseUpAsButton()
+        public virtual void OnMouseDown()
         {
             if (gameManager.selectedObject == null)
                 Selected();
@@ -35,12 +36,14 @@ namespace WPM
 
         public virtual void OnMouseEnter()
         {
-            gameManager.cursorOverSelectable = true;
+            gameManager.SetHighlightedObject(this);
+            gameManager.UpdateHexInfoPanel();
         }
 
         public virtual void OnMouseExit()
         {
-            gameManager.cursorOverSelectable = false;
+            gameManager.SetHighlightedObject(null);
+            gameManager.UpdateHexInfoPanel();
         }
 
         public virtual void Selected()
@@ -50,6 +53,7 @@ namespace WPM
                     gameManager.selectedObject.Deselected();
 
             gameManager.selectedObject = this;
+            gameManager.newObjectSelected = true;
             selected = true;
         }
 
@@ -58,6 +62,11 @@ namespace WPM
             if (gameManager.selectedObject == this)
                 gameManager.selectedObject = null;
             selected = false;
+        }
+
+        public virtual void OnSelectableEnter(SelectableObject selectedObject)
+        {
+
         }
 
         public virtual void ObjectSelected(SelectableObject selectedObject)
