@@ -87,14 +87,10 @@ namespace WPM {
         };
 
         Color color1000 = new Color(1, 0, 0, 0);
-        int _concurrentLoads;
-        int _currentZoomLevel;
-        int _webDownloads, _cacheLoads, _resourceLoads;
-        long _webDownloadTotalSize, _cacheLoadTotalSize;
+        int _resourceLoads;
+        long _cacheLoadTotalSize;
         int _tileSize = 0;
         string _tileServerCopyrightNotice;
-        string _tileLastError;
-        DateTime _tileLastErrorDate;
         Dictionary<int, TileInfo> cachedTiles;
         ZoomLevelInfo[] zoomLevelsInfo = new ZoomLevelInfo[TILE_MAX_ZOOM_LEVEL + 1];
         List<TileInfo> loadQueue, newQueue;
@@ -104,7 +100,6 @@ namespace WPM {
         Transform tilesRoot;
         Renderer northPoleObj, southPoleObj;
         int subserverSeq;
-        long _tileCurrentCacheUsage;
         FileInfo[] cachedFiles;
         float currentTileSize;
         Plane[] cameraPlanes;
@@ -223,13 +218,13 @@ namespace WPM {
         }
 
         public void TileRecalculateCacheUsage() {
-            _tileCurrentCacheUsage = 0;
+            tileCurrentCacheUsage = 0;
             if (!Directory.Exists(cachePath))
                 return;
             DirectoryInfo dir = new DirectoryInfo(cachePath);
             cachedFiles = dir.GetFiles().OrderBy(p => p.LastAccessTime).ToArray();
             for (int k = 0; k < cachedFiles.Length; k++) {
-                _tileCurrentCacheUsage += cachedFiles[k].Length;
+                tileCurrentCacheUsage += cachedFiles[k].Length;
             }
         }
 
@@ -238,7 +233,7 @@ namespace WPM {
         /// </summary>
         /// <param name="maxSize">Max size is in Mb.</param>
         void PurgeCacheOldFiles(long maxSize) {
-            _tileCurrentCacheUsage = 0;
+            tileCurrentCacheUsage = 0;
             if (!Directory.Exists(cachePath))
                 return;
             DirectoryInfo dir = new DirectoryInfo(cachePath);
@@ -251,9 +246,9 @@ namespace WPM {
             cachedFiles = dir.GetFiles().OrderBy(p => p.LastAccessTime).ToArray();
             maxSize *= 1024 * 1024;
             for (int k = 0; k < cachedFiles.Length; k++) {
-                _tileCurrentCacheUsage += cachedFiles[k].Length;
+                tileCurrentCacheUsage += cachedFiles[k].Length;
             }
-            if (_tileCurrentCacheUsage <= maxSize)
+            if (tileCurrentCacheUsage <= maxSize)
                 return;
 
             // Purge files until total size gets under max cache size
@@ -261,9 +256,9 @@ namespace WPM {
                 if (_tilePreloadTiles && cachedFiles[k].Name.StartsWith(PREFIX_MIN_ZOOM_LEVEL)) {
                     continue;
                 }
-                _tileCurrentCacheUsage -= cachedFiles[k].Length;
+                tileCurrentCacheUsage -= cachedFiles[k].Length;
                 cachedFiles[k].Delete();
-                if (_tileCurrentCacheUsage <= maxSize)
+                if (tileCurrentCacheUsage <= maxSize)
                     return;
             }
         }
@@ -288,7 +283,7 @@ namespace WPM {
                 MonitorInactiveTiles();
             }
 
-            if (shouldCheckTiles || flyToActive) {
+            if (shouldCheckTiles || isFlyingToActive) {
 
                 shouldCheckTiles = false;
                 currentCamera = mainCamera; // for optimization purposes
@@ -296,7 +291,7 @@ namespace WPM {
                 currentCameraForward = currentCamera.transform.forward;
                 globePos = transform.position;
 
-                _currentZoomLevel = GetCenterTileZoomLevel();
+                tileCurrentZoomLevel = GetCenterTileZoomLevel();
 
                 ToggleFrontiers();
 
@@ -315,7 +310,7 @@ namespace WPM {
                 localScaleFactor = transform.localScale.x * 0.01f;
                 for (int k = 0; k < zi.xMax; k++) {
                     for (int j = 0; j < zi.yMax; j++) {
-                        CheckTiles(null, _currentZoomLevel, k, j, startingZoomLevel, 0);
+                        CheckTiles(null, tileCurrentZoomLevel, k, j, startingZoomLevel, 0);
                     }
                 }
 
@@ -349,16 +344,16 @@ namespace WPM {
                 }
                 // Ensure local cache max size is not exceeded
                 long maxLocalCacheSize = _tileMaxLocalCacheSize * 1024 * 1024;
-                if (cachedFiles != null && _tileCurrentCacheUsage > maxLocalCacheSize) {
+                if (cachedFiles != null && tileCurrentCacheUsage > maxLocalCacheSize) {
                     for (int f = 0; f < cachedFiles.Length; f++) {
                         if (cachedFiles[f] != null && cachedFiles[f].Exists) {
                             if (_tilePreloadTiles && cachedFiles[f].Name.StartsWith(PREFIX_MIN_ZOOM_LEVEL)) {
                                 continue;
                             }
-                            _tileCurrentCacheUsage -= cachedFiles[f].Length;
+                            tileCurrentCacheUsage -= cachedFiles[f].Length;
                             cachedFiles[f].Delete();
                         }
-                        if (_tileCurrentCacheUsage <= maxLocalCacheSize)
+                        if (tileCurrentCacheUsage <= maxLocalCacheSize)
                             break;
                     }
                 }
@@ -375,9 +370,9 @@ namespace WPM {
             }
 
             if (_tilePreciseRotation) {
-                if (_currentZoomLevel > _tilePreciseRotationZoomLevel && _navigationMode == NAVIGATION_MODE.EARTH_ROTATES) {
+                if (tileCurrentZoomLevel > _tilePreciseRotationZoomLevel && _navigationMode == NAVIGATION_MODE.EARTH_ROTATES) {
                     _navigationMode = NAVIGATION_MODE.CAMERA_ROTATES;
-                } else if (_currentZoomLevel <= _tilePreciseRotationZoomLevel && _navigationMode == NAVIGATION_MODE.CAMERA_ROTATES) {
+                } else if (tileCurrentZoomLevel <= _tilePreciseRotationZoomLevel && _navigationMode == NAVIGATION_MODE.CAMERA_ROTATES) {
                     _navigationMode = NAVIGATION_MODE.EARTH_ROTATES;
                 }
             }
@@ -386,22 +381,22 @@ namespace WPM {
         void ToggleFrontiers() {
             // Check if frontiers/provinces can be shown
             if (_showFrontiers) {
-                if (_currentZoomLevel < _tileMaxZoomLevelFrontiers) {
+                if (tileCurrentZoomLevel < _tileMaxZoomLevelFrontiers) {
                     if (!frontiersLayer.activeSelf) {
                         frontiersLayer.SetActive(true);
                     }
-                } else if (_currentZoomLevel > _tileMaxZoomLevelFrontiers) {
+                } else if (tileCurrentZoomLevel > _tileMaxZoomLevelFrontiers) {
                     if (frontiersLayer.activeSelf) {
                         frontiersLayer.SetActive(false);
                     }
                 }
             }
             if (_showInlandFrontiers) {
-                if (_currentZoomLevel < _tileMaxZoomLevelFrontiers) {
+                if (tileCurrentZoomLevel < _tileMaxZoomLevelFrontiers) {
                     if (!inlandFrontiersLayer.activeSelf) {
                         inlandFrontiersLayer.SetActive(true);
                     }
-                } else if (_currentZoomLevel > _tileMaxZoomLevelFrontiers) {
+                } else if (tileCurrentZoomLevel > _tileMaxZoomLevelFrontiers) {
                     if (inlandFrontiersLayer.activeSelf) {
                         inlandFrontiersLayer.SetActive(false);
                     }
@@ -511,10 +506,10 @@ namespace WPM {
                             requestPaintMainTiles = true;
                             continue;
                         }
-                        if (_concurrentLoads <= _tileMaxConcurrentDownloads) {
+                        if (tileConcurrentLoads <= _tileMaxConcurrentDownloads) {
                             ti.loadStatus = TILE_LOAD_STATUS.Loading;
                             ti.stage = 20;
-                            _concurrentLoads++;
+                            tileConcurrentLoads++;
                             StartCoroutine(LoadTileContentBackground(ti));
                         }
                     } else if (Time.time - ti.queueTime > TILE_MAX_QUEUE_TIME) {
@@ -998,7 +993,7 @@ namespace WPM {
 
             string url = GetTileURL(_tileServer, ti);
             if (string.IsNullOrEmpty(url)) {
-                _concurrentLoads--;
+                tileConcurrentLoads--;
                 Debug.LogError("Tile server url not set. Aborting");
                 yield break;
             }
@@ -1048,7 +1043,7 @@ namespace WPM {
                 yield return new WaitForEndOfFrame();
             }
             spreadLoadAmongFrames--;
-            _concurrentLoads--;
+            tileConcurrentLoads--;
 
             //ti.stage = 60;
             //if (!ti.visible) {  // non visible textures are ignored
@@ -1059,10 +1054,10 @@ namespace WPM {
 
             ti.stage = 70;
             if (!string.IsNullOrEmpty(error)) {
-                _tileLastError = "Error getting tile z:" + ti.zoomLevel + " x:" + ti.x + " " + ti.y + ": " + error + " url=" + url;
-                _tileLastErrorDate = DateTime.Now;
+                tileLastError = "Error getting tile z:" + ti.zoomLevel + " x:" + ti.x + " " + ti.y + ": " + error + " url=" + url;
+                tileLastErrorDate = DateTime.Now;
                 if (_tileDebugErrors) {
-                    Debug.Log(_tileLastErrorDate + " " + _tileLastError);
+                    Debug.Log(tileLastErrorDate + " " + tileLastError);
                 }
                 ti.loadStatus = TILE_LOAD_STATUS.InQueue;
                 ti.loadDelay += 10;
@@ -1099,7 +1094,7 @@ namespace WPM {
             // Save texture
             ti.stage = 90;
             if (_tileEnableLocalCache && ti.source != TILE_SOURCE.Resources && !File.Exists(filePath)) {
-                _tileCurrentCacheUsage += textureBytes.Length;
+                tileCurrentCacheUsage += textureBytes.Length;
                 BackgroundSaver saver = new BackgroundSaver(textureBytes, filePath);
                 saver.Start();
             }
@@ -1107,15 +1102,15 @@ namespace WPM {
             // Update stats
             switch (ti.source) {
                 case TILE_SOURCE.Cache:
-                    _cacheLoads++;
+                    tileCacheLoads++;
                     _cacheLoadTotalSize += downloadedBytes;
                     break;
                 case TILE_SOURCE.Resources:
                     _resourceLoads++;
                     break;
                 default:
-                    _webDownloads++;
-                    _webDownloadTotalSize += downloadedBytes;
+                    tileWebDownloads++;
+                    tileWebDownloadsTotalSize += downloadedBytes;
                     break;
             }
 
@@ -1211,8 +1206,8 @@ namespace WPM {
         }
 
         class BackgroundSaver {
-            byte[] tex;
-            string filePath;
+            readonly byte[] tex;
+            readonly string filePath;
 
             public BackgroundSaver(byte[] tex, string filePath) {
                 this.tex = tex;
@@ -1343,7 +1338,7 @@ namespace WPM {
             }
             ti.texture.wrapMode = TextureWrapMode.Clamp;
 
-            _cacheLoads++;
+            tileCacheLoads++;
             _cacheLoadTotalSize += bb.Length;
 
             FinishLoadingTile(ti);

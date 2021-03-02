@@ -43,27 +43,20 @@ namespace WPM {
             }
         }
 
-
-        City _cityHighlighted;
-
         /// <summary>
         /// Returns City under mouse position or null if none.
         /// </summary>
-        public City cityHighlighted { get { return _cityHighlighted; } }
-
-        int _cityHighlightedIndex = -1;
+        public City cityHighlighted { get; private set; }
 
         /// <summary>
         /// Returns City index mouse position or null if none.
         /// </summary>
-        public int cityHighlightedIndex { get { return _cityHighlightedIndex; } }
-
-        int _cityLastClicked = -1;
+        public int cityHighlightedIndex { get; private set; } = -1;
 
         /// <summary>
         /// Returns the last clicked city index.
         /// </summary>
-        public int cityLastClicked { get { return _cityLastClicked; } }
+        public int cityLastClicked { get; private set; } = -1;
 
 
 

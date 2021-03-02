@@ -26,13 +26,13 @@ namespace WPM
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             Debug.Log(gameObject.name + ": I was entered!");
-            gameManager.cursorOverUI = true;
+            gameManager.CursorOverUI = true;
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
             Debug.Log(gameObject.name + ": I was exited!");
-            gameManager.cursorOverUI = false;
+            gameManager.CursorOverUI = false;
 
         }
     }

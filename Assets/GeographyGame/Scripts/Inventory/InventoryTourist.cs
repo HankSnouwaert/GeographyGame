@@ -22,7 +22,7 @@ namespace WPM
         private const int PROVINCE = 0;
         private const int LANDMARK = 1;
         private const int COUNTRY = 2;
-        string savedText = null;
+        readonly string savedText = null;
 
         private const int PROVINCE_MULTIPLIER = 1;
         private const int LANDMARK_MULTIPLIER = 10;
@@ -57,13 +57,13 @@ namespace WPM
             int timeMultiplier;
             int totalMultiplier;
             //Get possible Provinces
-            foreach (int province in gameManager.currentRegion.provinces)
+            foreach (int province in gameManager.CurrentRegion.provinces)
             {
-                timeMultiplier = gameManager.recentProvinceDestinations.IndexOf(province);
+                timeMultiplier = gameManager.RecentProvinceDestinations.IndexOf(province);
 
                 //Check if destination is no longer being tracked
                 if (timeMultiplier < 0)
-                    timeMultiplier = gameManager.trackingTime;
+                    timeMultiplier = gameManager.TrackingTime;
 
                 totalMultiplier = timeMultiplier * PROVINCE_MULTIPLIER;
 
@@ -73,13 +73,13 @@ namespace WPM
                 }
             }
             //Get possible Landmarks
-            foreach (string landmark in gameManager.currentRegion.landmarks)
+            foreach (string landmark in gameManager.CurrentRegion.landmarks)
             {
-                timeMultiplier = gameManager.recentLandmarkDestinations.IndexOf(landmark);
+                timeMultiplier = gameManager.RecentLandmarkDestinations.IndexOf(landmark);
 
                 //Check if destination is no longer being tracked
                 if (timeMultiplier < 0)
-                    timeMultiplier = gameManager.trackingTime;
+                    timeMultiplier = gameManager.TrackingTime;
 
                 totalMultiplier = timeMultiplier * LANDMARK_MULTIPLIER;
 
@@ -89,13 +89,13 @@ namespace WPM
                 }
             }
             //Get possible Countries
-            foreach (int country in gameManager.currentRegion.countries)
+            foreach (int country in gameManager.CurrentRegion.countries)
             {
-                timeMultiplier = gameManager.recentCountryDestinations.IndexOf(country);
+                timeMultiplier = gameManager.RecentCountryDestinations.IndexOf(country);
 
                 //Check if destination is no longer being tracked
                 if (timeMultiplier < 0)
-                    timeMultiplier = gameManager.trackingTime;
+                    timeMultiplier = gameManager.TrackingTime;
 
                 totalMultiplier = timeMultiplier * COUNTRY_MULTIPLIER;
 
@@ -112,10 +112,10 @@ namespace WPM
                 destinationType = PROVINCE;
                 provinceDestination = gameManager.worldGlobeMap.provinces[provinceChoices[destinationIndex]];
                 destinationName = provinceDestination.name;
-                gameManager.recentProvinceDestinations.Insert(0, provinceChoices[destinationIndex]);
-                while (gameManager.recentProvinceDestinations.Count >= gameManager.trackingTime)
+                gameManager.RecentProvinceDestinations.Insert(0, provinceChoices[destinationIndex]);
+                while (gameManager.RecentProvinceDestinations.Count >= gameManager.TrackingTime)
                 {
-                    gameManager.recentProvinceDestinations.RemoveAt(gameManager.trackingTime - 1);
+                    gameManager.RecentProvinceDestinations.RemoveAt(gameManager.TrackingTime - 1);
                 }
 
             }
@@ -123,12 +123,12 @@ namespace WPM
             {
                 destinationType = LANDMARK;
                 destinationIndex = destinationIndex - provinceChoices.Count;
-                landmarkDestination = gameManager.culturalLandmarksByName[landmarkChoices[destinationIndex]];
+                landmarkDestination = gameManager.CulturalLandmarksByName[landmarkChoices[destinationIndex]];
                 destinationName = landmarkDestination.objectName;
-                gameManager.recentLandmarkDestinations.Insert(0, landmarkChoices[destinationIndex]);
-                while (gameManager.recentLandmarkDestinations.Count >= gameManager.trackingTime)
+                gameManager.RecentLandmarkDestinations.Insert(0, landmarkChoices[destinationIndex]);
+                while (gameManager.RecentLandmarkDestinations.Count >= gameManager.TrackingTime)
                 {
-                    gameManager.recentLandmarkDestinations.RemoveAt(gameManager.trackingTime - 1);
+                    gameManager.RecentLandmarkDestinations.RemoveAt(gameManager.TrackingTime - 1);
                 }
             }
             else
@@ -137,10 +137,10 @@ namespace WPM
                 destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
                 countryDestination = gameManager.worldGlobeMap.countries[countryChoices[destinationIndex]]; //ERROR: Index Out of Range Exception
                 destinationName = countryDestination.name;
-                gameManager.recentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
-                while (gameManager.recentCountryDestinations.Count >= gameManager.trackingTime)
+                gameManager.RecentCountryDestinations.Insert(0, countryChoices[destinationIndex]);
+                while (gameManager.RecentCountryDestinations.Count >= gameManager.TrackingTime)
                 {
-                    gameManager.recentCountryDestinations.RemoveAt(gameManager.trackingTime - 1);
+                    gameManager.RecentCountryDestinations.RemoveAt(gameManager.TrackingTime - 1);
                 }
             }
         }
@@ -186,7 +186,7 @@ namespace WPM
                             //Remove Tourist from Inventory
                             player.RemoveItem(inventoryLocation);
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                            gameManager.cursorOverUI = false;
+                            gameManager.CursorOverUI = false;
                             correctProvince = true;
                             gameManager.DisplayPopUp("Exactly where I wanted to go!");
                             gameManager.DropOff(true);
@@ -208,7 +208,7 @@ namespace WPM
                         //Remove Tourist from Inventory
                         player.RemoveItem(inventoryLocation);
                         gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                        gameManager.cursorOverUI = false;
+                        gameManager.CursorOverUI = false;
                         landmarkReached = true;
                         gameManager.DisplayPopUp("Exactly where I wanted to go!");
                         gameManager.DropOff(true);
@@ -224,7 +224,7 @@ namespace WPM
                                 //Remove Tourist from Inventory
                                 player.RemoveItem(inventoryLocation);
                                 gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                                gameManager.cursorOverUI = false;
+                                gameManager.CursorOverUI = false;
                                 landmarkReached = true;
                                 gameManager.DisplayPopUp("Exactly where I wanted to go!");
                                 gameManager.DropOff(true);
@@ -250,7 +250,7 @@ namespace WPM
                             //Remove Tourist from Inventory
                             player.RemoveItem(inventoryLocation);
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                            gameManager.cursorOverUI = false;
+                            gameManager.CursorOverUI = false;
                             correctCountry = true;
                             gameManager.DisplayPopUp("Exactly where I wanted to go!");
                             gameManager.DropOff(true);

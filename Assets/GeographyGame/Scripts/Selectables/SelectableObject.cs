@@ -23,44 +23,43 @@ namespace WPM
 
         public virtual void OnMouseDown()
         {
-            if (gameManager.selectedObject == null)
+            if (gameManager.SelectedObject == null)
                 Selected();
             else
             {
-                if (gameManager.selectedObject == this)
+                if (gameManager.SelectedObject == this)
                     Deselected();
                 else
-                    gameManager.selectedObject.ObjectSelected(this);
+                    gameManager.SelectedObject.ObjectSelected(this);
             }   
         }
 
         public virtual void OnMouseEnter()
         {
-            gameManager.SetHighlightedObject(this);
+            gameManager.HighlightedObject = this;
             gameManager.UpdateHexInfoPanel();
         }
 
         public virtual void OnMouseExit()
         {
-            gameManager.SetHighlightedObject(null);
+            gameManager.HighlightedObject = null;
             gameManager.UpdateHexInfoPanel();
         }
 
         public virtual void Selected()
         {
-            if (gameManager.selectedObject != null)
-                if (gameManager.selectedObject != this)
-                    gameManager.selectedObject.Deselected();
+            if (gameManager.SelectedObject != null)
+                if (gameManager.SelectedObject != this)
+                    gameManager.SelectedObject.Deselected();
 
-            gameManager.selectedObject = this;
-            gameManager.newObjectSelected = true;
+            gameManager.SelectedObject = this;
             selected = true;
         }
 
         public virtual void Deselected()
         {
-            if (gameManager.selectedObject == this)
-                gameManager.selectedObject = null;
+            if (gameManager.SelectedObject == this)
+                gameManager.SelectedObject = null;
             selected = false;
         }
 

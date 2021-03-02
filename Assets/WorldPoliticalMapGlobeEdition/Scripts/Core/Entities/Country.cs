@@ -45,18 +45,17 @@ namespace WPM {
 
 
 		Font _labelFont;
-		Material _labelShadowFontMaterial;
 
-		/// <summary>
-		/// Internal method used to obtain the shadow material associated to a custom Font provided.
-		/// </summary>
-		/// <value>The label shadow font material.</value>
-		public Material labelFontShadowMaterial { get { return _labelShadowFontMaterial; } }
+        /// <summary>
+        /// Internal method used to obtain the shadow material associated to a custom Font provided.
+        /// </summary>
+        /// <value>The label shadow font material.</value>
+        public Material labelFontShadowMaterial { get; private set; }
 
-		/// <summary>
-		/// Optional font for this label. Note that the font material will be instanced so it can change color without affecting other labels.
-		/// </summary>
-		public Font labelFontOverride { 
+        /// <summary>
+        /// Optional font for this label. Note that the font material will be instanced so it can change color without affecting other labels.
+        /// </summary>
+        public Font labelFontOverride { 
 			get {
 				return _labelFont;
 			}
@@ -67,9 +66,9 @@ namespace WPM {
 						Material fontMaterial = GameObject.Instantiate (_labelFont.material);
 						fontMaterial.hideFlags = HideFlags.DontSave;
 						_labelFont.material = fontMaterial;
-						_labelShadowFontMaterial = GameObject.Instantiate (fontMaterial);
-						_labelShadowFontMaterial.hideFlags = HideFlags.DontSave;
-						_labelShadowFontMaterial.renderQueue--;
+						labelFontShadowMaterial = GameObject.Instantiate (fontMaterial);
+						labelFontShadowMaterial.hideFlags = HideFlags.DontSave;
+						labelFontShadowMaterial.renderQueue--;
 					}
 				}
 			}

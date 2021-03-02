@@ -48,7 +48,7 @@ namespace WPM.Poly2Tri {
 
 								public DTSweepBasin Basin = new DTSweepBasin ();
 								public DTSweepEdgeEvent EdgeEvent = new DTSweepEdgeEvent ();
-								private DTSweepPointComparator _comparator = new DTSweepPointComparator ();
+								private readonly DTSweepPointComparator _comparator = new DTSweepPointComparator ();
 
 								public override TriangulationAlgorithm Algorithm { get { return TriangulationAlgorithm.DTSweep; } }
 

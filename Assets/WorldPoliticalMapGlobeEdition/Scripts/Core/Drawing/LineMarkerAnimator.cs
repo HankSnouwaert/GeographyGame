@@ -69,27 +69,24 @@ namespace WPM {
 		/// </summary>
 		public LineEvent OnLineDrawingEnd;
 
-		/// <summary>
-		/// The underline Line Renderer component
-		/// </summary>
-		public LineRenderer lineRenderer {
-			get { return _lr; }
-		}
+        /// <summary>
+        /// The underline Line Renderer component
+        /// </summary>
+        public LineRenderer lineRenderer { get; private set; }
 
 
-		float startTime, startAutoFadeTime;
+        float startTime, startAutoFadeTime;
 		float startAltitude, endAltitude;
-		LineRenderer _lr;
-		Color colorTransparent;
+        Color colorTransparent;
 		Vector3[] vertices;
 
 		void OnEnable () {
-			_lr = transform.GetComponent<LineRenderer> ();
-			if (_lr == null) {
-				_lr = gameObject.AddComponent<LineRenderer> ();
+			lineRenderer = transform.GetComponent<LineRenderer> ();
+			if (lineRenderer == null) {
+				lineRenderer = gameObject.AddComponent<LineRenderer> ();
 			}
-			_lr.textureMode = LineTextureMode.Tile;
-			_lr.numCornerVertices = 3;
+			lineRenderer.textureMode = LineTextureMode.Tile;
+			lineRenderer.numCornerVertices = 3;
 		}
 
 
@@ -99,16 +96,16 @@ namespace WPM {
                 numPoints = 2;
             }
 			startTime = Time.time;
-			_lr.useWorldSpace = false;
-			_lr.startWidth = lineWidth;
-			_lr.endWidth = lineWidth;
+			lineRenderer.useWorldSpace = false;
+			lineRenderer.startWidth = lineWidth;
+			lineRenderer.endWidth = lineWidth;
 			if (!reuseMaterial) {
 				lineMaterial = Instantiate (lineMaterial);
 			}
 			lineMaterial.color = color;
-			_lr.material = lineMaterial; // needs to instantiate to preserve individual color so can't use sharedMaterial
-			_lr.startColor = color;
-			_lr.endColor = color;
+			lineRenderer.material = lineMaterial; // needs to instantiate to preserve individual color so can't use sharedMaterial
+			lineRenderer.startColor = color;
+			lineRenderer.endColor = color;
 
 			if (vertices == null) {
 				startAltitude = start.magnitude;
@@ -231,11 +228,11 @@ namespace WPM {
 				return;
 
 			if (t <= 0) {
-				_lr.positionCount = 0;
+				lineRenderer.positionCount = 0;
 			} else if (t >= 1f) {
-				_lr.positionCount = vertices.Length;
+				lineRenderer.positionCount = vertices.Length;
 				for (int k = 0; k < vertices.Length; k++) {
-					_lr.SetPosition (k, vertices [k]);
+					lineRenderer.SetPosition (k, vertices [k]);
 				}
 				if (OnLineDrawingEnd != null) {
 					OnLineDrawingEnd (this);
@@ -243,13 +240,13 @@ namespace WPM {
 			} else {
 				float f = (vertices.Length - 1) * t;
 				int lastPos = (int)f + 1;
-				_lr.positionCount = lastPos + 1;
+				lineRenderer.positionCount = lastPos + 1;
 				for (int k = 0; k < lastPos; k++) {
-					_lr.SetPosition (k, vertices [k]);
+					lineRenderer.SetPosition (k, vertices [k]);
 				}
 				float frac = f - (int)f;
 				Vector3 v = Vector3.Lerp (vertices [lastPos - 1], vertices [lastPos], frac);
-				_lr.SetPosition (lastPos, v);
+				lineRenderer.SetPosition (lastPos, v);
 			}
 
 		}

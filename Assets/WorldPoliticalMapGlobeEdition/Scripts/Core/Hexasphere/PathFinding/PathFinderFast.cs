@@ -32,18 +32,12 @@ namespace WPM.PathFinding
 		private Cell[] mCells = null;
 		private PriorityQueueB<int> mOpen = null;
 		private List<PathFinderNode> mClose = new List<PathFinderNode> ();
-		private HeuristicFormula mFormula = HeuristicFormula.SphericalDistance;
-		private int mHEstimate = 1;
-		private int mSearchLimit = 2000;
-		private int mSearchMaxCost = 2000;
-		private PathFinderNodeFast[] mCalcGrid = null;
+        private PathFinderNodeFast[] mCalcGrid = null;
 		private byte mOpenNodeValue = 1;
 		private byte mCloseNodeValue = 2;
-		private HiddenCellsFilterMode mHiddenCellsFilter = HiddenCellsFilterMode.OnlyUseVisibleCells;
-		private OnCellCross mOnCellCross = null;
 
-		//Promoted local variables to member variables to avoid recreation between calls
-		private int mH = 0;
+        //Promoted local variables to member variables to avoid recreation between calls
+        private int mH = 0;
 		private int mLocation = 0;
 		private int mNewLocation = 0;
 		private int mCloseNodeCounter = 0;
@@ -78,37 +72,19 @@ namespace WPM.PathFinding
 			comparer.SetMatrix (mCalcGrid);
 		}
 
-		public HeuristicFormula Formula {
-			get { return mFormula; }
-			set { mFormula = value; }
-		}
+        public HeuristicFormula Formula { get; set; } = HeuristicFormula.SphericalDistance;
 
-		public int HeuristicEstimate {
-			get { return mHEstimate; }
-			set { mHEstimate = value; }
-		}
+        public int HeuristicEstimate { get; set; } = 1;
 
-		public int SearchLimit {
-			get { return mSearchLimit; }
-			set { mSearchLimit = value; }
-		}
+        public int SearchLimit { get; set; } = 2000;
 
-		public int SearchMaxCost {
-			get { return mSearchMaxCost; }
-			set { mSearchMaxCost = value; }
-		}
+        public int SearchMaxCost { get; set; } = 2000;
 
-		public HiddenCellsFilterMode HiddenCellsFilter {
-            get { return mHiddenCellsFilter; }
-            set { mHiddenCellsFilter = value; }
-        }
+        public HiddenCellsFilterMode HiddenCellsFilter { get; set; } = HiddenCellsFilterMode.OnlyUseVisibleCells;
 
-		public OnCellCross OnCellCross {
-			get { return mOnCellCross; }
-			set { mOnCellCross = value; }
-		}
+        public OnCellCross OnCellCross { get; set; } = null;
 
-		public List<PathFinderNode> FindPath (int CellStartIndex, int CellEndIndex)
+        public List<PathFinderNode> FindPath (int CellStartIndex, int CellEndIndex)
 		{
 			mFound = false;
 			mCloseNodeCounter = 0;
@@ -125,7 +101,7 @@ namespace WPM.PathFinding
 			mLocation = CellStartIndex;
 			mEndLocation = CellEndIndex;
 			mCalcGrid [mLocation].G = 0;
-			mCalcGrid [mLocation].F = mHEstimate;
+			mCalcGrid [mLocation].F = HeuristicEstimate;
 			mCalcGrid [mLocation].PIndex = CellStartIndex;
 			mCalcGrid [mLocation].Status = mOpenNodeValue;
 
@@ -134,7 +110,7 @@ namespace WPM.PathFinding
 			float distCellToCell = Vector3.Angle(p0, p1) / 180f;
 			float distPerDegree = 0;
 			// Compute spherical distance
-			if (mFormula == HeuristicFormula.SphericalDistance) {
+			if (Formula == HeuristicFormula.SphericalDistance) {
 				distPerDegree = 1f / (distCellToCell * 180f);
 			}
 
@@ -152,7 +128,7 @@ namespace WPM.PathFinding
 					break;
 				}
 
-				if (mCloseNodeCounter > mSearchLimit) {
+				if (mCloseNodeCounter > SearchLimit) {
 					return null;
 				}
 
@@ -160,8 +136,8 @@ namespace WPM.PathFinding
 				int maxi = mCells [mLocation].neighbours.Length;
 				for (int i = 0; i < maxi; i++) {
 					mNewLocation = mCells [mLocation].neighboursIndices [i];
-                    if (mHiddenCellsFilter == HiddenCellsFilterMode.OnlyUseVisibleCells && !mCells[mNewLocation].visible) continue;
-					if (mHiddenCellsFilter == HiddenCellsFilterMode.OnlyUseHiddenCells && mCells[mNewLocation].visible) continue;
+                    if (HiddenCellsFilter == HiddenCellsFilterMode.OnlyUseVisibleCells && !mCells[mNewLocation].visible) continue;
+					if (HiddenCellsFilter == HiddenCellsFilterMode.OnlyUseHiddenCells && mCells[mNewLocation].visible) continue;
 
 					int gridValue = mGrid [mNewLocation] > 0 ? 1 : 0;
 					if (gridValue == 0)
@@ -170,13 +146,13 @@ namespace WPM.PathFinding
 					gridValue += mCells[mLocation].GetNeighbourCost(i);
 
 					// Check custom validator
-					if (mOnCellCross != null) {
-						gridValue += mOnCellCross (mNewLocation);
+					if (OnCellCross != null) {
+						gridValue += OnCellCross (mNewLocation);
 					}
 
 					mNewG = mCalcGrid [mLocation].G + gridValue;
 
-					if (mNewG > mSearchMaxCost)
+					if (mNewG > SearchMaxCost)
 						continue;
 
 					//Is it open or closed?
@@ -190,7 +166,7 @@ namespace WPM.PathFinding
 					mCalcGrid [mNewLocation].G = mNewG;
 
 					int dist = 1;
-					switch (mFormula) {
+					switch (Formula) {
 					case HeuristicFormula.SphericalDistance:
 						dist += (int)(Vector3.Angle (mCells [mEndLocation].sphereCenter, mCells [mNewLocation].sphereCenter) * distPerDegree); //  1000f);
 						break;

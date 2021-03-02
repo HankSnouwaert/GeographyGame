@@ -29,7 +29,7 @@ namespace SpeedTutorMainMenuSystem
         [SerializeField] private Toggle invertYToggle;
 
         [Space(20)]
-        [SerializeField] private bool canUse = false;
+        [SerializeField] private readonly bool canUse = false;
         [SerializeField] private MenuController menuController;
         #endregion
 

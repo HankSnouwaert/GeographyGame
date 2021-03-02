@@ -42,16 +42,15 @@ namespace WPM.Poly2Tri {
 	public class Contour : Point2DList, ITriangulatable, IEnumerable<TriangulationPoint>, IList<TriangulationPoint> {
 		private List<Contour> mHoles = new List<Contour> ();
 		private ITriangulatable mParent = null;
-		private string mName = "";
 
-		public new TriangulationPoint this [int index] {
+        public new TriangulationPoint this [int index] {
 			get { return mPoints [index] as TriangulationPoint; }
 			set { mPoints [index] = value; }
 		}
 
-		public string Name { get { return mName; } set { mName = value; } }
+        public string Name { get; set; } = "";
 
-		public IList<DelaunayTriangle> Triangles {
+        public IList<DelaunayTriangle> Triangles {
 			get {
 				throw new NotImplementedException ("PolyHole.Triangles should never get called");
 			}
@@ -106,7 +105,7 @@ namespace WPM.Poly2Tri {
 		}
 
 		public override string ToString () {
-			return mName + " : " + base.ToString ();
+			return Name + " : " + base.ToString ();
 		}
 
 		IEnumerator<TriangulationPoint> IEnumerable<TriangulationPoint>.GetEnumerator () {

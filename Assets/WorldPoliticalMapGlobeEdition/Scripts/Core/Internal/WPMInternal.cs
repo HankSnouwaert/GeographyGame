@@ -96,7 +96,7 @@ namespace WPM {
         // FlyTo functionality
         Quaternion flyToStartQuaternion, flyToEndQuaternion;
         Quaternion flyToCameraStartRotation, flyToCameraEndRotation;
-        bool flyToActive, flyToComplete;
+        bool flyToComplete;
         float flyToStartTime, flyToDuration;
         Vector3 flyToCameraStartPosition, flyToCameraEndPosition, flyToCameraStartUpVector;
         bool flyToCameraDistanceEnabled;
@@ -104,7 +104,7 @@ namespace WPM {
         float flyToCameraDistanceStart, flyToCameraDistanceEnd;
         float flyToBounceIntensity;
         NAVIGATION_MODE flyToMode;
-        bool zoomToActive, zoomComplete;
+        bool zoomComplete;
         float zoomToStartTime, zoomToDuration, zoomToStartDistance, zoomToEndDistance;
 
         // UI interaction variables
@@ -578,15 +578,15 @@ namespace WPM {
                 }
 
                 // Check maximum screen area size for highlighted country
-                if (_countryHighlightMaxScreenAreaSize < 1f && _countryRegionHighlighted != null && countryRegionHighlightedObj != null && countryRegionHighlightedObj.activeSelf) {
-                    if (!CheckGlobeDistanceForHighlight(_countryRegionHighlighted, _countryLabelsAutoFadeMaxHeight)) {
+                if (_countryHighlightMaxScreenAreaSize < 1f && countryRegionHighlighted != null && countryRegionHighlightedObj != null && countryRegionHighlightedObj.activeSelf) {
+                    if (!CheckGlobeDistanceForHighlight(countryRegionHighlighted, _countryLabelsAutoFadeMaxHeight)) {
                         countryRegionHighlightedObj.SetActive(false);
                     }
                 }
 
                 // Check maximum screen area size for highlighted country
-                if (_provinceHighlightMaxScreenAreaSize < 1f && _provinceRegionHighlighted != null && provinceRegionHighlightedObj != null && provinceRegionHighlightedObj.activeSelf) {
-                    if (!CheckGlobeDistanceForHighlight(_provinceRegionHighlighted, _provinceHighlightMaxScreenAreaSize)) {
+                if (_provinceHighlightMaxScreenAreaSize < 1f && provinceRegionHighlighted != null && provinceRegionHighlightedObj != null && provinceRegionHighlightedObj.activeSelf) {
+                    if (!CheckGlobeDistanceForHighlight(provinceRegionHighlighted, _provinceHighlightMaxScreenAreaSize)) {
                         provinceRegionHighlightedObj.SetActive(false);
                     }
                 }
@@ -633,44 +633,44 @@ namespace WPM {
                 bool isRelease = leftMouseButtonRelease || rightMouseButtonRelease;
                 bool fullClick = dragDampingStart == 0 && isRelease && (Time.time - mouseDownTime < 0.5f || simulatedMouseButtonClick == 0);
                 if (isClick || isRelease) {
-                    _countryLastClicked = _countryHighlightedIndex;
-                    _countryRegionLastClicked = _countryRegionHighlightedIndex;
-                    if (_countryLastClicked >= 0) {
+                    countryLastClicked = countryHighlightedIndex;
+                    countryRegionLastClicked = countryRegionHighlightedIndex;
+                    if (countryLastClicked >= 0) {
                         if (isClick && !fullClick && OnCountryPointerDown != null) {
-                            OnCountryPointerDown(_countryHighlightedIndex, _countryRegionHighlightedIndex);
+                            OnCountryPointerDown(countryHighlightedIndex, countryRegionHighlightedIndex);
                         } else if (isRelease) {
                             if (OnCountryPointerUp != null) {
-                                OnCountryPointerUp(_countryHighlightedIndex, _countryRegionHighlightedIndex);
+                                OnCountryPointerUp(countryHighlightedIndex, countryRegionHighlightedIndex);
                             }
                             if (fullClick && OnCountryClick != null) {
-                                OnCountryClick(_countryHighlightedIndex, _countryRegionHighlightedIndex);
+                                OnCountryClick(countryHighlightedIndex, countryRegionHighlightedIndex);
                             }
                         }
                     }
-                    _provinceLastClicked = _provinceHighlightedIndex;
-                    _provinceRegionLastClicked = _provinceRegionHighlightedIndex;
-                    if (_provinceLastClicked >= 0) {
+                    provinceLastClicked = provinceHighlightedIndex;
+                    provinceRegionLastClicked = provinceRegionHighlightedIndex;
+                    if (provinceLastClicked >= 0) {
                         if (isClick && !fullClick && OnProvincePointerDown != null) {
-                            OnProvincePointerDown(_provinceLastClicked, _provinceRegionLastClicked);
+                            OnProvincePointerDown(provinceLastClicked, provinceRegionLastClicked);
                         } else if (isRelease) {
                             if (OnProvincePointerUp != null) {
-                                OnProvincePointerUp(_provinceLastClicked, _provinceRegionLastClicked);
+                                OnProvincePointerUp(provinceLastClicked, provinceRegionLastClicked);
                             }
                             if (fullClick && OnProvinceClick != null) {
-                                OnProvinceClick(_provinceLastClicked, _provinceRegionLastClicked);
+                                OnProvinceClick(provinceLastClicked, provinceRegionLastClicked);
                             }
                         }
                     }
-                    _cityLastClicked = _cityHighlightedIndex;
-                    if (_cityLastClicked >= 0) {
+                    cityLastClicked = cityHighlightedIndex;
+                    if (cityLastClicked >= 0) {
                         if (isClick && !fullClick && OnCityPointerDown != null) {
-                            OnCityPointerDown(_cityLastClicked);
+                            OnCityPointerDown(cityLastClicked);
                         } else if (isRelease) {
                             if (OnCityPointerUp != null) {
-                                OnCityPointerUp(_cityLastClicked);
+                                OnCityPointerUp(cityLastClicked);
                             }
                             if (fullClick && OnCityClick != null) {
-                                OnCityClick(_cityLastClicked);
+                                OnCityClick(cityLastClicked);
                             }
                         }
                     }
@@ -841,7 +841,7 @@ namespace WPM {
             if (!Application.isPlaying) return;
 
             // Check if navigateTo... has been called and in this case rotate the globe until the country is centered
-            if (flyToActive) {
+            if (isFlyingToActive) {
                 NavigateToDestination();
             } else {
                 // subtle/slow continuous rotation
@@ -849,7 +849,7 @@ namespace WPM {
                     transform.Rotate(Misc.Vector3up, -_autoRotationSpeed * Time.deltaTime * 60f);
                 }
             }
-            if (zoomToActive) {
+            if (isZoomToActive) {
                 ZoomToDestination();
             }
         }
@@ -956,7 +956,7 @@ namespace WPM {
             } else {
                 surfaces = new Dictionary<int, GameObject>();
             }
-            _surfacesCount = 0;
+            surfacesCount = 0;
             DestroySurfacesLayer();
         }
 
@@ -1149,8 +1149,8 @@ namespace WPM {
         /// Stops current FlyTo() operation
         /// </summary>
         void StopNavigation(bool hasCompleted) {
-            if (!flyToActive) return;
-            flyToActive = false;
+            if (!isFlyingToActive) return;
+            isFlyingToActive = false;
             flyToComplete = hasCompleted;
             if (hasCompleted && OnFlyEnd != null) {
                 OnFlyEnd(GetCurrentMapLocation());
@@ -1162,9 +1162,9 @@ namespace WPM {
         /// Stops current RotateTo() operation
         /// </summary>
         void StopRotateTo(bool hasCompleted) {
-            if (!orbitRotateToActive) return;
-            orbitRotateToActive = false;
-            orbitRotateToComplete = hasCompleted;
+            if (!isOrbitRotateToActive) return;
+            isOrbitRotateToActive = false;
+            isOrbitRotateToComplete = hasCompleted;
             if (hasCompleted && OnOrbitRotateEnd != null) {
                 OnOrbitRotateEnd();
             }
@@ -1175,8 +1175,8 @@ namespace WPM {
         /// Stops current ZoomTo operation
         /// </summary>
         void StopZooming(bool hasCompleted) {
-            if (!zoomToActive) return;
-            zoomToActive = false;
+            if (!isZoomToActive) return;
+            isZoomToActive = false;
             zoomComplete = hasCompleted;
             if (hasCompleted && OnZoomEnd != null) {
                 OnZoomEnd(GetZoomLevel());
@@ -1390,7 +1390,7 @@ namespace WPM {
                     }
 
                     // Use right mouse button and drag to spin the world around z-axis
-                    if (!flyToActive) {
+                    if (!isFlyingToActive) {
                         if (Input.touchCount < 2) {
                             oldPinchRotationAngle = 999;
                             if (rightMouseButtonPressed) {
@@ -1409,7 +1409,7 @@ namespace WPM {
             }
 
             // auto drag on screen edges
-            if (_dragOnScreenEdges && !leftMouseButtonPressed && !flyToActive) {
+            if (_dragOnScreenEdges && !leftMouseButtonPressed && !isFlyingToActive) {
                 PerformDragOnScreenEdges();
             }
 
@@ -1595,11 +1595,11 @@ namespace WPM {
                     }
 
                     // Use right mouse button and drag to spin the world around z-axis
-                    if (rightMouseButtonPressed && Input.touchCount < 2 && !flyToActive) {
-                        if (_showProvinces && _provinceHighlightedIndex >= 0 && _centerOnRightClick && rightMouseButtonClick) {
-                            FlyToProvince(_provinceHighlightedIndex, 0.8f);
-                        } else if (_countryHighlightedIndex >= 0 && rightMouseButtonClick && _centerOnRightClick) {
-                            FlyToCountry(_countryHighlightedIndex, 0.8f);
+                    if (rightMouseButtonPressed && Input.touchCount < 2 && !isFlyingToActive) {
+                        if (_showProvinces && provinceHighlightedIndex >= 0 && _centerOnRightClick && rightMouseButtonClick) {
+                            FlyToProvince(provinceHighlightedIndex, 0.8f);
+                        } else if (countryHighlightedIndex >= 0 && rightMouseButtonClick && _centerOnRightClick) {
+                            FlyToCountry(countryHighlightedIndex, 0.8f);
                         } else {
                             Vector3 axis = (transform.position - cam.transform.position).normalized;
                             float rotAngle = _rightClickRotatingClockwise || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) ? -2f : 2f;
@@ -1731,16 +1731,16 @@ namespace WPM {
                 }
             }
 
-            if (_keepStraight && !flyToActive) {
+            if (_keepStraight && !isFlyingToActive) {
                 StraightenGlobe(SMOOTH_STRAIGHTEN_ON_POLES, true);
             }
         }
 
         void UpdateSurfaceCount() {
             if (_surfacesLayer != null)
-                _surfacesCount = (_surfacesLayer.GetComponentsInChildren<Transform>().Length - 1) / 2;
+                surfacesCount = (_surfacesLayer.GetComponentsInChildren<Transform>().Length - 1) / 2;
             else
-                _surfacesCount = 0;
+                surfacesCount = 0;
         }
 
 
@@ -1867,7 +1867,7 @@ namespace WPM {
                 int c, cr;
                 if (GetCountryUnderMouse(cursorLocation, out c, out cr)) {
                     bool ignoreCountryByEvent = false;
-                    if (c != _countryHighlightedIndex || (c == _countryHighlightedIndex && cr != _countryRegionHighlightedIndex)) {
+                    if (c != countryHighlightedIndex || (c == countryHighlightedIndex && cr != countryRegionHighlightedIndex)) {
                         if (OnCountryBeforeEnter != null) {
                             OnCountryBeforeEnter(c, cr, ref ignoreCountryByEvent);
                         }
@@ -1882,7 +1882,7 @@ namespace WPM {
                     if (!ignoreCountryByEvent) {
                         // if show provinces is enabled, then we draw provinces borders
                         if (_showProvinces && _countries[c].allowShowProvinces) {
-                            mDrawProvinces(_countryHighlightedIndex, false, false); // draw provinces borders if not drawn
+                            mDrawProvinces(countryHighlightedIndex, false, false); // draw provinces borders if not drawn
                             int p, pr;
                             // and now, we check if the mouse if inside a province, so highlight it
                             if (GetProvinceUnderMouse(c, cursorLocation, out p, out pr)) {
@@ -1890,7 +1890,7 @@ namespace WPM {
                                 if (OnProvinceBeforeEnter != null) {
                                     OnProvinceBeforeEnter(p, pr, ref ignoreByEvent);
                                 }
-                                if (p != _provinceHighlightedIndex || (p == _provinceHighlightedIndex && pr != _provinceRegionHighlightedIndex)) {
+                                if (p != provinceHighlightedIndex || (p == provinceHighlightedIndex && pr != provinceRegionHighlightedIndex)) {
                                     HideProvinceRegionHighlight();
 
                                     if (!ignoreByEvent) {
@@ -1908,7 +1908,7 @@ namespace WPM {
                         if (_showCities) {
                             int ci;
                             if (GetCityUnderMouse(c, cursorLocation, out ci)) {
-                                if (ci != _cityHighlightedIndex) {
+                                if (ci != cityHighlightedIndex) {
                                     HideCityHighlight();
 
                                     // Raise enter event
@@ -1916,7 +1916,7 @@ namespace WPM {
                                         OnCityEnter(ci);
                                 }
                                 HighlightCity(ci);
-                            } else if (_cityHighlightedIndex >= 0) {
+                            } else if (cityHighlightedIndex >= 0) {
                                 HideCityHighlight();
                             }
                         }
@@ -2719,7 +2719,7 @@ namespace WPM {
             if (!Application.isPlaying)
                 yield break;
             while (_followDeviceGPS) {
-                if (!flyToActive && Input.location.isEnabledByUser) {
+                if (!isFlyingToActive && Input.location.isEnabledByUser) {
                     if (Input.location.status == LocationServiceStatus.Stopped) {
                         Input.location.Start();
                     } else if (Input.location.status == LocationServiceStatus.Running) {

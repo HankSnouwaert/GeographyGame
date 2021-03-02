@@ -44,19 +44,15 @@ namespace WPM {
             }
         }
 
-        Province _provinceHighlighted;
-
         /// <summary>
         /// Returns Province under mouse position or null if none.
         /// </summary>
-        public Province provinceHighlighted { get { return _provinceHighlighted; } }
-
-        int _provinceHighlightedIndex = -1;
+        public Province provinceHighlighted { get; private set; }
 
         /// <summary>
         /// Returns current highlighted province index.
         /// </summary>
-        public int provinceHighlightedIndex { get { return _provinceHighlightedIndex; } }
+        public int provinceHighlightedIndex { get; private set; } = -1;
 
 
 
@@ -99,36 +95,26 @@ namespace WPM {
             }
         }
 
-
-
-        int _provinceLastClicked = -1;
-
         /// <summary>
         /// Returns the last clicked province index.
         /// </summary>
-        public int provinceLastClicked { get { return _provinceLastClicked; } }
-
-        int _provinceRegionLastClicked = -1;
+        public int provinceLastClicked { get; private set; } = -1;
 
         /// <summary>
         /// Returns the last clicked province region index.
         /// </summary>
-        public int provinceRegionLastClicked { get { return _provinceRegionLastClicked; } }
-
-        Region _provinceRegionHighlighted;
+        public int provinceRegionLastClicked { get; private set; } = -1;
 
         /// <summary>
         /// Returns currently highlightd province's region.
         /// </summary>
         /// <value>The country region highlighted.</value>
-        public Region provinceRegionHighlighted { get { return _provinceRegionHighlighted; } }
-
-        int _provinceRegionHighlightedIndex = -1;
+        public Region provinceRegionHighlighted { get; private set; }
 
         /// <summary>
         /// Returns current highlighted province's region index.
         /// </summary>
-        public int provinceRegionHighlightedIndex { get { return _provinceRegionHighlightedIndex; } }
+        public int provinceRegionHighlightedIndex { get; private set; } = -1;
 
         [SerializeField]
         bool

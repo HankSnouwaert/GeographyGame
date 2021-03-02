@@ -13,6 +13,7 @@ namespace WPM
 {
     public class GameManager : MonoBehaviour
     {
+        #region Variable Declaration 
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject playerPrefab;
@@ -34,41 +35,50 @@ namespace WPM
         //Prefabs
         private InventoryTourist touristPrefab;
         //Counters
-        public int globalTurnCounter = 0;
+        private int globalTurnCounter = 0;
         private int touristCounter = 0;
         private int score = 0;
-        public int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
+        private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
         private int turnsRemaining = 250;
         private int touristImageIndex = 0;
         //Flags
-        public bool cursorOverUI = false;
-        public bool cursorOverSelectable = false;
+        public bool CursorOverUI { get; set; } = false;
         public bool newObjectSelected = false;
         private bool menuOpen = false;
         private bool gameStart = true;
         //Game Settings
         private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn
-        public int trackingTime = 10; //Number of rounds a location is remembered
-        string startingCountry = "United States of America";
-        string startingProvince = "North Carolina";
+        public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered
+        readonly string startingCountry = "United States of America";
+        readonly string startingProvince = "North Carolina";
         public const int MIN_TIME_IN_REGION = 5;
         public const int MAX_TIME_IN_REGION = 10;
         //In-Game Objects
         private PlayerCharacter player;
-        public SelectableObject selectedObject = null;
-        public SelectableObject highlighedObject = null;
-        public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
-        //Recent Destination Lists
-        public List<int> recentProvinceDestinations = new List<int>();
-        public List<string> recentLandmarkDestinations = new List<string>();
-        public List<int> recentCountryDestinations = new List<int>();
+        private SelectableObject selectedObject = null;
+        public SelectableObject SelectedObject
+        {
+            get { return selectedObject; }
+            set
+            {
+                selectedObject = value;
+                if (selectedObject != null)
+                    newObjectSelected = true;
+            }
+        }
+        public SelectableObject HighlightedObject { get; set; } = null;
+        private Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
+        //Tourist Tracking Lists
+        public List<int> RecentProvinceDestinations { get; set; } = new List<int>();
+        public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();
+        public List<int> RecentCountryDestinations { get; set; } = new List<int>();
         //Map Regions
         private List<TouristRegion> touristRegions = new List<TouristRegion>();
-        public TouristRegion currentRegion;
-        public List<TouristRegion> regionsVisited = new List<TouristRegion>();
+        public TouristRegion CurrentRegion { get; set; }
+        private List<TouristRegion> regionsVisited = new List<TouristRegion>();
         //Landmark Lists
-        public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
-        public Dictionary<string, Landmark> culturalLandmarksByName = new Dictionary<string, Landmark>();
+        private Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
+        public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>();
         //MACROS
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         public const int POLITICAL_PROVINCE = 0;
@@ -83,6 +93,8 @@ namespace WPM
         private const int NUMBER_OF_TOURIST_IMAGES = 8;
 
         static GameManager _instance;
+
+        #endregion
 
         /// <summary>
         /// Instance of the game manager. Use this property to access World Map functionality.
@@ -159,7 +171,9 @@ namespace WPM
                 gameStart = false;
                 ClosePopUp();
             }
+
             UpdateHexInfoPanel();
+            
             //Open and close in game menu
             if (Input.GetKeyDown("escape"))
             {
@@ -219,32 +233,14 @@ namespace WPM
         /// </summary>
         void HandleOnCellClick(int cellIndex)
         {
-            if (!cursorOverUI && !menuOpen)
+            //Check that a hex is being clicked while an object is selected
+            if (!CursorOverUI && !menuOpen && selectedObject != null)
             {
-                if (selectedObject == null)
-                {
-                    /*
-                    if (worldGlobeMap.cells[cellIndex].tag != null)
-                    {
-                        //A new mappable object is being selected
-                        selectedObject = mappedObjects[worldGlobeMap.cells[cellIndex].tag];
-                        selectedObject.Selected();
-                    }
-                    else
-                    {
-                        //Nothing is selected, and an empty hex is being clicked
-                    }
-                    */
-                    //Nothing needs be done, if there is an object it will select itself
-                }
+                //Make sure your not clicking on a new object
+                if (newObjectSelected)
+                    newObjectSelected = false;  
                 else
-                {
-                    //A hex is being clicked while an object is selected
-                    if (newObjectSelected)
-                        newObjectSelected = false;  //Make sure your not clicking on a new object
-                    else
-                        selectedObject.OnCellClick(cellIndex);
-                }
+                    selectedObject.OnCellClick(cellIndex);
             }
         }
 
@@ -258,8 +254,8 @@ namespace WPM
             //Run any on cell enter method for the selected object
             if (selectedObject != null)
             {
-                if (cursorOverSelectable)
-                    selectedObject.OnSelectableEnter(highlighedObject);
+                if (HighlightedObject != null)
+                    selectedObject.OnSelectableEnter(HighlightedObject);
                 else
                     selectedObject.OnCellEnter(cellIndex);
             }
@@ -273,13 +269,18 @@ namespace WPM
         void HandleOnCellExit(int cellIndex)
         {
             Province province = worldGlobeMap.provinceHighlighted;
-            if (province == null || cursorOverUI)
+            if (province == null || CursorOverUI)
                 hexInfoPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Called whenver the hex info panel needs to be updated with information regarding
+        /// what the cursor is over.  NOTE: Will need to be updated to work when the cursor 
+        /// is over oceans or areas that are not a province
+        /// </summary>
         public void UpdateHexInfoPanel()
         {
-            if (!cursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
+            if (!CursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
                 //Get the hex's province and country
                 Province province = worldGlobeMap.provinceHighlighted;
@@ -298,12 +299,12 @@ namespace WPM
                     displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;
 
                     //Check to see if cursor is over a landmark
-                    if (highlighedObject != null && highlighedObject != player)
+                    if (HighlightedObject != null && HighlightedObject != player)
                     {
-                        if (highlighedObject.objectName != null)
+                        if (HighlightedObject.objectName != null)
                         {
                             //Add the landmark to the string
-                            displayText = displayText + System.Environment.NewLine + "Landmark: " + highlighedObject.objectName;
+                            displayText = displayText + System.Environment.NewLine + "Landmark: " + HighlightedObject.objectName;
                         }
                     }
                     //Display the string
@@ -657,22 +658,6 @@ namespace WPM
                     landmarks.Add(castedLandmark);
                 }
             }
-            
-            /*
-            string objectsInCell = worldGlobeMap.cells[cellIndex].tag;
-            if (objectsInCell != null && objectsInCell != "")
-            {
-                if (objectsInCell.Contains(","))
-                {
-
-                }
-                else
-                {
-                    landmarks[0] = culturalLandmarks[objectsInCell];
-                }
-                
-            }
-            */
             return landmarks; 
         }
 
@@ -698,6 +683,11 @@ namespace WPM
             return countryIndexes;
         }
 
+        /// <summary>
+        ///  Orient the camera on a given location
+        /// </summary>
+        /// <param name="vectorLocation"></param> The location to orient on>
+        /// <returns></returns> 
         public void OrientOnLocation(Vector3 vectorLocation)
         {
             worldGlobeMap.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
@@ -705,15 +695,10 @@ namespace WPM
             worldGlobeMap.yaw = 0;
         }
 
-        public void SetHighlightedObject(SelectableObject selectableObject)
-        {
-            highlighedObject = selectableObject;
-            if (selectableObject != null)
-                cursorOverSelectable = true;
-            else
-                cursorOverSelectable = false;
-        }
-
+        /// <summary>
+        ///  Instantiate provinces and mappable objects based on settings file
+        ///  NOTE: Settings file is not currently used and the settings have been hard coded
+        /// </summary>
         void ApplyGlobeSettings()
         {
             Debug.Log("Applying Globe Settings");
@@ -733,7 +718,6 @@ namespace WPM
             provinceSettings[TERRAIN] = false;
             provinceSettings[CLIMATE] = false;
 
-            //Add loop for all countries here
             foreach (Country country in worldGlobeMap.countries)
                 {
                     if (country.continent == "North America")
@@ -837,7 +821,6 @@ namespace WPM
                                     float playerSize = player.GetSize();
                                     worldGlobeMap.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
                                     string playerID = player.GetInstanceID().ToString();
-                                    //worldGlobeMap.cells[startingCellIndex].tag = playerID;
                                     worldGlobeMap.cells[startingCellIndex].occupants.Add(player);
                                     mappedObjects.Add(playerID, player);
                                 }
@@ -855,18 +838,11 @@ namespace WPM
                                     landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
                                     landmarkComponent.cell.canCross = false;
                                     worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
-                                    
                                     string landmarkID = landmarkComponent.GetInstanceID().ToString();
-                                    /*
-                                    if (worldGlobeMap.cells[landmarkComponent.cellIndex].tag == null)
-                                        worldGlobeMap.cells[landmarkComponent.cellIndex].tag = landmarkID;
-                                    else
-                                        worldGlobeMap.cells[landmarkComponent.cellIndex].tag = worldGlobeMap.cells[landmarkComponent.cellIndex].tag + "," + landmarkID;
-                                    */
                                     worldGlobeMap.cells[landmarkComponent.cellIndex].occupants.Add(landmarkComponent);
                                     mappedObjects.Add(landmarkID, landmarkComponent);
                                     culturalLandmarks.Add(landmarkID, landmarkComponent);
-                                    culturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);
+                                    CulturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);
                                 }
                             }
 
@@ -877,6 +853,9 @@ namespace WPM
             //}
         }
 
+        /// <summary>
+        ///  Instantiate all tourist regions and set initial region
+        /// </summary>
         void InitTouristRegions()
         {
             #region Create North East Region
@@ -929,6 +908,7 @@ namespace WPM
             //Landmarks
             northAmericaUSMidWestMidAtlantic.landmarks.Add("The Statue Of Liberty");
             northAmericaUSMidWestMidAtlantic.landmarks.Add("The Washington Monument");
+            northAmericaUSMidWestMidAtlantic.landmarks.Add("The Lincoln Memorial");
             northAmericaUSMidWestMidAtlantic.landmarks.Add("The Gateway Arch");
             northAmericaUSMidWestMidAtlantic.landmarks.Add("The CN Tower");
             northAmericaUSMidWestMidAtlantic.landmarks.Add("Parliament Hill");
@@ -957,6 +937,7 @@ namespace WPM
             northAmericaUSSouthEast.provinces.Add(3889); //Oklahoma
             //Landmarks
             northAmericaUSSouthEast.landmarks.Add("The Washington Monument");
+            northAmericaUSMidWestMidAtlantic.landmarks.Add("The Lincoln Memorial");
             #endregion
 
             #region Create US South West
@@ -976,6 +957,7 @@ namespace WPM
             //Landmarks
             northAmericaSouthWest.landmarks.Add("The Hoover Dam");
             northAmericaSouthWest.landmarks.Add("The Golden Gate Bridge");
+            northAmericaSouthWest.landmarks.Add("Mesa Verde National Park");
             //Countries
             northAmericaSouthWest.countries.Add(165); //Mexico
             #endregion
@@ -1083,7 +1065,7 @@ namespace WPM
 
             #endregion
 
-            currentRegion = northAmericaUSSouthEast;
+            CurrentRegion = northAmericaUSSouthEast;
         }
 
         /// <summary> 
@@ -1107,12 +1089,17 @@ namespace WPM
             if(touristsInCurrentRegion >= rand)
             {
                 //Switch regions
-                int newRegionNeighbourIndex = Random.Range(0, currentRegion.neighbouringRegions.Count - 1);
-                currentRegion = currentRegion.neighbouringRegions[newRegionNeighbourIndex];
+                int newRegionNeighbourIndex = Random.Range(0, CurrentRegion.neighbouringRegions.Count - 1);
+                CurrentRegion = CurrentRegion.neighbouringRegions[newRegionNeighbourIndex];
                 touristsInCurrentRegion = 0;
             }
         }
 
+        /// <summary>
+        ///  Update the games current score
+        /// </summary>
+        /// <param name="scoreModification"></param> The amount the score should be changed by>
+        /// <returns></returns> 
         public void UpdateScore(int scoreModification)
         {
             score = score + scoreModification;
@@ -1121,9 +1108,9 @@ namespace WPM
 
         /// <summary> 
         /// Update the turns remaining until the game ends and check if game has ended
-        /// Inputs:
-        ///     turnModification: The number of turns the remaining turns are being updated by
         /// </summary>
+        /// <param name="turnModification"></param> The number of turns the reminaing turns
+        /// are updated by
         public void UpdateRemainingTurns(int turnModification)
         {
             turnsRemaining = turnsRemaining + turnModification;
@@ -1144,40 +1131,60 @@ namespace WPM
             gameOverPanel.SetActive(true);
             inventoryPanel.SetActive(false);
             dialogPanel.SetActive(false);
-            cursorOverUI = true;
+            CursorOverUI = true;
             menuOpen = true;
             gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
             popUpPanel.SetActive(false);
         }
 
+        /// <summary> 
+        /// Resets the game by reloading the scene
+        /// </summary>
         public void GameReset()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
+        /// <summary> 
+        /// Exit the application
+        /// </summary>
         public void ExitGame()
         {
             Application.Quit();
         }
 
+        /// <summary> 
+        /// Open in game menu
+        /// </summary>
         public void OpenGameMenu()
         {
             gameMenuPanel.SetActive(true);
             menuOpen = true;
         }
 
+        /// <summary> 
+        /// Close in game menu
+        /// </summary>
         public void CloseGameMenu()
         {
             gameMenuPanel.SetActive(false);
             menuOpen = false;
         }
 
+        /// <summary> 
+        /// Display a popup notification with a given message
+        /// </summary>
+        /// <param name="displayText"></param> The text to be displayed on the pop up
+        /// are updated by
         public void DisplayPopUp(string displayText)
         {
             popUpPanel.SetActive(true);
             popUpMessage.text = displayText;
         }
 
+        /// <summary> 
+        /// Close active pop up
+        /// </summary>
         public void ClosePopUp()
         {
             popUpPanel.SetActive(false);
@@ -1185,12 +1192,13 @@ namespace WPM
 
         public void DropOff(bool success)
         {
-            /*
+            /*  This will be for drop off sound effects
             if (success)
                 dropOffSuccess.Play();
             else
                 dropOffFailure.Play();
-                */
+            */    
         }
+        
     }
 }

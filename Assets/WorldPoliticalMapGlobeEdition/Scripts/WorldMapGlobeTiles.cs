@@ -238,51 +238,37 @@ namespace WPM {
         /// <summary>
         /// Gets current active tile downloads
         /// </summary>
-        public int tileConcurrentLoads {
-            get { return _concurrentLoads; }
-        }
+        public int tileConcurrentLoads { get; private set; }
 
         /// <summary>
         /// Gets current tile zoom level
         /// </summary>
-        public int tileCurrentZoomLevel {
-            get { return _currentZoomLevel; }
-        }
+        public int tileCurrentZoomLevel { get; private set; }
 
         /// <summary>
         /// Gets number of total tiles downloaded from web
         /// </summary>
-        public int tileWebDownloads {
-            get { return _webDownloads; }
-        }
+        public int tileWebDownloads { get; private set; }
 
         /// <summary>
         /// Gets number of total tiles downloaded from the application Resources folder
         /// </summary>
-        public int tileResourceDownloads {
-            get { return _resourceLoads; }
-        }
+        public int tileResourceDownloads { get; private set; }
 
         /// <summary>
         /// Gets total size in byte sof tiles downloaded from web
         /// </summary>
-        public long tileWebDownloadsTotalSize {
-            get { return _webDownloadTotalSize; }
-        }
+        public long tileWebDownloadsTotalSize { get; private set; }
 
         /// <summary>
         /// Gets number of total tiles downloaded from local cache
         /// </summary>
-        public int tileCacheLoads {
-            get { return _cacheLoads; }
-        }
+        public int tileCacheLoads { get; private set; }
 
         /// <summary>
         /// Gets total size in byte sof tiles downloaded from local cache
         /// </summary>
-        public long tileCacheLoadsTotalSize {
-            get { return _cacheLoadTotalSize; }
-        }
+        public long tileCacheLoadsTotalSize { get; private set; }
 
         [SerializeField]
         TILE_SERVER _tileServer = TILE_SERVER.OpenStreeMap;
@@ -354,16 +340,12 @@ namespace WPM {
         /// <summary>
         /// Returns last logged error
         /// </summary>
-        public string tileLastError {
-            get { return _tileLastError; }
-        }
+        public string tileLastError { get; private set; }
 
         /// <summary>
         /// Returns last logged error date & time
         /// </summary>
-        public DateTime tileLastErrorDate {
-            get { return _tileLastErrorDate; }
-        }
+        public DateTime tileLastErrorDate { get; private set; }
 
 
         [SerializeField]
@@ -471,9 +453,7 @@ namespace WPM {
         /// <summary>
         /// Returns the current disk usage of the tile cache in bytes.
         /// </summary>
-        public long tileCurrentCacheUsage {
-            get { return _tileCurrentCacheUsage; }
-        }
+        public long tileCurrentCacheUsage { get; private set; }
 
 
 

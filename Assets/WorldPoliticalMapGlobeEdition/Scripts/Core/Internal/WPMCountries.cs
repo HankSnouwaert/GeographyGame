@@ -1228,13 +1228,13 @@ namespace WPM {
 			countryIndex = regionIndex = -1;
 
 			// Check if current country is still under mouse
-			if (_countryHighlightedIndex >= 0 && _countryHighlightedIndex < countries.Length && _countryHighlighted != null) {
-				if (_countryHighlighted.regions != null && _countryRegionHighlightedIndex >= 0 && _countryRegionHighlightedIndex < _countryHighlighted.regions.Count) {
-					Region region = _countryHighlighted.regions [_countryRegionHighlightedIndex];
+			if (countryHighlightedIndex >= 0 && countryHighlightedIndex < countries.Length && countryHighlighted != null) {
+				if (countryHighlighted.regions != null && countryRegionHighlightedIndex >= 0 && countryRegionHighlightedIndex < countryHighlighted.regions.Count) {
+					Region region = countryHighlighted.regions [countryRegionHighlightedIndex];
 					if (region.Contains (mousePos)) {
-						maxArea = _countryHighlighted.regionsRect2DArea; // don't check for bigger countries since this is at least still highlighted - just check if any other smaller country inside this one can be highlighted
-						countryIndex = _countryHighlightedIndex;
-						regionIndex = _countryRegionHighlightedIndex;
+						maxArea = countryHighlighted.regionsRect2DArea; // don't check for bigger countries since this is at least still highlighted - just check if any other smaller country inside this one can be highlighted
+						countryIndex = countryHighlightedIndex;
+						regionIndex = countryRegionHighlightedIndex;
 					}
 				}
 			}
@@ -1304,29 +1304,29 @@ namespace WPM {
 		void HideCountryRegionHighlight () {
 			HideProvinceRegionHighlight ();
 			HideCityHighlight ();
-			if (_countryRegionHighlightedIndex >= 0 && _countryRegionHighlightedIndex >= 0) {
-				if (_countryHighlighted != null) {
-					int rCount = _countryHighlighted.regions.Count;
+			if (countryRegionHighlightedIndex >= 0 && countryRegionHighlightedIndex >= 0) {
+				if (countryHighlighted != null) {
+					int rCount = countryHighlighted.regions.Count;
 					for (int k = 0; k < rCount; k++) {
 						HideCountryRegionHighlightSingle (k);
 					}
 				}
 				countryRegionHighlightedObj = null;
 				// Raise exit event
-				if (OnCountryExit != null && _countryHighlightedIndex >= 0)
-					OnCountryExit (_countryHighlightedIndex, _countryRegionHighlightedIndex);
+				if (OnCountryExit != null && countryHighlightedIndex >= 0)
+					OnCountryExit (countryHighlightedIndex, countryRegionHighlightedIndex);
 			}
 			hudMatCountry.mainTexture = null;
 
-			_countryHighlighted = null;
-			_countryHighlightedIndex = -1;
-			_countryRegionHighlighted = null;
-			_countryRegionHighlightedIndex = -1;
+			countryHighlighted = null;
+			countryHighlightedIndex = -1;
+			countryRegionHighlighted = null;
+			countryRegionHighlightedIndex = -1;
 		}
 
         void HideCountryRegionHighlightSingle(int regionIndex) {
-            int cacheIndex = GetCacheIndexForCountryRegion(_countryHighlightedIndex, regionIndex);
-            Region region = _countryHighlighted.regions[regionIndex];
+            int cacheIndex = GetCacheIndexForCountryRegion(countryHighlightedIndex, regionIndex);
+            Region region = countryHighlighted.regions[regionIndex];
             GameObject surf;
             surfaces.TryGetValue(cacheIndex, out surf);
             if (surf == null) { 
@@ -1353,7 +1353,7 @@ namespace WPM {
 			return null; 
 #else
 			if (countryRegionHighlightedObj != null) {
-				if (countryIndex == _countryHighlightedIndex && regionIndex == _countryRegionHighlightedIndex && !refreshGeometry)
+				if (countryIndex == countryHighlightedIndex && regionIndex == countryRegionHighlightedIndex && !refreshGeometry)
 					return countryRegionHighlightedObj;
 				HideCountryRegionHighlight ();
 			}
@@ -1375,10 +1375,10 @@ namespace WPM {
 					decorator.ForceUpdateDecorators ();
 				}
 			}
-			_countryHighlightedIndex = countryIndex;
-			_countryRegionHighlighted = countries [countryIndex].regions [regionIndex];
-			_countryRegionHighlightedIndex = regionIndex;
-			_countryHighlighted = countries [countryIndex];
+			countryHighlightedIndex = countryIndex;
+			countryRegionHighlighted = countries [countryIndex].regions [regionIndex];
+			countryRegionHighlightedIndex = regionIndex;
+			countryHighlighted = countries [countryIndex];
 
 			return countryRegionHighlightedObj;
 #endif
@@ -1433,7 +1433,7 @@ namespace WPM {
 		}
 
 		bool CheckGlobeDistanceForHighlight (Region region, float threshold) {
-			if (_showTiles && _currentZoomLevel > _tileMaxZoomLevelFrontiers) return false;
+			if (_showTiles && tileCurrentZoomLevel > _tileMaxZoomLevelFrontiers) return false;
 			Camera cam = mainCamera;
 			Vector3 regionTR = Conversion.GetSpherePointFromLatLon (region.latlonRect2D.max);
 			Vector3 regionBL = Conversion.GetSpherePointFromLatLon (region.latlonRect2D.min);

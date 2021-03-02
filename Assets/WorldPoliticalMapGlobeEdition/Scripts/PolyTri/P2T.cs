@@ -32,7 +32,7 @@
 
 namespace WPM.Poly2Tri {
 				public static class P2T {
-								private static TriangulationAlgorithm _defaultAlgorithm = TriangulationAlgorithm.DTSweep;
+								private static readonly TriangulationAlgorithm _defaultAlgorithm = TriangulationAlgorithm.DTSweep;
 
 								public static void Triangulate (PolygonSet ps) {
 												foreach (Polygon p in ps.Polygons) {

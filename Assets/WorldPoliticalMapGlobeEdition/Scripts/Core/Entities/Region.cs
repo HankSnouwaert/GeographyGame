@@ -43,13 +43,11 @@ namespace WPM {
             get { return _latlonCenter; }
             set {
                 _latlonCenter = value;
-                _sphereCenter = Conversion.GetSpherePointFromLatLon(_latlonCenter);
+                sphereCenter = Conversion.GetSpherePointFromLatLon(_latlonCenter);
             }
         }
 
-        Vector3 _sphereCenter;
-
-        public Vector3 sphereCenter { get { return _sphereCenter; } }
+        public Vector3 sphereCenter { get; private set; }
 
         Rect _latlonRect2D;
 
@@ -60,15 +58,11 @@ namespace WPM {
             get { return _latlonRect2D; }
             set {
                 _latlonRect2D = value;
-                _rect2Dbillboard = Conversion.GetBillboardRectFromLatLonRect(_latlonRect2D);
+                rect2Dbillboard = Conversion.GetBillboardRectFromLatLonRect(_latlonRect2D);
             }
         }
 
-        Rect _rect2Dbillboard;
-
-        public Rect rect2Dbillboard {
-            get { return _rect2Dbillboard; }
-        }
+        public Rect rect2Dbillboard { get; private set; }
 
         /// <summary>
         /// Equals to rect2D.width * rect2D.height. Precomputed for performance purposes in comparison functions
@@ -109,8 +103,8 @@ namespace WPM {
             Region c = new Region(entity, regionIndex);
             c._latlonCenter = this._latlonCenter;
             c._latlonRect2D = this._latlonRect2D;
-            c._rect2Dbillboard = this._rect2Dbillboard;
-            c._sphereCenter = this._sphereCenter;
+            c.rect2Dbillboard = this.rect2Dbillboard;
+            c.sphereCenter = this.sphereCenter;
             c.customMaterial = this.customMaterial;
             c.customTextureScale = this.customTextureScale;
             c.customTextureOffset = this.customTextureOffset;
@@ -129,7 +123,7 @@ namespace WPM {
             _latlon = new Vector2[0];
             _spherePoints = new Vector3[0];
             _latlonRect2D = new Rect(0, 0, 0, 0);
-            _rect2Dbillboard = _latlonRect2D;
+            rect2Dbillboard = _latlonRect2D;
         }
 
 

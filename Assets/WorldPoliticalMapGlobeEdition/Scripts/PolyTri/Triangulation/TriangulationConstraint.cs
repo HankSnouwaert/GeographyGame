@@ -59,9 +59,7 @@ namespace WPM.Poly2Tri {
 	}
  
 	public class TriangulationConstraint : Edge {
-		private uint mContraintCode = 0;
-
-		public TriangulationPoint P {
+        public TriangulationPoint P {
 			get { return mP as TriangulationPoint; } 
 			set {
 				// Note:  intentionally use != instead of !Equals() because we
@@ -85,14 +83,14 @@ namespace WPM.Poly2Tri {
 			}
 		}
 
-		public uint ConstraintCode { get { return mContraintCode; } }
+        public uint ConstraintCode { get; private set; } = 0;
 
 
-		/// <summary>
-		/// Give two points in any order. Will always be ordered so
-		/// that q.y > p.y and q.x > p.x if same y value 
-		/// </summary>
-		public TriangulationConstraint (TriangulationPoint p1, TriangulationPoint p2) {
+        /// <summary>
+        /// Give two points in any order. Will always be ordered so
+        /// that q.y > p.y and q.x > p.x if same y value 
+        /// </summary>
+        public TriangulationConstraint (TriangulationPoint p1, TriangulationPoint p2) {
 			mP = p1;
 			mQ = p2;
 			if (p1.Y > p2.Y) {
@@ -112,11 +110,11 @@ namespace WPM.Poly2Tri {
 		}
 
 		public override string ToString () {
-			return "[P=" + P.ToString () + ", Q=" + Q.ToString () + " : {" + mContraintCode.ToString () + "}]";
+			return "[P=" + P.ToString () + ", Q=" + Q.ToString () + " : {" + ConstraintCode.ToString () + "}]";
 		}
         
 		public void CalculateContraintCode () {
-			mContraintCode = TriangulationConstraint.CalculateContraintCode (P, Q);
+			ConstraintCode = TriangulationConstraint.CalculateContraintCode (P, Q);
 		}
 
 		public static uint CalculateContraintCode (TriangulationPoint p, TriangulationPoint q) {

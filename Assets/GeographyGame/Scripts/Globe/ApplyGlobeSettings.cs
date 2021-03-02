@@ -7,7 +7,7 @@ namespace WPM
 {
     public class GlobeManager : MonoBehaviour
     {
-        WorldMapGlobe map;
+        readonly WorldMapGlobe map;
 
         void Start()
         {

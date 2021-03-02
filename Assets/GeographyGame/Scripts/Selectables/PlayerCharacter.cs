@@ -9,14 +9,14 @@ namespace WPM
 {
     public class PlayerCharacter : MappableObject
     {
-        int travelRange = 30;
+        readonly int travelRange = 30;
         //int distanceTraveled = 0;
         public int destination = 0;
         bool moving = false;
         public List<int> pathIndices = null;
-        private float size = 0.0003f;
+        private readonly float size = 0.0003f;
         public List<InventoryItem> inventory = new List<InventoryItem>();
-        private int inventorySize = 7;
+        private readonly int inventorySize = 7;
         public bool stop = false;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
@@ -25,7 +25,7 @@ namespace WPM
         InventoryGUI inventoryGUI;
         List<int>[] cellsInRange;
         Dictionary<string, int> climateCosts = new Dictionary<string, int>();
-        Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
+        readonly Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
         private const int STARTING_NUMBER_OF_TOURISTS = 2;
 
@@ -221,7 +221,7 @@ namespace WPM
             if (selected)
             {
                 map.SetCellColor(cellLocation, Color.green, true);
-                if (!gameManager.cursorOverUI && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0)
+                if (!gameManager.CursorOverUI && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0)
                 {
                     OnCellEnter(gameManager.worldGlobeMap.lastHighlightedCellIndex);
                 }
