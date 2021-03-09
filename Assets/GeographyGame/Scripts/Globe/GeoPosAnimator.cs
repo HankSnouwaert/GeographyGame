@@ -75,6 +75,10 @@ namespace WPM
             {
                 latLon.Clear();
             }
+
+            //ERROR TEST
+            //pathIndices = null;
+
             foreach (var hexIndex in pathIndices)
             {
                 latLon.Add(map.cells[hexIndex].latlonCenter);

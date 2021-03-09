@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace WPM
 {
 
-    public class DialogGUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class GUIPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         private GameManager gameManager;
 
@@ -25,13 +25,11 @@ namespace WPM
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
-            Debug.Log(gameObject.name + ": I was entered!");
             gameManager.CursorOverUI = true;
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
-            Debug.Log(gameObject.name + ": I was exited!");
             gameManager.CursorOverUI = false;
 
         }

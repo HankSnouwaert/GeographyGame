@@ -24,6 +24,7 @@ namespace WPM
         public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
         public GameObject popUpPanel;
+        public GameObject errorPanel;
         public InventoryGUI inventoryGUI;
         public AudioSource dropOffSuccess;
         public AudioSource dropOffFailure;
@@ -32,6 +33,8 @@ namespace WPM
         private Text scoreInfo;
         private Text gameOverMessage;
         private Text popUpMessage;
+        private Text errorMessage;
+        private InputField stackTraceInputField;
         //Prefabs
         private InventoryTourist touristPrefab;
         //Counters
@@ -42,10 +45,15 @@ namespace WPM
         private int turnsRemaining = 250;
         private int touristImageIndex = 0;
         //Flags
-        public bool CursorOverUI { get; set; } = false;
+        public bool CursorOverUI {
+            get;
+            set;
+        } = false;
+        private bool closingGUIPanel = false;
         public bool newObjectSelected = false;
-        private bool menuOpen = false;
+        private bool gamePaused = false;
         private bool gameStart = true;
+        private int errorState = 0;
         //Game Settings
         private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn
         public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered
@@ -80,14 +88,21 @@ namespace WPM
         private Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
         public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>();
         //MACROS
+        //Province Attributes
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         public const int POLITICAL_PROVINCE = 0;
         public const int TERRAIN = 1;
         public const int CLIMATE = 2;
+        //Mount Points
         public const int START_POINT = 0;
         public const int NATURAL_POINT = 1;
         public const int CULTURAL_POINT = 2;
-        public const string CELL_PLAYER = "Player";
+        //public const string CELL_PLAYER = "Player";
+        //Error States
+        public const int CLOSE_WINDOW = 0;
+        public const int RESTART_SCENE = 1;
+        public const int CLOSE_APPLICATION = 2;
+
         //Tourist Image Management
         private string[] touristImageFiles;
         private const int NUMBER_OF_TOURIST_IMAGES = 8;
@@ -117,7 +132,16 @@ namespace WPM
 
         void Start()
         {
-            ApplyGlobeSettings();
+            try
+            {
+                ApplyGlobeSettings();
+            }
+            catch (System.Exception ex)
+            {
+                errorState = CLOSE_APPLICATION;
+                DisplayError(ex.Message, ex.StackTrace);
+            }
+
             InitTouristRegions();
 
             // Setup grid events
@@ -150,6 +174,12 @@ namespace WPM
             popUpPanel.SetActive(false);
             textObject = popUpPanel.transform.GetChild(0);
             popUpMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            //Error Message Panel
+            errorPanel.SetActive(false);
+            textObject = errorPanel.transform.GetChild(0);
+            errorMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            Transform scrollViewTextObject = errorPanel.transform.GetChild(1).GetChild(0).GetChild(0);
+            stackTraceInputField = scrollViewTextObject.gameObject.GetComponent(typeof(InputField)) as InputField;
 
             //Set Tourist Images
             touristImageFiles = new string[8];
@@ -233,15 +263,45 @@ namespace WPM
         /// </summary>
         void HandleOnCellClick(int cellIndex)
         {
-            //Check that a hex is being clicked while an object is selected
-            if (!CursorOverUI && !menuOpen && selectedObject != null)
+            //Check if a GUI panel is beling closed
+            if (closingGUIPanel)
             {
-                //Make sure your not clicking on a new object
-                if (newObjectSelected)
-                    newObjectSelected = false;  
-                else
-                    selectedObject.OnCellClick(cellIndex);
+                CursorOverUI = false;
+                closingGUIPanel = false;
+                HandleOnCellEnter(cellIndex);
             }
+            else
+            {
+                //Check that a hex is being clicked while an object is selected
+                if (!CursorOverUI && !gamePaused && selectedObject != null)
+                {
+                    //Make sure your not clicking on a new object
+                    if (newObjectSelected)
+                        newObjectSelected = false;
+                    else
+                        try
+                        {
+                            selectedObject.OnCellClick(cellIndex);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            //Get Stack Trace
+                            string combinedStackTrace = ex.StackTrace;
+                            var inner = ex.InnerException;
+                            while (inner != null)
+                            {
+                                combinedStackTrace = combinedStackTrace + inner.StackTrace;
+                                inner = inner.InnerException;
+                            }
+
+                            if (errorState < CLOSE_WINDOW)
+                                errorState = CLOSE_WINDOW;
+
+                            DisplayError(ex.Message, combinedStackTrace);
+                        }
+                }
+            }
+           
         }
 
         /// <summary>
@@ -252,7 +312,7 @@ namespace WPM
         void HandleOnCellEnter(int cellIndex)
         { 
             //Run any on cell enter method for the selected object
-            if (selectedObject != null)
+            if (!CursorOverUI && !gamePaused && selectedObject != null)
             {
                 if (HighlightedObject != null)
                     selectedObject.OnSelectableEnter(HighlightedObject);
@@ -268,9 +328,12 @@ namespace WPM
         /// </summary>
         void HandleOnCellExit(int cellIndex)
         {
-            Province province = worldGlobeMap.provinceHighlighted;
-            if (province == null || CursorOverUI)
-                hexInfoPanel.SetActive(false);
+            if (!CursorOverUI && !gamePaused)
+            {
+                Province province = worldGlobeMap.provinceHighlighted;
+                if (province == null || CursorOverUI)
+                    hexInfoPanel.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -280,7 +343,7 @@ namespace WPM
         /// </summary>
         public void UpdateHexInfoPanel()
         {
-            if (!CursorOverUI && !menuOpen && worldGlobeMap.lastHighlightedCellIndex >= 0)
+            if (!CursorOverUI && !gamePaused && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
                 //Get the hex's province and country
                 Province province = worldGlobeMap.provinceHighlighted;
@@ -1132,7 +1195,7 @@ namespace WPM
             inventoryPanel.SetActive(false);
             dialogPanel.SetActive(false);
             CursorOverUI = true;
-            menuOpen = true;
+            gamePaused = true;
             gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
             popUpPanel.SetActive(false);
         }
@@ -1159,7 +1222,7 @@ namespace WPM
         public void OpenGameMenu()
         {
             gameMenuPanel.SetActive(true);
-            menuOpen = true;
+            gamePaused = true;
         }
 
         /// <summary> 
@@ -1168,7 +1231,8 @@ namespace WPM
         public void CloseGameMenu()
         {
             gameMenuPanel.SetActive(false);
-            menuOpen = false;
+            gamePaused = false;
+            closingGUIPanel = true;
         }
 
         /// <summary> 
@@ -1188,6 +1252,37 @@ namespace WPM
         public void ClosePopUp()
         {
             popUpPanel.SetActive(false);
+        }
+
+        /// <summary> 
+        /// Display an error popup with a given error message
+        /// </summary>
+        /// <param name="errorText"></param> The error text to be displayed on the pop up
+        /// are updated by
+        public void DisplayError(string errorText, string stackTraceText)
+        {
+            errorPanel.SetActive(true);
+            errorMessage.text = "Error: " + errorText;
+            stackTraceInputField.text = stackTraceText;
+        }
+
+        public void ErrorButton()
+        {
+            errorPanel.SetActive(false);
+            closingGUIPanel = true;
+            switch (errorState)
+            {
+                case (CLOSE_WINDOW):
+                    break;
+                case (RESTART_SCENE):
+                    GameReset();
+                    break;
+                case (CLOSE_APPLICATION):
+                    ExitGame();
+                    break;
+                default:
+                    break;
+            }   
         }
 
         public void DropOff(bool success)

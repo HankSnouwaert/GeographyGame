@@ -109,8 +109,6 @@ namespace WPM
             {
                 if (moving)
                     stop = true;
-               // else
-                   // Deselected();
             }
             //Attempt to move to new location
             else 
