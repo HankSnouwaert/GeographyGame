@@ -43,7 +43,7 @@ namespace WPM
         public virtual void OnMouseExit()
         {
             gameManager.HighlightedObject = null;
-            gameManager.UpdateHexInfoPanel();
+            gameManager.UpdateHexInfoPanel(); 
         }
 
         public virtual void Selected()

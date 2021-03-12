@@ -16,6 +16,7 @@ namespace WPM
         #region Variable Declaration 
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
+        public CellManager cellManager;
         public GameObject playerPrefab;
         public GameObject inventoryPanel;
         public GameObject dialogPanel;
@@ -45,15 +46,11 @@ namespace WPM
         private int turnsRemaining = 250;
         private int touristImageIndex = 0;
         //Flags
-        public bool CursorOverUI {
-            get;
-            set;
-        } = false;
-        private bool closingGUIPanel = false;
-        public bool newObjectSelected = false;
-        private bool gamePaused = false;
+        public bool CursorOverUI {get; set;} = false;
+        public bool ClosingGUIPanel { get; set; } = false;
+        public bool GamePaused { get; set; } = false;
         private bool gameStart = true;
-        private int errorState = 0;
+        public ErrorState errorState = ErrorState.close_window;
         //Game Settings
         private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn
         public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered
@@ -63,7 +60,7 @@ namespace WPM
         public const int MAX_TIME_IN_REGION = 10;
         //In-Game Objects
         private PlayerCharacter player;
-        private SelectableObject selectedObject = null;
+        private SelectableObject selectedObject;
         public SelectableObject SelectedObject
         {
             get { return selectedObject; }
@@ -71,9 +68,10 @@ namespace WPM
             {
                 selectedObject = value;
                 if (selectedObject != null)
-                    newObjectSelected = true;
+                    cellManager.NewObjectSelected = true;
             }
         }
+
         public SelectableObject HighlightedObject { get; set; } = null;
         private Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
         //Tourist Tracking Lists
@@ -138,16 +136,18 @@ namespace WPM
             }
             catch (System.Exception ex)
             {
-                errorState = CLOSE_APPLICATION;
+                errorState = ErrorState.close_application;
                 DisplayError(ex.Message, ex.StackTrace);
             }
 
             InitTouristRegions();
 
             // Setup grid events
+            /*
             worldGlobeMap.OnCellEnter += HandleOnCellEnter;
             worldGlobeMap.OnCellExit += HandleOnCellExit;
             worldGlobeMap.OnCellClick += HandleOnCellClick;
+            */
 
             //Get Prefabs
             touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
@@ -256,6 +256,8 @@ namespace WPM
             }
         }
 
+        //CELL MANAGER
+        /*
         /// <summary>
         /// Called whenever a hex cell is clicked
         /// Inputs:
@@ -264,16 +266,16 @@ namespace WPM
         void HandleOnCellClick(int cellIndex)
         {
             //Check if a GUI panel is beling closed
-            if (closingGUIPanel)
+            if (ClosingGUIPanel)
             {
                 CursorOverUI = false;
-                closingGUIPanel = false;
+                ClosingGUIPanel = false;
                 HandleOnCellEnter(cellIndex);
             }
             else
             {
                 //Check that a hex is being clicked while an object is selected
-                if (!CursorOverUI && !gamePaused && selectedObject != null)
+                if (!CursorOverUI && !GamePaused && selectedObject != null)
                 {
                     //Make sure your not clicking on a new object
                     if (newObjectSelected)
@@ -336,6 +338,10 @@ namespace WPM
             }
         }
 
+        */
+
+        //HEX INFO PANEL
+
         /// <summary>
         /// Called whenver the hex info panel needs to be updated with information regarding
         /// what the cursor is over.  NOTE: Will need to be updated to work when the cursor 
@@ -343,7 +349,7 @@ namespace WPM
         /// </summary>
         public void UpdateHexInfoPanel()
         {
-            if (!CursorOverUI && !gamePaused && worldGlobeMap.lastHighlightedCellIndex >= 0)
+            if (!CursorOverUI && !GamePaused && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
                 //Get the hex's province and country
                 Province province = worldGlobeMap.provinceHighlighted;
@@ -377,13 +383,17 @@ namespace WPM
             }
         }
 
+        //THIS SHOULD BE REMOVED
+
         /// <summary>
         /// Called whenever the selected object needs to be cleared
         /// </summary>
         public void DeselectObject()
         {
-            selectedObject = null;
+            SelectedObject = null;
         }
+
+        //RANGE CHECKING
 
         /// <summary> 
         /// Get all cells within a certain range (measured in cells) of a target cell
@@ -619,6 +629,8 @@ namespace WPM
 
         }
 
+        //CELL CHECKING
+
         /// <summary> 
         /// Get all provinces that overlap with a given cell
         /// Inputs:
@@ -746,6 +758,8 @@ namespace WPM
             return countryIndexes;
         }
 
+        //CAMERA CONTROLS
+
         /// <summary>
         ///  Orient the camera on a given location
         /// </summary>
@@ -757,6 +771,8 @@ namespace WPM
             worldGlobeMap.pitch = 0;
             worldGlobeMap.yaw = 0;
         }
+
+        //GLOBE INITIALIZATION
 
         /// <summary>
         ///  Instantiate provinces and mappable objects based on settings file
@@ -1195,7 +1211,7 @@ namespace WPM
             inventoryPanel.SetActive(false);
             dialogPanel.SetActive(false);
             CursorOverUI = true;
-            gamePaused = true;
+            GamePaused = true;
             gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
             popUpPanel.SetActive(false);
         }
@@ -1222,7 +1238,7 @@ namespace WPM
         public void OpenGameMenu()
         {
             gameMenuPanel.SetActive(true);
-            gamePaused = true;
+            GamePaused = true;
         }
 
         /// <summary> 
@@ -1231,8 +1247,8 @@ namespace WPM
         public void CloseGameMenu()
         {
             gameMenuPanel.SetActive(false);
-            gamePaused = false;
-            closingGUIPanel = true;
+            GamePaused = false;
+            ClosingGUIPanel = true;
         }
 
         /// <summary> 
@@ -1269,15 +1285,15 @@ namespace WPM
         public void ErrorButton()
         {
             errorPanel.SetActive(false);
-            closingGUIPanel = true;
+            ClosingGUIPanel = true;
             switch (errorState)
             {
-                case (CLOSE_WINDOW):
+                case (ErrorState.close_window):
                     break;
-                case (RESTART_SCENE):
+                case (ErrorState.restart_scene):
                     GameReset();
                     break;
-                case (CLOSE_APPLICATION):
+                case (ErrorState.close_application):
                     ExitGame();
                     break;
                 default:
