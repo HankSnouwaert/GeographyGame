@@ -16,7 +16,8 @@ namespace WPM
         #region Variable Declaration 
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
-        public CellManager cellManager;
+        public GameObject cellManager;
+        public ICellClicker cellClicker;
         public GameObject playerPrefab;
         public GameObject inventoryPanel;
         public GameObject dialogPanel;
@@ -68,7 +69,7 @@ namespace WPM
             {
                 selectedObject = value;
                 if (selectedObject != null)
-                    cellManager.NewObjectSelected = true;
+                    cellClicker.NewObjectSelected = true;
             }
         }
 
@@ -130,6 +131,8 @@ namespace WPM
 
         void Start()
         {
+            cellClicker = cellManager.GetComponent<ICellClicker>();
+
             try
             {
                 ApplyGlobeSettings();

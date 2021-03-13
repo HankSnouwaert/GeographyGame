@@ -4,27 +4,19 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class CellManager : MonoBehaviour
+    public class MouseCellClicker : MonoBehaviour, ICellClicker
     {
-        public GameManager gameManager;
-        public WorldMapGlobe worldGlobeMap;
+        private GameManager gameManager;
+        public ICellEnterer cellEnterer;
         public bool ClosingGUIPanel { get; set; } = false;
-        public bool CursorOverUI { get; set; } = false;
         public bool NewObjectSelected { get; set; } = false;
 
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             // Setup grid events
-            worldGlobeMap.OnCellEnter += HandleOnCellEnter;
-            worldGlobeMap.OnCellExit += HandleOnCellExit;
-            worldGlobeMap.OnCellClick += HandleOnCellClick;
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-           
+            gameManager = FindObjectOfType<GameManager>();
+            gameManager.worldGlobeMap.OnCellClick += HandleOnCellClick;
         }
 
         /// <summary>
@@ -32,19 +24,19 @@ namespace WPM
         /// Inputs:
         ///     cellIndex: index of cell clicked
         /// </summary>
-        void HandleOnCellClick(int cellIndex)
+        public void HandleOnCellClick(int cellIndex)
         {
-            //Check if a GUI panel is beling closed
+            //Check if a GUI panel is being closed
             if (ClosingGUIPanel)
             {
                 gameManager.CursorOverUI = false;
                 ClosingGUIPanel = false;
-                HandleOnCellEnter(cellIndex);
+                cellEnterer.HandleOnCellEnter(cellIndex);
             }
             else
             {
                 //Check that a hex is being clicked while an object is selected
-                if (!CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObject != null)
+                if (!gameManager.CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObject != null)
                 {
                     //Make sure your not clicking on a new object
                     if (NewObjectSelected)
@@ -73,40 +65,6 @@ namespace WPM
                 }
             }
 
-        }
-
-        /// <summary>
-        /// Called whenever a hex cell is moused over
-        /// Inputs:
-        ///     cellIndex: index of cell entered
-        /// </summary>
-        void HandleOnCellEnter(int cellIndex)
-        {
-            //Run any on cell enter method for the selected object
-            if (!CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObject != null)
-            {
-                if (gameManager.HighlightedObject != null)
-                    gameManager.SelectedObject.OnSelectableEnter(gameManager.HighlightedObject);
-               
-                gameManager.SelectedObject.OnCellEnter(cellIndex);
-            }
-        }
-
-        /// <summary>
-        /// Called whenever the curser moves out of a hex
-        /// Inputs:
-        ///     cellIndex: index of cell clicked (Not currently used)
-        /// </summary>
-        void HandleOnCellExit(int cellIndex)
-        {
-            if (!CursorOverUI && !gameManager.GamePaused)
-            {
-                Province province = worldGlobeMap.provinceHighlighted;
-                if (province == null || CursorOverUI)
-                    gameManager.hexInfoPanel.SetActive(false);
-            }
-        }
-
-
+        }    
     }
 }
