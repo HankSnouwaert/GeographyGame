@@ -77,7 +77,7 @@ namespace WPM
             }
 
             //ERROR TEST
-            //pathIndices = null;
+            pathIndices = null;
 
             foreach (var hexIndex in pathIndices)
             {

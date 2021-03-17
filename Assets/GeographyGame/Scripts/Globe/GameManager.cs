@@ -17,6 +17,7 @@ namespace WPM
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject cellManager;
+        public ErrorHandler errorHandler;
         public ICellClicker cellClicker;
         public GameObject playerPrefab;
         public GameObject inventoryPanel;
@@ -47,7 +48,8 @@ namespace WPM
         private int turnsRemaining = 250;
         private int touristImageIndex = 0;
         //Flags
-        public bool CursorOverUI {get; set;} = false;
+        public bool CursorOverUI {get;
+            set;} = false;
         public bool ClosingGUIPanel { get; set; } = false;
         public bool GamePaused { get; set; } = false;
         private bool gameStart = true;
@@ -198,6 +200,8 @@ namespace WPM
 
         void Update()
         {
+            bool debug = false;
+
             //This is where you run code that needs to be run after the first step of the game
             if (gameStart)
             {
@@ -205,8 +209,15 @@ namespace WPM
                 ClosePopUp();
             }
 
+
             UpdateHexInfoPanel();
-            
+            bool CursorOverUI = CheckForMouseOverPanel();
+
+            if (CursorOverUI)
+                debug = true;
+            else
+                debug = false;
+
             //Open and close in game menu
             if (Input.GetKeyDown("escape"))
             {
@@ -230,6 +241,25 @@ namespace WPM
             if (Input.GetMouseButton(0) && popUpPanel.activeSelf)
                 popUpPanel.SetActive(false);
         }
+
+
+        public bool CheckForMouseOverPanel()
+        {
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            pointerEventData.position = Input.mousePosition;
+
+            List<RaycastResult> raycastResultList = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
+            for(int i = 0; i < raycastResultList.Count; i++)
+            {
+                if (raycastResultList[i].gameObject.GetComponent<GUIPanel>() == null ){
+                    raycastResultList.RemoveAt(i);
+                    i--;
+                }
+            }
+            return raycastResultList.Count > 0;
+        }
+
 
         /// <summary>
         /// Called whenever a new turn happens in game. Multiple turns can pass at once.
@@ -1285,6 +1315,7 @@ namespace WPM
             stackTraceInputField.text = stackTraceText;
         }
 
+        /*
         public void ErrorButton()
         {
             errorPanel.SetActive(false);
@@ -1303,6 +1334,7 @@ namespace WPM
                     break;
             }   
         }
+        */
 
         public void DropOff(bool success)
         {

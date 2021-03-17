@@ -16,6 +16,7 @@ namespace WPM
         {
             // Setup grid events
             gameManager = FindObjectOfType<GameManager>();
+            cellEnterer = gameManager.cellManager.GetComponent<ICellEnterer>();
             gameManager.worldGlobeMap.OnCellClick += HandleOnCellClick;
         }
 
@@ -48,19 +49,7 @@ namespace WPM
                         }
                         catch (System.Exception ex)
                         {
-                            //Get Stack Trace
-                            string combinedStackTrace = ex.StackTrace;
-                            var inner = ex.InnerException;
-                            while (inner != null)
-                            {
-                                combinedStackTrace = combinedStackTrace + inner.StackTrace;
-                                inner = inner.InnerException;
-                            }
-
-                            if (gameManager.errorState < ErrorState.close_window)
-                                gameManager.errorState = ErrorState.close_window;
-
-                            gameManager.DisplayError(ex.Message, combinedStackTrace);
+                            gameManager.errorHandler.catchException(ex);
                         }
                 }
             }

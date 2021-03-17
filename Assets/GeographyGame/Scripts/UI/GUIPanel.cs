@@ -7,14 +7,18 @@ using UnityEngine.UI;
 namespace WPM
 {
 
-    public class GUIPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class GUIPanel : MonoBehaviour//, IPointerEnterHandler, IPointerExitHandler
     {
-        private GameManager gameManager;
+        protected GameManager gameManager;
+        protected MouseCellClicker mouseCellClicker;
+        protected GameObject panel;
 
         // Start is called before the first frame update
-        void Start()
+        public virtual void Start()
         {
             gameManager = FindObjectOfType<GameManager>();
+            mouseCellClicker = FindObjectOfType<MouseCellClicker>();
+            panel = gameObject;
         }
 
         // Update is called once per frame
@@ -23,6 +27,17 @@ namespace WPM
 
         }
 
+        public void OpenPanel()
+        {
+            panel.SetActive(true);
+        }
+
+        public void ClosePanel()
+        {
+            panel.SetActive(false);
+            mouseCellClicker.ClosingGUIPanel = true;
+        }
+        /*
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             gameManager.CursorOverUI = true;
@@ -33,5 +48,6 @@ namespace WPM
             gameManager.CursorOverUI = false;
 
         }
+        */
     }
 }

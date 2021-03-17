@@ -20,6 +20,7 @@ namespace WPM
 
         public enum ErrorState
         {
+            no_error,
             close_window,
             restart_scene,
             close_application
