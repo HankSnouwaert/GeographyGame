@@ -14,24 +14,22 @@ namespace WPM
         //public Color normalColor = new Color(255, 255, 255, 255);
         public int inventorySpace = 1;
         public int inventoryLocation;
-        protected InventoryGUI inventoryGUI;
-        protected SpriteRenderer spriteRenderer; 
+        protected InventoryUI inventoryUI;
+        protected SpriteRenderer spriteRenderer;
+        protected IUIManager uiManager;
 
-        public override void Start()
+        public override void Awake()
         {
-            base.Start();
-            inventoryGUI = FindObjectOfType<InventoryGUI>();
+            base.Awake();
+            inventoryUI = FindObjectOfType<InventoryUI>();
             //spriteRenderer = GetComponent<SpriteRenderer>();
         }
-        /*
-        public void Update()
+
+        public virtual void Start()
         {
-            if (selected)
-            {
-                EventSystem.current.SetSelectedGameObject(gameObject);
-            }
+
         }
-        */
+
         public override void Selected()
         {
             base.Selected();

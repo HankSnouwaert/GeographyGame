@@ -24,6 +24,7 @@ namespace WPM
         private const int COUNTRY = 2;
         readonly string savedText = null;
 
+
         private const int PROVINCE_MULTIPLIER = 1;
         private const int LANDMARK_MULTIPLIER = 10;
         private const int COUNTRY_MULTIPLIER = 1;
@@ -186,7 +187,7 @@ namespace WPM
                             //Remove Tourist from Inventory
                             player.RemoveItem(inventoryLocation);
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                            gameManager.CursorOverUI = false;
+                            uiManager.CursorOverUI = false;
                             correctProvince = true;
                             gameManager.DisplayPopUp("Exactly where I wanted to go!");
                             gameManager.DropOff(true);
@@ -208,7 +209,7 @@ namespace WPM
                         //Remove Tourist from Inventory
                         player.RemoveItem(inventoryLocation);
                         gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                        gameManager.CursorOverUI = false;
+                        uiManager.CursorOverUI = false;
                         landmarkReached = true;
                         gameManager.DisplayPopUp("Exactly where I wanted to go!");
                         gameManager.DropOff(true);
@@ -224,7 +225,7 @@ namespace WPM
                                 //Remove Tourist from Inventory
                                 player.RemoveItem(inventoryLocation);
                                 gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                                gameManager.CursorOverUI = false;
+                                uiManager.CursorOverUI = false;
                                 landmarkReached = true;
                                 gameManager.DisplayPopUp("Exactly where I wanted to go!");
                                 gameManager.DropOff(true);
@@ -250,7 +251,7 @@ namespace WPM
                             //Remove Tourist from Inventory
                             player.RemoveItem(inventoryLocation);
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
-                            gameManager.CursorOverUI = false;
+                            uiManager.CursorOverUI = false;
                             correctCountry = true;
                             gameManager.DisplayPopUp("Exactly where I wanted to go!");
                             gameManager.DropOff(true);

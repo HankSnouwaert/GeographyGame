@@ -4,26 +4,30 @@ using UnityEngine;
 
 namespace WPM
 {
+    /// <summary>
+    ///  Used to handle instances of the mouse moving over a cell on the world globe map
+    /// </summary>
     public class MouseCellEnterer : MonoBehaviour, ICellEnterer
     {
         private GameManager gameManager;
+        private IUIManager uiManager;
 
-        // Start is called before the first frame update
         void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
             gameManager.worldGlobeMap.OnCellEnter += HandleOnCellEnter;
+            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
         }
 
         /// <summary>
-        /// Called whenever a hex cell is moused over
-        /// Inputs:
-        ///     cellIndex: index of cell entered
+        ///  Called when the mouse cursor moves over a cell on the world globe map
         /// </summary>
+        /// <param name="cellIndex"></param> The cell the mouse cursor moves over>
+        /// <returns></returns> 
         public void HandleOnCellEnter(int cellIndex)
         {
             //Run any on cell enter method for the selected object
-            if (!gameManager.CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObject != null)
+            if (!uiManager.CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObject != null)
             {
                 if (gameManager.HighlightedObject != null)
                     gameManager.SelectedObject.OnSelectableEnter(gameManager.HighlightedObject);

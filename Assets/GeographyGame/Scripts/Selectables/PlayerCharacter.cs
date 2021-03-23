@@ -21,23 +21,30 @@ namespace WPM
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         //GameManager gameManager;
-        GameObject InventoryPanel; 
-        InventoryGUI inventoryGUI;
+        GameObject InventoryPanel;
+        InventoryUI inventoryUI;
         List<int>[] cellsInRange;
         Dictionary<string, int> climateCosts = new Dictionary<string, int>();
         readonly Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
         private const int STARTING_NUMBER_OF_TOURISTS = 2;
+        private IUIManager uiManager;
 
-        public override void Start()
+
+        public override void Awake()
         {
-            base.Start();
+            base.Awake();
+            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+        }
+
+        public void Start()
+        {
             objectName = "player";
             //gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
             InventoryPanel = GameObject.Find("Canvas/InventoryPanel");
-            inventoryGUI = InventoryPanel.GetComponent(typeof(InventoryGUI)) as InventoryGUI;
+            inventoryUI = InventoryPanel.GetComponent(typeof(InventoryUI)) as InventoryUI;
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
@@ -219,7 +226,7 @@ namespace WPM
             if (selected)
             {
                 map.SetCellColor(cellLocation, Color.green, true);
-                if (!gameManager.CursorOverUI && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0)
+                if (!uiManager.CursorOverUI && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0)
                 {
                     OnCellEnter(gameManager.worldGlobeMap.lastHighlightedCellIndex);
                 }
@@ -318,7 +325,7 @@ namespace WPM
             {
                 inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
             }
-            inventoryGUI.UpdateInventory(inventory);
+            inventoryUI.UpdateInventory(inventory);
 
             return true;
         }
@@ -330,7 +337,7 @@ namespace WPM
             {
                 inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
             }
-            inventoryGUI.UpdateInventory(inventory);
+            inventoryUI.UpdateInventory(inventory);
             if(inventory.Count == 0)
             {
                 gameManager.GenerateTourist();

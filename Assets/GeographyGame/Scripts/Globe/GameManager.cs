@@ -16,9 +16,12 @@ namespace WPM
         #region Variable Declaration 
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
-        public GameObject cellManager;
-        public ErrorHandler errorHandler;
-        public ICellClicker cellClicker;
+        public GameObject uiManagerObject;
+        public IUIManager uiManager { get; set; }
+        public GameObject cellManagerObject;
+        public ICellManager CellManager { get; set; }
+        public GameObject errorHandlerObject;
+        public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
         public GameObject inventoryPanel;
         public GameObject dialogPanel;
@@ -28,9 +31,11 @@ namespace WPM
         public GameObject gameMenuPanel;
         public GameObject popUpPanel;
         public GameObject errorPanel;
-        public InventoryGUI inventoryGUI;
+        public InventoryUI inventoryUI;
         public AudioSource dropOffSuccess;
         public AudioSource dropOffFailure;
+        //TO BE SORTED
+        private ICellClicker cellClicker;
         //Panel Messages
         private Text hexInfo;
         private Text scoreInfo;
@@ -48,9 +53,6 @@ namespace WPM
         private int turnsRemaining = 250;
         private int touristImageIndex = 0;
         //Flags
-        public bool CursorOverUI {get;
-            set;} = false;
-        public bool ClosingGUIPanel { get; set; } = false;
         public bool GamePaused { get; set; } = false;
         private bool gameStart = true;
         public ErrorState errorState = ErrorState.close_window;
@@ -131,9 +133,16 @@ namespace WPM
             }
         }
 
+        private void Awake()
+        {
+            CellManager = cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
+            ErrorHandler = errorHandlerObject.GetComponentInChildren(typeof(IErrorHandler)) as IErrorHandler;
+            uiManager = uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+        }
+
         void Start()
         {
-            cellClicker = cellManager.GetComponent<ICellClicker>();
+            cellClicker = CellManager.CellClicker;
 
             try
             {
@@ -209,14 +218,7 @@ namespace WPM
                 ClosePopUp();
             }
 
-
             UpdateHexInfoPanel();
-            bool CursorOverUI = CheckForMouseOverPanel();
-
-            if (CursorOverUI)
-                debug = true;
-            else
-                debug = false;
 
             //Open and close in game menu
             if (Input.GetKeyDown("escape"))
@@ -240,24 +242,6 @@ namespace WPM
             //Check if player is clicking out of a popup
             if (Input.GetMouseButton(0) && popUpPanel.activeSelf)
                 popUpPanel.SetActive(false);
-        }
-
-
-        public bool CheckForMouseOverPanel()
-        {
-            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-            pointerEventData.position = Input.mousePosition;
-
-            List<RaycastResult> raycastResultList = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
-            for(int i = 0; i < raycastResultList.Count; i++)
-            {
-                if (raycastResultList[i].gameObject.GetComponent<GUIPanel>() == null ){
-                    raycastResultList.RemoveAt(i);
-                    i--;
-                }
-            }
-            return raycastResultList.Count > 0;
         }
 
 
@@ -382,7 +366,7 @@ namespace WPM
         /// </summary>
         public void UpdateHexInfoPanel()
         {
-            if (!CursorOverUI && !GamePaused && worldGlobeMap.lastHighlightedCellIndex >= 0)
+            if (!uiManager.CursorOverUI && !GamePaused && worldGlobeMap.lastHighlightedCellIndex >= 0)
             {
                 //Get the hex's province and country
                 Province province = worldGlobeMap.provinceHighlighted;
@@ -1180,6 +1164,8 @@ namespace WPM
             CurrentRegion = northAmericaUSSouthEast;
         }
 
+        //GAME UPDATES
+
         /// <summary> 
         /// Called when a tourist needs to be generated and added to the palyer's inventory
         /// </summary>
@@ -1234,6 +1220,8 @@ namespace WPM
             scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
+        //CHANGE GAME STATE
+
         /// <summary> 
         /// Called when game ends
         /// </summary>
@@ -1243,7 +1231,7 @@ namespace WPM
             gameOverPanel.SetActive(true);
             inventoryPanel.SetActive(false);
             dialogPanel.SetActive(false);
-            CursorOverUI = true;
+            uiManager.CursorOverUI = true;
             GamePaused = true;
             gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
             popUpPanel.SetActive(false);
@@ -1281,7 +1269,7 @@ namespace WPM
         {
             gameMenuPanel.SetActive(false);
             GamePaused = false;
-            ClosingGUIPanel = true;
+            cellClicker.ClosingUIPanel = true;
         }
 
         /// <summary> 
