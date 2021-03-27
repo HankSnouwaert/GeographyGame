@@ -16,7 +16,6 @@ namespace WPM
         public int inventoryLocation;
         protected InventoryUI inventoryUI;
         protected SpriteRenderer spriteRenderer;
-        protected IUIManager uiManager;
 
         public override void Awake()
         {

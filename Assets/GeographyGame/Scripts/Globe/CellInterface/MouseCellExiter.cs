@@ -26,13 +26,14 @@ namespace WPM
         /// <returns></returns> 
         public void HandleOnCellExit(int cellIndex)
         {
+            /*
             if (!uiManager.CursorOverUI && !gameManager.GamePaused)
             {
                 Province province = gameManager.worldGlobeMap.provinceHighlighted;
                 if (province == null || uiManager.CursorOverUI)
-                    gameManager.hexInfoPanel.SetActive(false);
+                    uiManager.mouseOverInfoUIObject.SetActive(false);
             }
-
+            */
         }
     }
 }

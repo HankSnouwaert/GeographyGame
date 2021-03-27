@@ -11,10 +11,14 @@ namespace WPM
         public IErrorUI ErrorUI { get; set; }
         [SerializeField] private GameObject mouseOverInfoUIObject;
         public IMouseOverInfoUI MouseOverInfoUI { get; set; }
+        [SerializeField] private GameObject inventoryUIObject;
+
         public bool CursorOverUI { get; set; }
         public bool ClosingUI { get; set; } = false;
         private GameManager gameManager;
         private ICellManager cellManager;
+        
+
 
         // Start is called before the first frame update
         void Awake()
@@ -55,6 +59,13 @@ namespace WPM
                 }
             }
             return raycastResultList.Count > 0;
+        }
+
+        public void GameOver()
+        {
+            errorUIObject.SetActive(false);
+            mouseOverInfoUIObject.SetActive(false);
+            inventoryUIObject.SetActive(false);
         }
 
     }

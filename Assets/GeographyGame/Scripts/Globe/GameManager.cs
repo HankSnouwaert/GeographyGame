@@ -23,9 +23,8 @@ namespace WPM
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
-        public GameObject inventoryPanel;
         public GameObject dialogPanel;
-        public GameObject hexInfoPanel;
+        //public GameObject hexInfoPanel;
         public GameObject scorePanel;
         public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
@@ -169,10 +168,7 @@ namespace WPM
             //Hide U.I. Panels and Get Their Text Objects
             //Dialog Panel
             dialogPanel.SetActive(false);
-            //Hex Info Panel
-            hexInfoPanel.SetActive(false);
-            Transform textObject = hexInfoPanel.transform.GetChild(0);
-            hexInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            Transform textObject;
             //Score Panel
             textObject = scorePanel.transform.GetChild(0);
             scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
@@ -290,48 +286,7 @@ namespace WPM
             }
         }
 
-        /*
-        /// <summary>
-        /// Called whenver the hex info panel needs to be updated with information regarding
-        /// what the cursor is over.  NOTE: Will need to be updated to work when the cursor 
-        /// is over oceans or areas that are not a province
-        /// </summary>
-        public void UpdateHexInfoPanel()
-        {
-            if (!uiManager.CursorOverUI && !GamePaused && worldGlobeMap.lastHighlightedCellIndex >= 0)
-            {
-                //Get the hex's province and country
-                Province province = worldGlobeMap.provinceHighlighted;
-                Country country = worldGlobeMap.countryHighlighted;
-                string displayText;
-                if (province != null)
-                {
-                    //Create the string of the hex's info
-                    string nameType;
-                    if (country.name == "United States of America")
-                        nameType = "State: ";
-                    else
-                        nameType = "Province: ";
-                    string politicalProvince = province.attrib["PoliticalProvince"];
-                    string climate = province.attrib["ClimateGroup"];
-                    displayText = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;
-
-                    //Check to see if cursor is over a landmark
-                    if (HighlightedObject != null && HighlightedObject != player)
-                    {
-                        if (HighlightedObject.objectName != null)
-                        {
-                            //Add the landmark to the string
-                            displayText = displayText + System.Environment.NewLine + "Landmark: " + HighlightedObject.objectName;
-                        }
-                    }
-                    //Display the string
-                    hexInfoPanel.SetActive(true);
-                    hexInfo.text = displayText;
-                }
-            }
-        }
-        */
+        
         //THIS SHOULD BE REMOVED
 
         /// <summary>
@@ -1160,10 +1115,10 @@ namespace WPM
         public void GameOver()
         {
             //Setup U.I. panels and flags
+            uiManager.GameOver();
+
             gameOverPanel.SetActive(true);
-            inventoryPanel.SetActive(false);
             dialogPanel.SetActive(false);
-            uiManager.CursorOverUI = true;
             GamePaused = true;
             gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
             popUpPanel.SetActive(false);
