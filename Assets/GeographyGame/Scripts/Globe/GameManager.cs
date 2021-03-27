@@ -64,7 +64,7 @@ namespace WPM
         public const int MIN_TIME_IN_REGION = 5;
         public const int MAX_TIME_IN_REGION = 10;
         //In-Game Objects
-        private PlayerCharacter player;
+        public PlayerCharacter player;
         private SelectableObject selectedObject;
         public SelectableObject SelectedObject
         {
@@ -173,7 +173,6 @@ namespace WPM
             hexInfoPanel.SetActive(false);
             Transform textObject = hexInfoPanel.transform.GetChild(0);
             hexInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            hexInfoPanel.SetActive(false);
             //Score Panel
             textObject = scorePanel.transform.GetChild(0);
             scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
@@ -218,7 +217,7 @@ namespace WPM
                 ClosePopUp();
             }
 
-            UpdateHexInfoPanel();
+            //UpdateHexInfoPanel();
 
             //Open and close in game menu
             if (Input.GetKeyDown("escape"))
@@ -228,6 +227,24 @@ namespace WPM
                 else
                     OpenGameMenu();
             }
+
+            //Check what mouse is over
+            /*
+            Ray ray;
+            RaycastHit hit;
+
+            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))
+            {
+                print(hit.collider.name);
+                GameObject hitObject = hit.collider.gameObject;
+                SelectableObject hitSelectable = hitObject.GetComponent(typeof(SelectableObject)) as SelectableObject;
+                if (hitSelectable != null)
+                {
+                    HighlightedObject = hitSelectable;
+                }
+            }
+            */
 
             //Check for camera movement
             if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
@@ -273,92 +290,7 @@ namespace WPM
             }
         }
 
-        //CELL MANAGER
         /*
-        /// <summary>
-        /// Called whenever a hex cell is clicked
-        /// Inputs:
-        ///     cellIndex: index of cell clicked
-        /// </summary>
-        void HandleOnCellClick(int cellIndex)
-        {
-            //Check if a GUI panel is beling closed
-            if (ClosingGUIPanel)
-            {
-                CursorOverUI = false;
-                ClosingGUIPanel = false;
-                HandleOnCellEnter(cellIndex);
-            }
-            else
-            {
-                //Check that a hex is being clicked while an object is selected
-                if (!CursorOverUI && !GamePaused && selectedObject != null)
-                {
-                    //Make sure your not clicking on a new object
-                    if (newObjectSelected)
-                        newObjectSelected = false;
-                    else
-                        try
-                        {
-                            selectedObject.OnCellClick(cellIndex);
-                        }
-                        catch (System.Exception ex)
-                        {
-                            //Get Stack Trace
-                            string combinedStackTrace = ex.StackTrace;
-                            var inner = ex.InnerException;
-                            while (inner != null)
-                            {
-                                combinedStackTrace = combinedStackTrace + inner.StackTrace;
-                                inner = inner.InnerException;
-                            }
-
-                            if (errorState < CLOSE_WINDOW)
-                                errorState = CLOSE_WINDOW;
-
-                            DisplayError(ex.Message, combinedStackTrace);
-                        }
-                }
-            }
-           
-        }
-
-        /// <summary>
-        /// Called whenever a hex cell is moused over
-        /// Inputs:
-        ///     cellIndex: index of cell entered
-        /// </summary>
-        void HandleOnCellEnter(int cellIndex)
-        { 
-            //Run any on cell enter method for the selected object
-            if (!CursorOverUI && !gamePaused && selectedObject != null)
-            {
-                if (HighlightedObject != null)
-                    selectedObject.OnSelectableEnter(HighlightedObject);
-                else
-                    selectedObject.OnCellEnter(cellIndex);
-            }
-        }
-
-        /// <summary>
-        /// Called whenever the curser moves out of a hex
-        /// Inputs:
-        ///     cellIndex: index of cell clicked (Not currently used)
-        /// </summary>
-        void HandleOnCellExit(int cellIndex)
-        {
-            if (!CursorOverUI && !gamePaused)
-            {
-                Province province = worldGlobeMap.provinceHighlighted;
-                if (province == null || CursorOverUI)
-                    hexInfoPanel.SetActive(false);
-            }
-        }
-
-        */
-
-        //HEX INFO PANEL
-
         /// <summary>
         /// Called whenver the hex info panel needs to be updated with information regarding
         /// what the cursor is over.  NOTE: Will need to be updated to work when the cursor 
@@ -399,7 +331,7 @@ namespace WPM
                 }
             }
         }
-
+        */
         //THIS SHOULD BE REMOVED
 
         /// <summary>
@@ -1269,7 +1201,7 @@ namespace WPM
         {
             gameMenuPanel.SetActive(false);
             GamePaused = false;
-            cellClicker.ClosingUIPanel = true;
+            uiManager.ClosingUI = true;
         }
 
         /// <summary> 

@@ -7,12 +7,6 @@
     {
         /// <summary>
         /// A flag used to determine if the current click should be ignored
-        /// because a panel is being closed
-        /// </summary>
-        bool ClosingUIPanel { get; set; }
-
-        /// <summary>
-        /// A flag used to determine if the current click should be ignored
         /// because a new object was just selected
         /// </summary>
         bool NewObjectSelected { get; set; }

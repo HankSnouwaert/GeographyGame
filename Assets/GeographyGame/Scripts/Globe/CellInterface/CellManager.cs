@@ -12,6 +12,8 @@ namespace WPM
         public ICellClicker CellClicker { get; set; } 
         public ICellEnterer CellEnterer { get; set; }
         public ICellExiter CellExiter { get; set; } 
+        public int highlightedCellIndex { get; set; }
+        public Cell highlightedCell { get; set; }
 
         void Awake()
         {

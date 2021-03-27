@@ -11,6 +11,7 @@ namespace WPM
         public bool selected;
         protected WorldMapGlobe map;
         protected GameManager gameManager;
+        protected IUIManager uiManager;
         protected PlayerCharacter player;
 
         // Start is called before the first frame update
@@ -18,32 +19,42 @@ namespace WPM
         public virtual void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
+            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
             player = FindObjectOfType<PlayerCharacter>();
         }
 
         public virtual void OnMouseDown()
         {
-            if (gameManager.SelectedObject == null)
-                Selected();
-            else
+            if (!uiManager.CursorOverUI)
             {
-                if (gameManager.SelectedObject == this)
-                    Deselected();
+                if (gameManager.SelectedObject == null)
+                    Selected();
                 else
-                    gameManager.SelectedObject.ObjectSelected(this);
-            }   
+                {
+                    if (gameManager.SelectedObject == this)
+                        Deselected();
+                    else
+                        gameManager.SelectedObject.ObjectSelected(this);
+                }
+            }
         }
 
         public virtual void OnMouseEnter()
         {
-            gameManager.HighlightedObject = this;
-            gameManager.UpdateHexInfoPanel();
+            if (!uiManager.CursorOverUI)
+            {
+                gameManager.HighlightedObject = this;
+                //uiManager.MouseOverInfoUI.UpdateHexInfoPanel();
+            }
         }
 
         public virtual void OnMouseExit()
         {
-            gameManager.HighlightedObject = null;
-            gameManager.UpdateHexInfoPanel(); 
+            if (!uiManager.CursorOverUI)
+            {
+                gameManager.HighlightedObject = null;
+                //gameManager.UpdateHexInfoPanel();
+            }
         }
 
         public virtual void Selected()

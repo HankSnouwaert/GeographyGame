@@ -10,6 +10,7 @@ namespace WPM
     public class UIElement : MonoBehaviour, IUIElement
     {
         protected GameManager gameManager;
+        protected IUIManager uiManager;
         protected ICellClicker mouseCellClicker;
         protected GameObject uiObject;
 
@@ -18,6 +19,7 @@ namespace WPM
         {
             gameManager = FindObjectOfType<GameManager>();
             mouseCellClicker = gameManager.cellManagerObject.GetComponent(typeof(ICellClicker)) as ICellClicker;
+            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
             uiObject = gameObject;
         }
 
@@ -29,7 +31,7 @@ namespace WPM
         public virtual void CloseUI()
         {
             uiObject.SetActive(false);
-            mouseCellClicker.ClosingUIPanel = true;
+            uiManager.ClosingUI = true;
         }
         
         /*

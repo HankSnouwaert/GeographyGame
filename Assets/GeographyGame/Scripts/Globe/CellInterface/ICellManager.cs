@@ -8,5 +8,7 @@
         ICellClicker CellClicker { get; set; }
         ICellEnterer CellEnterer { get; set; }
         ICellExiter CellExiter { get; set; }
+        int highlightedCellIndex { get; set; }
+        Cell highlightedCell { get; set; }
     }
 }

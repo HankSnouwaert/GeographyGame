@@ -11,12 +11,13 @@ namespace WPM
     {
         private GameManager gameManager;
         private IUIManager uiManager;
-
+        private ICellManager cellManager;
         void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
             gameManager.worldGlobeMap.OnCellEnter += HandleOnCellEnter;
             uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            cellManager = GetComponent(typeof(ICellManager)) as ICellManager;
         }
 
         /// <summary>
@@ -33,6 +34,8 @@ namespace WPM
                     gameManager.SelectedObject.OnSelectableEnter(gameManager.HighlightedObject);
 
                 gameManager.SelectedObject.OnCellEnter(cellIndex);
+                cellManager.highlightedCellIndex = cellIndex;
+                cellManager.highlightedCell = gameManager.worldGlobeMap.cells[cellIndex];
             }
         }
     }

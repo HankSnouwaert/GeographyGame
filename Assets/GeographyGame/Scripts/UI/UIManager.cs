@@ -7,22 +7,39 @@ namespace WPM
 {
     public class UIManager : MonoBehaviour, IUIManager
     {
-        [SerializeField] private GameObject errorPanelObject;
+        [SerializeField] private GameObject errorUIObject;
         public IErrorUI ErrorUI { get; set; }
+        [SerializeField] private GameObject mouseOverInfoUIObject;
+        public IMouseOverInfoUI MouseOverInfoUI { get; set; }
         public bool CursorOverUI { get; set; }
+        public bool ClosingUI { get; set; } = false;
+        private GameManager gameManager;
+        private ICellManager cellManager;
 
         // Start is called before the first frame update
         void Awake()
         {
-            ErrorUI = errorPanelObject.GetComponent(typeof(IErrorUI)) as IErrorUI;
+            ErrorUI = errorUIObject.GetComponent(typeof(IErrorUI)) as IErrorUI;
+            MouseOverInfoUI = mouseOverInfoUIObject.GetComponent(typeof(IMouseOverInfoUI)) as IMouseOverInfoUI;
+            gameManager = FindObjectOfType<GameManager>();
+            cellManager = gameManager.cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
         }
 
         void Update()
         {
-            CursorOverUI = CheckForMouseOverPanel();
+            CursorOverUI = CheckForMouseOverUI();
+            if (ClosingUI)
+            {
+                ClosingUI = false;
+                int currentCellIndex = cellManager.highlightedCellIndex;
+                if(currentCellIndex != -1)
+                    cellManager.CellEnterer.HandleOnCellEnter(currentCellIndex);
+                CursorOverUI = true;
+            }
+            MouseOverInfoUI.UpdateUI();
         }
 
-        public bool CheckForMouseOverPanel()
+        public bool CheckForMouseOverUI()
         {
             PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
             pointerEventData.position = Input.mousePosition;
