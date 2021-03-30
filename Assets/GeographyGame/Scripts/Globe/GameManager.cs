@@ -23,7 +23,6 @@ namespace WPM
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
-        //public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
         public GameObject popUpPanel;
         public GameObject errorPanel;
@@ -163,17 +162,7 @@ namespace WPM
             touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             
             //Hide U.I. Panels and Get Their Text Objects
-            //Dialog Panel
-            //dialogPanel.SetActive(false);
             Transform textObject;
-            //Score Panel
-            //textObject = scorePanel.transform.GetChild(0);
-            //scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            //scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
-            //GameOver Panel
-            //gameOverPanel.SetActive(false);
-            //textObject = gameOverPanel.transform.GetChild(0);
-            //gameOverMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             //GameMenu Panel
             gameMenuPanel.SetActive(false);
             //PopUp Panel
@@ -1146,6 +1135,12 @@ namespace WPM
         {
             gameMenuPanel.SetActive(true);
             GamePaused = true;
+        }
+
+
+        public void ResumeGame()
+        {
+            GamePaused = false;
         }
 
         /// <summary> 

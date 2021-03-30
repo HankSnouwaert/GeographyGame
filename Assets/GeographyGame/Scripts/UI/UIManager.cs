@@ -22,6 +22,8 @@ namespace WPM
         public ITurnsUI TurnsUI { get; set; }
         [SerializeField] public GameObject gameOverUIObject;
         public IGameOverUI GameOverUI { get; set; }
+        [SerializeField] public GameObject gameMenuUIObject;
+        public IGameMenuUI GameMenuUI { get; set; }
         public bool CursorOverUI { get; set; }
         public bool ClosingUI { get; set; } = false;
         private GameManager gameManager;
