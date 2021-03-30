@@ -17,5 +17,6 @@ namespace WPM
         IGameOverUI GameOverUI { get; set; }
         IGameMenuUI GameMenuUI { get; set; }
         void GameOver();
+        void ExitCurrentUI();
     }
 }

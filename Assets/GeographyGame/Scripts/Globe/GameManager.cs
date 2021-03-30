@@ -206,12 +206,17 @@ namespace WPM
             if (Input.GetKeyDown("escape"))
             {
                 if (GameMenuOpen)
-                    uiManager.GameMenuUI.ReturnToGameSelected();
+                    uiManager.ExitCurrentUI();
                 else
                 {
-                    uiManager.GameMenuUI.OpenUI();
-                    GameMenuOpen = true;
-                    GamePaused = true;
+                    if (selectedObject != null)
+                        selectedObject.Deselected();
+                    else
+                    {
+                        uiManager.GameMenuUI.OpenUI();
+                        GameMenuOpen = true;
+                        GamePaused = true;
+                    }
                 }
                     
             }

@@ -86,5 +86,12 @@ namespace WPM
             GameOverUI.OpenUI();
         }
 
+        public void ExitCurrentUI()
+        {
+            if (gameMenuUIObject.activeSelf)
+            {
+                GameMenuUI.RestartGameSelected();
+            }
+        }
     }
 }
