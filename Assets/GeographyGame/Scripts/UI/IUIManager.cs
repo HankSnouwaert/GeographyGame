@@ -12,8 +12,10 @@ namespace WPM
         IDropOffUI DropOffUI { get; set; }
         IScoreUI ScoreUI { get; set; }
         ITurnsUI TurnsUI { get; set; }
-        void GameOver();
         IErrorUI ErrorUI { get; set; }
         IMouseOverInfoUI MouseOverInfoUI { get; set; }
+        IGameOverUI GameOverUI { get; set; }
+        IGameMenuUI GameMenuUI { get; set; }
+        void GameOver();
     }
 }

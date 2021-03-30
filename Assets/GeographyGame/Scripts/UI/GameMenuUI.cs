@@ -9,6 +9,11 @@ namespace WPM
     {
         private Text[] textComponents;
         private Text displayText;
+
+        void Start()
+        {
+            CloseUI();
+        }
         public void ReturnToGameSelected()
         {
             CloseUI();

@@ -41,6 +41,7 @@ namespace WPM
             ScoreUI = scoreUIObject.GetComponent(typeof(IScoreUI)) as IScoreUI;
             TurnsUI = turnsUIObject.GetComponent(typeof(ITurnsUI)) as ITurnsUI;
             GameOverUI = gameOverUIObject.GetComponent(typeof(IGameOverUI)) as IGameOverUI;
+            GameMenuUI = gameMenuUIObject.GetComponent(typeof(IGameMenuUI)) as IGameMenuUI;
             gameManager = FindObjectOfType<GameManager>();
             cellManager = gameManager.cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
         }

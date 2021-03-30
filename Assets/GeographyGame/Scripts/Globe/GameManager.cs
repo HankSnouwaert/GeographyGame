@@ -23,7 +23,7 @@ namespace WPM
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
-        public GameObject gameMenuPanel;
+        //public GameObject gameMenuPanel;
         public GameObject popUpPanel;
         public GameObject errorPanel;
         public InventoryUI inventoryUI;
@@ -49,6 +49,7 @@ namespace WPM
         private int touristImageIndex = 0;
         //Flags
         public bool GamePaused { get; set; } = false;
+        public bool GameMenuOpen { get; set; } = false;
         private bool gameStart = true;
         public ErrorState errorState = ErrorState.close_window;
         //Game Settings
@@ -164,7 +165,7 @@ namespace WPM
             //Hide U.I. Panels and Get Their Text Objects
             Transform textObject;
             //GameMenu Panel
-            gameMenuPanel.SetActive(false);
+            //gameMenuPanel.SetActive(false);
             //PopUp Panel
             popUpPanel.SetActive(false);
             textObject = popUpPanel.transform.GetChild(0);
@@ -204,10 +205,15 @@ namespace WPM
             //Open and close in game menu
             if (Input.GetKeyDown("escape"))
             {
-                if (gameMenuPanel.activeSelf)
-                    CloseGameMenu();
+                if (GameMenuOpen)
+                    uiManager.GameMenuUI.ReturnToGameSelected();
                 else
-                    OpenGameMenu();
+                {
+                    uiManager.GameMenuUI.OpenUI();
+                    GameMenuOpen = true;
+                    GamePaused = true;
+                }
+                    
             }
 
             //Check what mouse is over
@@ -1128,6 +1134,7 @@ namespace WPM
             Application.Quit();
         }
 
+        /*
         /// <summary> 
         /// Open in game menu
         /// </summary>
@@ -1136,21 +1143,12 @@ namespace WPM
             gameMenuPanel.SetActive(true);
             GamePaused = true;
         }
-
+        */
 
         public void ResumeGame()
         {
             GamePaused = false;
-        }
-
-        /// <summary> 
-        /// Close in game menu
-        /// </summary>
-        public void CloseGameMenu()
-        {
-            gameMenuPanel.SetActive(false);
-            GamePaused = false;
-            uiManager.ClosingUI = true;
+            GameMenuOpen = false;
         }
 
         /// <summary> 
