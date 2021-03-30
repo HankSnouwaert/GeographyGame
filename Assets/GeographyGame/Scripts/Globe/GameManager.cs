@@ -23,7 +23,7 @@ namespace WPM
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
-        public GameObject scorePanel;
+        //public GameObject scorePanel;
         public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
         public GameObject popUpPanel;
@@ -35,7 +35,7 @@ namespace WPM
         private ICellClicker cellClicker;
         //Panel Messages
         private Text hexInfo;
-        private Text scoreInfo;
+        //private Text scoreInfo;
         private Text gameOverMessage;
         private Text popUpMessage;
         private Text errorMessage;
@@ -168,9 +168,9 @@ namespace WPM
             //dialogPanel.SetActive(false);
             Transform textObject;
             //Score Panel
-            textObject = scorePanel.transform.GetChild(0);
-            scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
+            //textObject = scorePanel.transform.GetChild(0);
+            //scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            //scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
             //GameOver Panel
             gameOverPanel.SetActive(false);
             textObject = gameOverPanel.transform.GetChild(0);
@@ -1086,7 +1086,8 @@ namespace WPM
         public void UpdateScore(int scoreModification)
         {
             score = score + scoreModification;
-            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
+            uiManager.ScoreUI.UpdateDisplayedScore(score);
+            //scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
         /// <summary> 
@@ -1102,7 +1103,8 @@ namespace WPM
                 turnsRemaining = 0;
                 GameOver();
             }
-            scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
+            uiManager.TurnsUI.UpdateDisplayedRemainingTurns(turnsRemaining);
+            //scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
         //CHANGE GAME STATE

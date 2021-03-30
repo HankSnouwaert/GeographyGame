@@ -45,7 +45,7 @@ namespace WPM
             }
         }
 
-        public void SetMouseOverInfoMessage(string textToSet)
+        public void SetMouseOverInfoMessage(string textToSet)//THIS MAKES NO SENSE
         {
             uiObject.SetActive(true);
             mouseOverInfoText.text = MouseOverInfoString;
