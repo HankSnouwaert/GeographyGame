@@ -23,7 +23,7 @@ namespace WPM
             uiObject = gameObject;
         }
 
-        public void OpenUI()
+        public virtual void OpenUI()
         {
             uiObject.SetActive(true);
         }

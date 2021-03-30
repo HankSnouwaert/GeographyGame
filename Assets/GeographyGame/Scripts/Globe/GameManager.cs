@@ -23,8 +23,7 @@ namespace WPM
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
-        //public GameObject scorePanel;
-        public GameObject gameOverPanel;
+        //public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
         public GameObject popUpPanel;
         public GameObject errorPanel;
@@ -45,7 +44,7 @@ namespace WPM
         //Counters
         private int globalTurnCounter = 0;
         private int touristCounter = 0;
-        private int score = 0;
+        public int score = 0;
         private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
         private int turnsRemaining = 250;
         private int touristImageIndex = 0;
@@ -172,9 +171,9 @@ namespace WPM
             //scoreInfo = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             //scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
             //GameOver Panel
-            gameOverPanel.SetActive(false);
-            textObject = gameOverPanel.transform.GetChild(0);
-            gameOverMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            //gameOverPanel.SetActive(false);
+            //textObject = gameOverPanel.transform.GetChild(0);
+            //gameOverMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             //GameMenu Panel
             gameMenuPanel.SetActive(false);
             //PopUp Panel
@@ -1117,10 +1116,10 @@ namespace WPM
             //Setup U.I. panels and flags
             uiManager.GameOver();
 
-            gameOverPanel.SetActive(true);
+            //gameOverPanel.SetActive(true);
             //dialogPanel.SetActive(false);
             GamePaused = true;
-            gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
+            //gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
             popUpPanel.SetActive(false);
         }
 
