@@ -12,7 +12,10 @@ namespace WPM
         [SerializeField] private GameObject mouseOverInfoUIObject;
         public IMouseOverInfoUI MouseOverInfoUI { get; set; }
         [SerializeField] private GameObject inventoryUIObject;
-
+        [SerializeField] public GameObject navigationUIObject;
+        public INavigationUI NavigationUI { get; set; }
+        [SerializeField] public GameObject dropOffUIObject;
+        public IDropOffUI DropOffUI { get; set; }
         public bool CursorOverUI { get; set; }
         public bool ClosingUI { get; set; } = false;
         private GameManager gameManager;
@@ -25,6 +28,8 @@ namespace WPM
         {
             ErrorUI = errorUIObject.GetComponent(typeof(IErrorUI)) as IErrorUI;
             MouseOverInfoUI = mouseOverInfoUIObject.GetComponent(typeof(IMouseOverInfoUI)) as IMouseOverInfoUI;
+            NavigationUI = navigationUIObject.GetComponent(typeof(INavigationUI)) as INavigationUI;
+            DropOffUI = dropOffUIObject.GetComponent(typeof(IDropOffUI)) as IDropOffUI;
             gameManager = FindObjectOfType<GameManager>();
             cellManager = gameManager.cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
         }

@@ -23,8 +23,6 @@ namespace WPM
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
-        public GameObject dialogPanel;
-        //public GameObject hexInfoPanel;
         public GameObject scorePanel;
         public GameObject gameOverPanel;
         public GameObject gameMenuPanel;
@@ -167,7 +165,7 @@ namespace WPM
             
             //Hide U.I. Panels and Get Their Text Objects
             //Dialog Panel
-            dialogPanel.SetActive(false);
+            //dialogPanel.SetActive(false);
             Transform textObject;
             //Score Panel
             textObject = scorePanel.transform.GetChild(0);
@@ -593,7 +591,7 @@ namespace WPM
                             if (provinceOverlaps)
                                 break;
                         }
-                        if (provinceOverlaps)
+                        if (provinceOverlaps && !foundProvinceIndexes.Contains(provinceIndex))
                         {
                             foundProvinceIndexes.Add(neighborIndex);
                         }
@@ -1118,7 +1116,7 @@ namespace WPM
             uiManager.GameOver();
 
             gameOverPanel.SetActive(true);
-            dialogPanel.SetActive(false);
+            //dialogPanel.SetActive(false);
             GamePaused = true;
             gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
             popUpPanel.SetActive(false);

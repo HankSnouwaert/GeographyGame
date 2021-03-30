@@ -8,16 +8,15 @@ namespace WPM
     public class MouseOverInfoUI : UIElement, IMouseOverInfoUI
     {
         public string MouseOverInfoString { get; set; }
-        private Component[] hexInfoComponents;
-        private Text hexInfoText;
+        private Component[] mouseOverInfoComponents;
+        private Text mouseOverInfoText;
 
         public override void Awake()
         {
             base.Awake();
             uiObject.SetActive(false);
-            // Transform textObject = uiObject.transform.GetChild(0);
-            hexInfoComponents = uiObject.GetComponentsInChildren<Text>();
-            hexInfoText = hexInfoComponents[0] as Text;
+            mouseOverInfoComponents = uiObject.GetComponentsInChildren<Text>();
+            mouseOverInfoText = mouseOverInfoComponents[0] as Text;
         }
 
         public void UpdateUI()
@@ -49,7 +48,7 @@ namespace WPM
         public void SetMouseOverInfoMessage(string textToSet)
         {
             uiObject.SetActive(true);
-            hexInfoText.text = MouseOverInfoString;
+            mouseOverInfoText.text = MouseOverInfoString;
         }
 
         public string CreateMouseOverInfoString(Province province, Country country, MappableObject highlightedObject)
@@ -57,7 +56,6 @@ namespace WPM
             if (province != null)
             {
                 string createdString;
-                //Create the string of the hex's info
                 string nameType;
                 if (country.name == "United States of America")
                     nameType = "State: ";

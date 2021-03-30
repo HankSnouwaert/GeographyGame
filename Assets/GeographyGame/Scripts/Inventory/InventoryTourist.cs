@@ -8,10 +8,11 @@ namespace WPM
 {
     public class InventoryTourist : InventoryItem
     {
-        private GameObject dialogPanel;
-        private GameObject dropOffButtonObject;
+        //private GameObject dialogPanel;
+        //private GameObject dropOffButtonObject;
         private Text dialog;
-        private Button dropOffButton;
+        private IDropOffUI dropOffUI;
+        //private Button dropOffButton;
         private string destinationName;
         private int destinationIndex;
         //private Province[] possibleProvinces;
@@ -33,20 +34,22 @@ namespace WPM
         public override void Start()
         {
             base.Start();
-            dialogPanel = gameManager.dialogPanel;
+            /*
+            dialogPanel = uiManager.NavigationUIObject;
             Transform textObject = dialogPanel.transform.GetChild(0);
             dialog = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             Transform dropOffButtonTransfrom = dialogPanel.transform.GetChild(1);
             dropOffButton = dropOffButtonTransfrom.gameObject.GetComponent(typeof(Button)) as Button;
 
             dropOffButtonObject = dropOffButtonTransfrom.gameObject;
-
+            */
+            dropOffUI = gameManager.uiManager.DropOffUI;
             SetDestination();
 
             gameManager.DisplayPopUp("Hey there!  I want to see " + destinationName + "!");
 
 
-            dropOffButtonObject.SetActive(true);
+            dropOffUI.ToggleOptionForDropOff(false);
 
         }
 
@@ -150,17 +153,19 @@ namespace WPM
         {
             base.Selected();
             int debug = inventoryLocation;
-            dialogPanel.SetActive(true);
-            dialog.text = "I want to go to " + destinationName;
-            dropOffButton.onClick.AddListener(delegate { DropOff(); });
+            dropOffUI.ToggleOptionForDropOff(true);
+            //dialog.text = "I want to go to " + destinationName;
+            dropOffUI.SetDropOffDelegate(DropOff);
+            //dropOffButton.onClick.AddListener(delegate { DropOff(); });
         }
 
         public override void Deselected()
         {
             base.Deselected();
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            dialogPanel.SetActive(false);
-            dropOffButton.onClick.RemoveAllListeners();
+            dropOffUI.ToggleOptionForDropOff(false);
+            dropOffUI.ClearDropOffDelegate();
+            //dropOffButton.onClick.RemoveAllListeners();
         }
 
         public override void MouseEnter()

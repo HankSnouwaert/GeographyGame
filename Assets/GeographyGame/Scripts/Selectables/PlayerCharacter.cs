@@ -20,7 +20,6 @@ namespace WPM
         public bool stop = false;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
-        //GameManager gameManager;
         GameObject InventoryPanel;
         InventoryUI inventoryUI;
         List<int>[] cellsInRange;
@@ -28,13 +27,14 @@ namespace WPM
         readonly Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
         private const int STARTING_NUMBER_OF_TOURISTS = 2;
-        private IUIManager uiManager;
+        private INavigationUI navigationUI;
+        private List<Landmark> landmarksInRange = new List<Landmark>();
 
 
         public override void Awake()
         {
             base.Awake();
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            navigationUI = uiManager.NavigationUI;
         }
 
         public void Start()
@@ -55,6 +55,7 @@ namespace WPM
             {
                 gameManager.GenerateTourist();
             }
+            UpdateLocation(cellLocation);
         }
 
         public float GetSize()
@@ -196,21 +197,25 @@ namespace WPM
         /// and update the distance the player character has travelled
         /// </summary>
         /// <param name="newCellIndex"></param>
-        public void UpdateLocation(int newCellIndex)
+        public virtual void UpdateLocation(int newCellIndex)
         {
             //Update distance travelled
             int neighborIndex = map.GetCellNeighbourIndex(cellLocation, newCellIndex);
-            //distanceTraveled = distanceTraveled + map.GetCellNeighbourCost(cellLocation, neighborIndex);
-            //Update cell tags and player character location
 
-            //map.cells[cellLocation].tag = null;
-            map.cells[cellLocation].occupants.Remove(this);
-            cellLocation = newCellIndex;
+            base.UpdateLocation(newCellIndex);
 
-            //map.cells[cellLocation].tag = GetInstanceID().ToString();
-            map.cells[cellLocation].occupants.Add(this);
+            List<int>[] cellNeighbors = gameManager.GetCellsInRange(newCellIndex, 1);
+            List<Landmark>[] landmarksInRangeTemp = gameManager.GetLandmarksInRange(newCellIndex, cellNeighbors);
+            landmarksInRange.Clear();
+            foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
+            {
+                if(landmarkList != null)
+                    landmarksInRange.AddRange(landmarkList);
+            }
 
-            vectorLocation = map.cells[cellLocation].sphereCenter;
+            List<MappableObject> mappableLandmarks = landmarksInRange.Cast<MappableObject>().ToList();
+
+            navigationUI.UpdateNavigationDisplay(provincesOccupied, countriesOccupied, mappableLandmarks);
             //Update Turns
             int turns = map.GetCellNeighbourCost(cellLocation, neighborIndex);
             gameManager.NextTurn(turns);
