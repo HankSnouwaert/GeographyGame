@@ -194,7 +194,7 @@ namespace WPM
 
         public void ItemMouseExit()
         {
-            gameManager.ClosePopUp();
+            //gameManager.ClosePopUp();
         }
     }
 }

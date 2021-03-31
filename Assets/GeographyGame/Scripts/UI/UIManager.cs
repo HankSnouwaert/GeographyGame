@@ -24,6 +24,8 @@ namespace WPM
         public IGameOverUI GameOverUI { get; set; }
         [SerializeField] public GameObject gameMenuUIObject;
         public IGameMenuUI GameMenuUI { get; set; }
+        [SerializeField] public GameObject inventoryPopUpUIObject;
+        public IInventoryPopUpUI InventoryPopUpUI { get; set; }
         public bool CursorOverUI { get; set; }
         public bool ClosingUI { get; set; } = false;
         private GameManager gameManager;
@@ -42,6 +44,7 @@ namespace WPM
             TurnsUI = turnsUIObject.GetComponent(typeof(ITurnsUI)) as ITurnsUI;
             GameOverUI = gameOverUIObject.GetComponent(typeof(IGameOverUI)) as IGameOverUI;
             GameMenuUI = gameMenuUIObject.GetComponent(typeof(IGameMenuUI)) as IGameMenuUI;
+            InventoryPopUpUI = inventoryPopUpUIObject.GetComponent(typeof(IInventoryPopUpUI)) as IInventoryPopUpUI;
             gameManager = FindObjectOfType<GameManager>();
             cellManager = gameManager.cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
         }
@@ -83,6 +86,7 @@ namespace WPM
             errorUIObject.SetActive(false);
             mouseOverInfoUIObject.SetActive(false);
             inventoryUIObject.SetActive(false);
+            inventoryPopUpUIObject.SetActive(false);
             GameOverUI.OpenUI();
         }
 

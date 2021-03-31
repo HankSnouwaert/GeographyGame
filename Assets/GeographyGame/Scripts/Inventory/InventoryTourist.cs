@@ -12,6 +12,7 @@ namespace WPM
         //private GameObject dropOffButtonObject;
         private Text dialog;
         private IDropOffUI dropOffUI;
+        private IUIManager uiManager;
         //private Button dropOffButton;
         private string destinationName;
         private int destinationIndex;
@@ -45,10 +46,8 @@ namespace WPM
             */
             dropOffUI = gameManager.uiManager.DropOffUI;
             SetDestination();
-
-            gameManager.DisplayPopUp("Hey there!  I want to see " + destinationName + "!");
-
-
+            uiManager = gameManager.uiManager;
+            uiManager.InventoryPopUpUI.DisplayPopUp("Hey there!  I want to see " + destinationName + "!", false);
             dropOffUI.ToggleOptionForDropOff(false);
 
         }
@@ -157,6 +156,7 @@ namespace WPM
             //dialog.text = "I want to go to " + destinationName;
             dropOffUI.SetDropOffDelegate(DropOff);
             //dropOffButton.onClick.AddListener(delegate { DropOff(); });
+            SetPopUpRequest(true);
         }
 
         public override void Deselected()
@@ -165,13 +165,20 @@ namespace WPM
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             dropOffUI.ToggleOptionForDropOff(false);
             dropOffUI.ClearDropOffDelegate();
+            uiManager.InventoryPopUpUI.ClearPopUp(true);
             //dropOffButton.onClick.RemoveAllListeners();
         }
 
         public override void MouseEnter()
         {
             base.MouseEnter();
-            gameManager.DisplayPopUp("I want to see " + destinationName + "!");
+            uiManager.InventoryPopUpUI.DisplayPopUp("I want to see " + destinationName + "!", false);
+        }
+
+        public override void OnMouseExit()
+        {
+            base.OnMouseExit();
+            uiManager.InventoryPopUpUI.ClearPopUp(false);
         }
 
         public void DropOff()
@@ -194,13 +201,13 @@ namespace WPM
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             uiManager.CursorOverUI = false;
                             correctProvince = true;
-                            gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                            uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
                             gameManager.DropOff(true);
                         }
                     }
                     if(correctProvince == false)
                     {
-                        gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+                        uiManager.InventoryPopUpUI.DisplayPopUp("Well this doesn't look right. . . .", false);
                         gameManager.DropOff(false);
                     }
                         
@@ -216,7 +223,7 @@ namespace WPM
                         gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                         uiManager.CursorOverUI = false;
                         landmarkReached = true;
-                        gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                        uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
                         gameManager.DropOff(true);
                     }
                     else
@@ -232,7 +239,7 @@ namespace WPM
                                 gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                                 uiManager.CursorOverUI = false;
                                 landmarkReached = true;
-                                gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                                uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
                                 gameManager.DropOff(true);
                             }
                         }
@@ -240,7 +247,7 @@ namespace WPM
 
                     if(landmarkReached == false)
                     {
-                        gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+                        uiManager.InventoryPopUpUI.DisplayPopUp("Well this doesn't look right. . . .", false);
                         gameManager.DropOff(false);
                     }
                        
@@ -258,13 +265,13 @@ namespace WPM
                             gameManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             uiManager.CursorOverUI = false;
                             correctCountry = true;
-                            gameManager.DisplayPopUp("Exactly where I wanted to go!");
+                            uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
                             gameManager.DropOff(true);
                         }
                     }
                     if (correctCountry == false)
                     {
-                        gameManager.DisplayPopUp("Well this doesn't look right. . . .");
+                        uiManager.InventoryPopUpUI.DisplayPopUp("Well this doesn't look right. . . .", false);
                         gameManager.DropOff(false);
                     }
                     break;
@@ -316,12 +323,16 @@ namespace WPM
             }
         }
 
+        public void SetPopUpRequest(bool persistant)
+        {
+            uiManager.InventoryPopUpUI.DisplayPopUp("I want to see " + destinationName + "!", persistant);
+        }
+
         public override void OnCellClick(int index)
         {
             //player.OnCellClick(index);
             if(index == player.cellLocation)
             {
-
                 player.Selected();
             }
         }

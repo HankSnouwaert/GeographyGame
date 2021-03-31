@@ -24,7 +24,7 @@ namespace WPM
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
         //public GameObject gameMenuPanel;
-        public GameObject popUpPanel;
+        //public GameObject popUpPanel;
         public GameObject errorPanel;
         public InventoryUI inventoryUI;
         public AudioSource dropOffSuccess;
@@ -32,10 +32,10 @@ namespace WPM
         //TO BE SORTED
         private ICellClicker cellClicker;
         //Panel Messages
-        private Text hexInfo;
+        //private Text hexInfo;
         //private Text scoreInfo;
-        private Text gameOverMessage;
-        private Text popUpMessage;
+        //private Text gameOverMessage;
+        //private Text popUpMessage;
         private Text errorMessage;
         private InputField stackTraceInputField;
         //Prefabs
@@ -167,9 +167,9 @@ namespace WPM
             //GameMenu Panel
             //gameMenuPanel.SetActive(false);
             //PopUp Panel
-            popUpPanel.SetActive(false);
-            textObject = popUpPanel.transform.GetChild(0);
-            popUpMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+            //popUpPanel.SetActive(false);
+            //textObject = popUpPanel.transform.GetChild(0);
+            //popUpMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             //Error Message Panel
             errorPanel.SetActive(false);
             textObject = errorPanel.transform.GetChild(0);
@@ -197,7 +197,7 @@ namespace WPM
             if (gameStart)
             {
                 gameStart = false;
-                ClosePopUp();
+                //ClosePopUp();
             }
 
             //UpdateHexInfoPanel();
@@ -250,8 +250,8 @@ namespace WPM
                 worldGlobeMap.DragTowards(Vector2.right);
 
             //Check if player is clicking out of a popup
-            if (Input.GetMouseButton(0) && popUpPanel.activeSelf)
-                popUpPanel.SetActive(false);
+            if (Input.GetMouseButton(0) && uiManager.InventoryPopUpUI.TempPopUp == true)
+                uiManager.InventoryPopUpUI.ClearPopUp(false);
         }
 
 
@@ -1120,7 +1120,7 @@ namespace WPM
             //dialogPanel.SetActive(false);
             GamePaused = true;
             //gameOverMessage.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + score;
-            popUpPanel.SetActive(false);
+            //popUpPanel.SetActive(false);
         }
 
         /// <summary> 
@@ -1155,7 +1155,7 @@ namespace WPM
             GamePaused = false;
             GameMenuOpen = false;
         }
-
+        /*
         /// <summary> 
         /// Display a popup notification with a given message
         /// </summary>
@@ -1174,7 +1174,7 @@ namespace WPM
         {
             popUpPanel.SetActive(false);
         }
-
+        */
         /// <summary> 
         /// Display an error popup with a given error message
         /// </summary>

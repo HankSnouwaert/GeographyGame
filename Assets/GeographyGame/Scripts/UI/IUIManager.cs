@@ -16,6 +16,7 @@ namespace WPM
         IMouseOverInfoUI MouseOverInfoUI { get; set; }
         IGameOverUI GameOverUI { get; set; }
         IGameMenuUI GameMenuUI { get; set; }
+        IInventoryPopUpUI InventoryPopUpUI { get; set; }
         void GameOver();
         void ExitCurrentUI();
     }
