@@ -47,7 +47,7 @@ namespace WPM
             inventoryUI = InventoryPanel.GetComponent(typeof(InventoryUI)) as InventoryUI;
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
-            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
+            cellsInRange = globeParser.GetCellsInRange(cellLocation, travelRange+1);
             gameManager.OrientOnLocation(vectorLocation);
 
             //Generate Initial Tourists
@@ -204,8 +204,8 @@ namespace WPM
 
             base.UpdateLocation(newCellIndex);
 
-            List<int>[] cellNeighbors = gameManager.GetCellsInRange(newCellIndex, 1);
-            List<Landmark>[] landmarksInRangeTemp = gameManager.GetLandmarksInRange(newCellIndex, cellNeighbors);
+            List<int>[] cellNeighbors = globeParser.GetCellsInRange(newCellIndex, 1);
+            List<Landmark>[] landmarksInRangeTemp = globeParser.GetLandmarksInRange(newCellIndex, cellNeighbors);
             landmarksInRange.Clear();
             foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
             {
@@ -239,7 +239,7 @@ namespace WPM
 
             ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange + 1);
+            cellsInRange = globeParser.GetCellsInRange(cellLocation, travelRange + 1);
             SetCellCosts();
 
             moving = false;

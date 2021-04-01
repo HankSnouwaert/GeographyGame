@@ -17,11 +17,13 @@ namespace WPM
         [Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject uiManagerObject;
-        public IUIManager uiManager { get; set; }
+        public IUIManager UIManager { get; set; }
         public GameObject cellManagerObject;
         public ICellManager CellManager { get; set; }
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
+        public GameObject globeParserObject;
+        public IGlobeParser GlobeParser { get; set; }
         public GameObject playerPrefab;
         //public GameObject gameMenuPanel;
         //public GameObject popUpPanel;
@@ -133,7 +135,8 @@ namespace WPM
         {
             CellManager = cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
             ErrorHandler = errorHandlerObject.GetComponentInChildren(typeof(IErrorHandler)) as IErrorHandler;
-            uiManager = uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            UIManager = uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            GlobeParser = globeParserObject.GetComponent(typeof(IGlobeParser)) as IGlobeParser;
         }
 
         void Start()
@@ -206,14 +209,14 @@ namespace WPM
             if (Input.GetKeyDown("escape"))
             {
                 if (GameMenuOpen)
-                    uiManager.ExitCurrentUI();
+                    UIManager.ExitCurrentUI();
                 else
                 {
                     if (selectedObject != null)
                         selectedObject.Deselected();
                     else
                     {
-                        uiManager.GameMenuUI.OpenUI();
+                        UIManager.GameMenuUI.OpenUI();
                         GameMenuOpen = true;
                         GamePaused = true;
                     }
@@ -250,8 +253,8 @@ namespace WPM
                 worldGlobeMap.DragTowards(Vector2.right);
 
             //Check if player is clicking out of a popup
-            if (Input.GetMouseButton(0) && uiManager.InventoryPopUpUI.TempPopUp == true)
-                uiManager.InventoryPopUpUI.ClearPopUp(false);
+            if (Input.GetMouseButton(0) && UIManager.InventoryPopUpUI.TempPopUp == true)
+                UIManager.InventoryPopUpUI.ClearPopUp(false);
         }
 
 
@@ -295,7 +298,7 @@ namespace WPM
         }
 
         //RANGE CHECKING
-
+        /*
         /// <summary> 
         /// Get all cells within a certain range (measured in cells) of a target cell
         /// Inputs:
@@ -658,6 +661,8 @@ namespace WPM
             }
             return countryIndexes;
         }
+
+        */
 
         //CAMERA CONTROLS
 
@@ -1085,7 +1090,7 @@ namespace WPM
         public void UpdateScore(int scoreModification)
         {
             score = score + scoreModification;
-            uiManager.ScoreUI.UpdateDisplayedScore(score);
+            UIManager.ScoreUI.UpdateDisplayedScore(score);
             //scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
@@ -1102,7 +1107,7 @@ namespace WPM
                 turnsRemaining = 0;
                 GameOver();
             }
-            uiManager.TurnsUI.UpdateDisplayedRemainingTurns(turnsRemaining);
+            UIManager.TurnsUI.UpdateDisplayedRemainingTurns(turnsRemaining);
             //scoreInfo.text = "Score: " + score + System.Environment.NewLine + "Turns Left: " + turnsRemaining;
         }
 
@@ -1114,7 +1119,7 @@ namespace WPM
         public void GameOver()
         {
             //Setup U.I. panels and flags
-            uiManager.GameOver();
+            UIManager.GameOver();
 
             //gameOverPanel.SetActive(true);
             //dialogPanel.SetActive(false);
