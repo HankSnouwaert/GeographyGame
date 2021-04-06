@@ -15,6 +15,7 @@ namespace WPM
         private IUIManager uiManager;
         private GlobeManager globeManager;
         private IGlobeParser globeParser;
+        private IGlobeInfo globeInfo;
         //private Button dropOffButton;
         private string destinationName;
         private int destinationIndex;
@@ -47,12 +48,12 @@ namespace WPM
             dropOffButtonObject = dropOffButtonTransfrom.gameObject;
             */
             dropOffUI = gameManager.UIManager.DropOffUI;
-            SetDestination();
             uiManager = gameManager.UIManager;
-            uiManager.InventoryPopUpUI.DisplayPopUp("Hey there!  I want to see " + destinationName + "!", false);
-            dropOffUI.ToggleOptionForDropOff(false);
             globeManager = FindObjectOfType<GlobeManager>();
             globeParser = globeManager.GlobeParser;
+            globeInfo = globeManager.GlobeInfo;
+            SetDestination(); uiManager.InventoryPopUpUI.DisplayPopUp("Hey there!  I want to see " + destinationName + "!", false);
+            dropOffUI.ToggleOptionForDropOff(false);
         }
 
         private void SetDestination()
@@ -129,7 +130,7 @@ namespace WPM
             {
                 destinationType = LANDMARK;
                 destinationIndex = destinationIndex - provinceChoices.Count;
-                landmarkDestination = gameManager.CulturalLandmarksByName[landmarkChoices[destinationIndex]];
+                landmarkDestination = globeInfo.CulturalLandmarksByName[landmarkChoices[destinationIndex]];
                 destinationName = landmarkDestination.objectName;
                 gameManager.RecentLandmarkDestinations.Insert(0, landmarkChoices[destinationIndex]);
                 while (gameManager.RecentLandmarkDestinations.Count >= gameManager.TrackingTime)

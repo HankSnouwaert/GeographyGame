@@ -9,6 +9,8 @@ namespace WPM
     {
         private GameManager gameManager;
         private WorldMapGlobe worldGlobeMap;
+        private GlobeManager globeManager;
+        private IGlobeInfo globeInfo;
         readonly string startingCountry = "United States of America";
         readonly string startingProvince = "North Carolina";
         //MACROS
@@ -25,7 +27,12 @@ namespace WPM
         private void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
-            worldGlobeMap = gameManager.worldGlobeMap;
+            globeManager = FindObjectOfType<GlobeManager>();
+            worldGlobeMap = globeManager.worldGlobeMap;
+        }
+        private void Start()
+        {
+            globeInfo = globeManager.GlobeInfo;
         }
 
         public void ApplyGlobeSettings()
@@ -164,7 +171,7 @@ namespace WPM
                     worldGlobeMap.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
                     string playerID = gameManager.player.GetInstanceID().ToString();
                     worldGlobeMap.cells[startingCellIndex].occupants.Add(gameManager.player);
-                    gameManager.mappedObjects.Add(playerID, gameManager.player);
+                    globeInfo.MappedObjects.Add(playerID, gameManager.player);
                 }
                 if (mountPoint.type == CULTURAL_POINT) //&& loadedMapSettings.culturalLandmarks)
                 {
@@ -182,9 +189,9 @@ namespace WPM
                     worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
                     string landmarkID = landmarkComponent.GetInstanceID().ToString();
                     worldGlobeMap.cells[landmarkComponent.cellIndex].occupants.Add(landmarkComponent);
-                    gameManager.mappedObjects.Add(landmarkID, landmarkComponent);
-                    gameManager.culturalLandmarks.Add(landmarkID, landmarkComponent);
-                    gameManager.CulturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);
+                    globeInfo.MappedObjects.Add(landmarkID, landmarkComponent);
+                    globeInfo.CulturalLandmarks.Add(landmarkID, landmarkComponent);
+                    globeInfo.CulturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);
                 }
             }
         }

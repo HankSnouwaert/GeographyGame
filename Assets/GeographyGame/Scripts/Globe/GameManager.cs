@@ -49,8 +49,6 @@ namespace WPM
         //Game Settings
         private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn  (Tourist Manager)
         public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered  (Tourist Manager)
-        readonly string startingCountry = "United States of America";
-        readonly string startingProvince = "North Carolina";
         public const int MIN_TIME_IN_REGION = 5;  //Tourist Manager
         public const int MAX_TIME_IN_REGION = 10;  //Tourist Manager
         //In-Game Objects
@@ -68,7 +66,7 @@ namespace WPM
         }
         public SelectableObject HighlightedObject { get; set; } = null;
 
-        public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();  //Globe Manager: GlobeInfo
+        //public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();  //Globe Manager: GlobeInfo
         
         //Tourist Tracking Lists
         public List<int> RecentProvinceDestinations { get; set; } = new List<int>();  //Tourist Manager
@@ -79,8 +77,8 @@ namespace WPM
         public TouristRegion CurrentRegion { get; set; }  //Tourist Manager
         private List<TouristRegion> regionsVisited = new List<TouristRegion>();  //Tourist Manager
         //Landmark Lists
-        public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();  //Globe Manager: GlobeInfo
-        public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>(); //Globe Manager: GlobeInfo
+        //public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();  //Globe Manager: GlobeInfo
+        //public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>(); //Globe Manager: GlobeInfo
         //MACROS 
         //Province Attributes
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3; 
