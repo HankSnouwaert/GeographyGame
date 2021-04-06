@@ -23,8 +23,6 @@ namespace WPM
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject playerPrefab;
-        //public GameObject gameMenuPanel;
-        //public GameObject popUpPanel;
         public GameObject errorPanel;
         public InventoryUI inventoryUI;
         public AudioSource dropOffSuccess;
@@ -32,10 +30,6 @@ namespace WPM
         //TO BE SORTED
         private ICellClicker cellClicker;
         //Panel Messages
-        //private Text hexInfo;
-        //private Text scoreInfo;
-        //private Text gameOverMessage;
-        //private Text popUpMessage;
         private Text errorMessage;  //Error Manager
         private InputField stackTraceInputField; //Error Manager
         //Prefabs
@@ -140,16 +134,6 @@ namespace WPM
         void Start()
         {
             cellClicker = globeManager.CellCursorInterface.CellClicker;
-
-            try
-            {
-                ApplyGlobeSettings();
-            }
-            catch (System.Exception ex)
-            {
-                errorState = ErrorState.close_application;
-                DisplayError(ex.Message, ex.StackTrace);
-            }
 
             InitTouristRegions();
 
@@ -682,7 +666,7 @@ namespace WPM
         ///  Instantiate provinces and mappable objects based on settings file
         ///  NOTE: Settings file is not currently used and the settings have been hard coded
         /// </summary>
-        
+        /*
         void ApplyGlobeSettings()
         {
             Debug.Log("Applying Globe Settings");
@@ -829,7 +813,8 @@ namespace WPM
                 }
             //}
         }
-
+        */
+        
         /// <summary>
         ///  Instantiate all tourist regions and set initial region
         /// </summary>
