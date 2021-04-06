@@ -3,7 +3,7 @@
     /// <summary>
     ///  Used to hold interfaces related to cell interaction
     /// </summary>
-    public interface ICellManager
+    public interface ICellCursorInterface
     {
         ICellClicker CellClicker { get; set; }
         ICellEnterer CellEnterer { get; set; }

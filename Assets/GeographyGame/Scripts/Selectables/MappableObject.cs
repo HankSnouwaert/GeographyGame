@@ -13,15 +13,17 @@ namespace WPM
         public List<Province> provincesOccupied = new List<Province>();
         public List<string> politicalProvincesOccupied = new List<string>();
         public List<string> climatesOccupied = new List<string>();
+        protected GlobeManager globeManager;
         protected IGlobeParser globeParser;
 
         public override void Awake()
         {
             base.Awake();
-            globeParser = gameManager.GlobeParser;
+            globeManager = FindObjectOfType<GlobeManager>();
+            globeParser = globeManager.GlobeParser;
         }
 
-        protected void UpdateLocation(int newCellIndex)
+        public virtual void UpdateLocation(int newCellIndex)
         {
             if(cellLocation != -1)
                 map.cells[cellLocation].occupants.Remove(this);
@@ -39,7 +41,7 @@ namespace WPM
         private void UpdateCountriesOccupied()
         {
             countriesOccupied.Clear();
-            List<int> countryIndexes = globeParser.GetCountriesInCell(cellLocation);
+            List<int> countryIndexes = globeParser.CountryParser.GetCountriesInCell(cellLocation);
             foreach (int countryIndex in countryIndexes)
             {
                 countriesOccupied.Add(gameManager.worldGlobeMap.countries[countryIndex]);
@@ -48,7 +50,7 @@ namespace WPM
         private void UpdateProvincesOccupied()
         {
             provincesOccupied.Clear();
-            List<int> provinceIndexes = globeParser.GetProvicesInCell(cellLocation);
+            List<int> provinceIndexes = globeParser.ProvinceParser.GetProvicesInCell(cellLocation);
             foreach (int provinceIndex in provinceIndexes)
             {
                 provincesOccupied.Add(gameManager.worldGlobeMap.provinces[provinceIndex]);

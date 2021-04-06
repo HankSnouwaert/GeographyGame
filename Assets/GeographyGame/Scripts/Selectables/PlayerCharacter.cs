@@ -197,7 +197,7 @@ namespace WPM
         /// and update the distance the player character has travelled
         /// </summary>
         /// <param name="newCellIndex"></param>
-        public virtual void UpdateLocation(int newCellIndex)
+        public override void UpdateLocation(int newCellIndex)
         {
             //Update distance travelled
             int neighborIndex = map.GetCellNeighbourIndex(cellLocation, newCellIndex);
@@ -205,7 +205,7 @@ namespace WPM
             base.UpdateLocation(newCellIndex);
 
             List<int>[] cellNeighbors = globeParser.GetCellsInRange(newCellIndex, 1);
-            List<Landmark>[] landmarksInRangeTemp = globeParser.GetLandmarksInRange(newCellIndex, cellNeighbors);
+            List<Landmark>[] landmarksInRangeTemp = globeParser.LandmarkParser.GetLandmarksInRange(newCellIndex, cellNeighbors);
             landmarksInRange.Clear();
             foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
             {

@@ -18,12 +18,10 @@ namespace WPM
         public WorldMapGlobe worldGlobeMap;
         public GameObject uiManagerObject;
         public IUIManager UIManager { get; set; }
-        public GameObject cellManagerObject;
-        public ICellManager CellManager { get; set; }
+        private GlobeManager globeManager;
+        public ICellCursorInterface CellCursorInterface { get; set; }
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
-        public GameObject globeParserObject;
-        public IGlobeParser GlobeParser { get; set; }
         public GameObject playerPrefab;
         //public GameObject gameMenuPanel;
         //public GameObject popUpPanel;
@@ -38,29 +36,29 @@ namespace WPM
         //private Text scoreInfo;
         //private Text gameOverMessage;
         //private Text popUpMessage;
-        private Text errorMessage;
-        private InputField stackTraceInputField;
+        private Text errorMessage;  //Error Manager
+        private InputField stackTraceInputField; //Error Manager
         //Prefabs
-        private InventoryTourist touristPrefab;
+        private InventoryTourist touristPrefab; //Tourist Manager
         //Counters
-        private int globalTurnCounter = 0;
-        private int touristCounter = 0;
+        private int globalTurnCounter = 0; 
+        private int touristCounter = 0; //Tourist Manager
         public int score = 0;
-        private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
+        private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1  (Tourist Manager)
         private int turnsRemaining = 250;
-        private int touristImageIndex = 0;
+        private int touristImageIndex = 0; //Tourist Manager
         //Flags
         public bool GamePaused { get; set; } = false;
         public bool GameMenuOpen { get; set; } = false;
         private bool gameStart = true;
-        public ErrorState errorState = ErrorState.close_window;
+        public ErrorState errorState = ErrorState.close_window;  //Error Manager
         //Game Settings
-        private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn
-        public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered
+        private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn  (Tourist Manager)
+        public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered  (Tourist Manager)
         readonly string startingCountry = "United States of America";
         readonly string startingProvince = "North Carolina";
-        public const int MIN_TIME_IN_REGION = 5;
-        public const int MAX_TIME_IN_REGION = 10;
+        public const int MIN_TIME_IN_REGION = 5;  //Tourist Manager
+        public const int MAX_TIME_IN_REGION = 10;  //Tourist Manager
         //In-Game Objects
         public PlayerCharacter player;
         private SelectableObject selectedObject;
@@ -74,23 +72,24 @@ namespace WPM
                     cellClicker.NewObjectSelected = true;
             }
         }
-
         public SelectableObject HighlightedObject { get; set; } = null;
-        private Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();
+
+        public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();  //Globe Manager: GlobeInfo
+        
         //Tourist Tracking Lists
-        public List<int> RecentProvinceDestinations { get; set; } = new List<int>();
-        public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();
-        public List<int> RecentCountryDestinations { get; set; } = new List<int>();
+        public List<int> RecentProvinceDestinations { get; set; } = new List<int>();  //Tourist Manager
+        public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();  //Tourist Manager
+        public List<int> RecentCountryDestinations { get; set; } = new List<int>();  //Tourist Manager
         //Map Regions
-        private List<TouristRegion> touristRegions = new List<TouristRegion>();
-        public TouristRegion CurrentRegion { get; set; }
-        private List<TouristRegion> regionsVisited = new List<TouristRegion>();
+        public List<TouristRegion> touristRegions = new List<TouristRegion>();  //Tourist Manager
+        public TouristRegion CurrentRegion { get; set; }  //Tourist Manager
+        private List<TouristRegion> regionsVisited = new List<TouristRegion>();  //Tourist Manager
         //Landmark Lists
-        private Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();
-        public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>();
-        //MACROS
+        public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();  //Globe Manager: GlobeInfo
+        public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>(); //Globe Manager: GlobeInfo
+        //MACROS 
         //Province Attributes
-        public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
+        public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3; 
         public const int POLITICAL_PROVINCE = 0;
         public const int TERRAIN = 1;
         public const int CLIMATE = 2;
@@ -105,8 +104,8 @@ namespace WPM
         public const int CLOSE_APPLICATION = 2;
 
         //Tourist Image Management
-        private string[] touristImageFiles;
-        private const int NUMBER_OF_TOURIST_IMAGES = 8;
+        private string[] touristImageFiles; //Tourist Manager
+        private const int NUMBER_OF_TOURIST_IMAGES = 8; //Tourist Manager
 
         static GameManager _instance;
 
@@ -133,15 +132,14 @@ namespace WPM
 
         private void Awake()
         {
-            CellManager = cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
+            globeManager = FindObjectOfType<GlobeManager>();
             ErrorHandler = errorHandlerObject.GetComponentInChildren(typeof(IErrorHandler)) as IErrorHandler;
             UIManager = uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
-            GlobeParser = globeParserObject.GetComponent(typeof(IGlobeParser)) as IGlobeParser;
         }
 
         void Start()
         {
-            cellClicker = CellManager.CellClicker;
+            cellClicker = globeManager.CellCursorInterface.CellClicker;
 
             try
             {
@@ -661,8 +659,8 @@ namespace WPM
             }
             return countryIndexes;
         }
-
         */
+        
 
         //CAMERA CONTROLS
 
@@ -684,20 +682,14 @@ namespace WPM
         ///  Instantiate provinces and mappable objects based on settings file
         ///  NOTE: Settings file is not currently used and the settings have been hard coded
         /// </summary>
+        
         void ApplyGlobeSettings()
         {
             Debug.Log("Applying Globe Settings");
             //if (File.Exists(Application.dataPath + "/student.txt"))
             //{
             //Load Settings
-            /*
-            string savedMapSettings = File.ReadAllText(Application.dataPath + "/student.txt");
-            SaveObject loadedMapSettings = JsonUtility.FromJson<SaveObject>(savedMapSettings);
-            bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
-            provinceSettings[POLITICAL_PROVINCE] = loadedMapSettings.provinces;
-            provinceSettings[TERRAIN] = loadedMapSettings.terrain;
-            provinceSettings[CLIMATE] = loadedMapSettings.climate;
-            */
+           
             bool[] provinceSettings = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
             provinceSettings[POLITICAL_PROVINCE] = true;
             provinceSettings[TERRAIN] = false;
@@ -1052,7 +1044,6 @@ namespace WPM
 
             CurrentRegion = northAmericaUSSouthEast;
         }
-
         //GAME UPDATES
 
         /// <summary> 

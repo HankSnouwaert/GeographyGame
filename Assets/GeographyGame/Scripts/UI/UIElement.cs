@@ -10,6 +10,7 @@ namespace WPM
     public class UIElement : MonoBehaviour, IUIElement
     {
         protected GameManager gameManager;
+        protected GlobeManager globeManager;
         protected IUIManager uiManager;
         protected ICellClicker mouseCellClicker;
         protected GameObject uiObject;
@@ -18,8 +19,9 @@ namespace WPM
         public virtual void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
-            mouseCellClicker = gameManager.cellManagerObject.GetComponent(typeof(ICellClicker)) as ICellClicker;
+            globeManager = FindObjectOfType<GlobeManager>();
             uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            mouseCellClicker = globeManager.CellCursorInterface.CellClicker;
             uiObject = gameObject;
         }
 

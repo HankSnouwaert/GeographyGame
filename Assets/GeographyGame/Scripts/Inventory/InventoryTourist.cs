@@ -13,6 +13,7 @@ namespace WPM
         private Text dialog;
         private IDropOffUI dropOffUI;
         private IUIManager uiManager;
+        private GlobeManager globeManager;
         private IGlobeParser globeParser;
         //private Button dropOffButton;
         private string destinationName;
@@ -50,7 +51,8 @@ namespace WPM
             uiManager = gameManager.UIManager;
             uiManager.InventoryPopUpUI.DisplayPopUp("Hey there!  I want to see " + destinationName + "!", false);
             dropOffUI.ToggleOptionForDropOff(false);
-            globeParser = gameManager.GlobeParser;
+            globeManager = FindObjectOfType<GlobeManager>();
+            globeParser = globeManager.GlobeParser;
         }
 
         private void SetDestination()
@@ -190,7 +192,7 @@ namespace WPM
             switch (destinationType)
             {
                 case PROVINCE:
-                    List<int> selectedProvinces = globeParser.GetProvicesInCell(player.cellLocation);
+                    List<int> selectedProvinces = globeParser.ProvinceParser.GetProvicesInCell(player.cellLocation);
                     bool correctProvince = false;
                     foreach (int province in selectedProvinces)
                     {
@@ -254,7 +256,7 @@ namespace WPM
                        
                     break;
                 case COUNTRY:
-                    List<int> selectedCountries = globeParser.GetCountriesInCell(player.cellLocation);
+                    List<int> selectedCountries = globeParser.CountryParser.GetCountriesInCell(player.cellLocation);
                     bool correctCountry = false;
                     foreach (int countryIndex in selectedCountries)
                     {

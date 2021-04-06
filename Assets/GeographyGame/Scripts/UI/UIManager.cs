@@ -29,8 +29,8 @@ namespace WPM
         public bool CursorOverUI { get; set; }
         public bool ClosingUI { get; set; } = false;
         private GameManager gameManager;
-        private ICellManager cellManager;
-        
+        private GlobeManager globeManager;
+        private ICellCursorInterface cellCursorInterface;
 
 
         // Start is called before the first frame update
@@ -46,7 +46,13 @@ namespace WPM
             GameMenuUI = gameMenuUIObject.GetComponent(typeof(IGameMenuUI)) as IGameMenuUI;
             InventoryPopUpUI = inventoryPopUpUIObject.GetComponent(typeof(IInventoryPopUpUI)) as IInventoryPopUpUI;
             gameManager = FindObjectOfType<GameManager>();
-            cellManager = gameManager.cellManagerObject.GetComponent(typeof(ICellManager)) as ICellManager;
+            globeManager = FindObjectOfType<GlobeManager>();
+            
+        }
+
+        void Start()
+        {
+            cellCursorInterface = globeManager.CellCursorInterface;
         }
 
         void Update()
@@ -55,9 +61,9 @@ namespace WPM
             if (ClosingUI)
             {
                 ClosingUI = false;
-                int currentCellIndex = cellManager.highlightedCellIndex;
+                int currentCellIndex = cellCursorInterface.highlightedCellIndex;
                 if(currentCellIndex != -1)
-                    cellManager.CellEnterer.HandleOnCellEnter(currentCellIndex);
+                    cellCursorInterface.CellEnterer.HandleOnCellEnter(currentCellIndex);
                 CursorOverUI = true;
             }
             MouseOverInfoUI.UpdateUI();

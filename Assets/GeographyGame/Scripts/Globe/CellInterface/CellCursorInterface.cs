@@ -7,7 +7,7 @@ namespace WPM
     /// <summary>
     ///  Used to hold interfaces related to cell interaction
     /// </summary>
-    public class CellManager : MonoBehaviour, ICellManager
+    public class CellCursorInterface : MonoBehaviour, ICellCursorInterface
     {
         public ICellClicker CellClicker { get; set; } 
         public ICellEnterer CellEnterer { get; set; }
