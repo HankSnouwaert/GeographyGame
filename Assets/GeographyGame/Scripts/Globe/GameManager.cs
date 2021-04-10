@@ -158,20 +158,6 @@ namespace WPM
                     }
                 }      
             }
-            /*
-            //Check for camera movement
-            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-                worldGlobeMap.DragTowards(Vector2.up);
-            if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
-                worldGlobeMap.DragTowards(Vector2.down);
-            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-                worldGlobeMap.DragTowards(Vector2.left);
-            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-                worldGlobeMap.DragTowards(Vector2.right);
-            */
-            //Check if player is clicking out of a popup
-            if (Input.GetMouseButton(0) && UIManager.InventoryPopUpUI.TempPopUp == true)
-                UIManager.InventoryPopUpUI.ClearPopUp(false);
         }
 
 

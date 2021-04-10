@@ -66,6 +66,10 @@ namespace WPM
                 CursorOverUI = true;
             }
             MouseOverInfoUI.UpdateUI();
+
+            //Check if player is clicking out of a popup
+            if (Input.GetMouseButton(0) && InventoryPopUpUI.TempPopUp == true)
+                InventoryPopUpUI.ClearPopUp(false);
         }
 
         public bool CheckForMouseOverUI()
