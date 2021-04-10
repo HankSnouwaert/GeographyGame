@@ -78,7 +78,7 @@ PrefabInstance:
     - target: {fileID: 6439881483729845871, guid: 692318a27561c9e448b5a89ec78e5d68,
         type: 3}
       propertyPath: m_Name
-      value: ElCastilloOfChichenItza
+      value: CastilloOfChichenItza
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 692318a27561c9e448b5a89ec78e5d68, type: 3}

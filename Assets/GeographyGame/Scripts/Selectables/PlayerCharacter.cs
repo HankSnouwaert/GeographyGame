@@ -28,6 +28,7 @@ namespace WPM
         public const int IMPASSABLE = 0;
         private const int STARTING_NUMBER_OF_TOURISTS = 2;
         private INavigationUI navigationUI;
+        private ITouristManager touristManager;
         private List<Landmark> landmarksInRange = new List<Landmark>();
 
 
@@ -49,11 +50,12 @@ namespace WPM
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = globeParser.GetCellsInRange(cellLocation, travelRange+1);
             gameManager.OrientOnLocation(vectorLocation);
+            touristManager = gameManager.TouristManager;
 
             //Generate Initial Tourists
             for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
             {
-                gameManager.GenerateTourist();
+                touristManager.GenerateTourist();
             }
             UpdateLocation(cellLocation);
         }
@@ -102,7 +104,16 @@ namespace WPM
                 //Attempt to display path to new location
                 map.ClearCells(true, false, false);
                 //map.SetCellColor(cellLocation, Color.green, true);
-                pathIndices = DrawPath(cellLocation, index);
+                try
+                {
+                    pathIndices = DrawPath(cellLocation, index);
+                }
+                catch (Exception ex)
+                {
+                    errorHandler.catchException(ex);
+                }
+
+
                 if (pathIndices != null)
                 {
                     pathIndices.Insert(0, cellLocation);
@@ -345,7 +356,7 @@ namespace WPM
             inventoryUI.UpdateInventory(inventory);
             if(inventory.Count == 0)
             {
-                gameManager.GenerateTourist();
+                touristManager.GenerateTourist();
             }
         }
     }

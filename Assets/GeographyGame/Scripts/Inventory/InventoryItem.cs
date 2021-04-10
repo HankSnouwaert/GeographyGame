@@ -24,11 +24,6 @@ namespace WPM
             //spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public virtual void Start()
-        {
-
-        }
-
         public override void Selected()
         {
             base.Selected();

@@ -46,8 +46,7 @@ namespace WPM
             GameMenuUI = gameMenuUIObject.GetComponent(typeof(IGameMenuUI)) as IGameMenuUI;
             InventoryPopUpUI = inventoryPopUpUIObject.GetComponent(typeof(IInventoryPopUpUI)) as IInventoryPopUpUI;
             gameManager = FindObjectOfType<GameManager>();
-            globeManager = FindObjectOfType<GlobeManager>();
-            
+            globeManager = FindObjectOfType<GlobeManager>(); 
         }
 
         void Start()

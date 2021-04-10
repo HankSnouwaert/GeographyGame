@@ -22,6 +22,8 @@ namespace WPM
         public ICellCursorInterface CellCursorInterface { get; set; }
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
+        public GameObject touristManagerObject;
+        public ITouristManager TouristManager { get; set; }
         public GameObject playerPrefab;
         public GameObject errorPanel;
         public InventoryUI inventoryUI;
@@ -33,24 +35,24 @@ namespace WPM
         private Text errorMessage;  //Error Manager
         private InputField stackTraceInputField; //Error Manager
         //Prefabs
-        private InventoryTourist touristPrefab; //Tourist Manager
+        //private InventoryTourist touristPrefab; //Tourist Manager
         //Counters
         private int globalTurnCounter = 0; 
-        private int touristCounter = 0; //Tourist Manager
+        //private int touristCounter = 0; //Tourist Manager
         public int score = 0;
-        private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1  (Tourist Manager)
+        //private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1  (Tourist Manager)
         private int turnsRemaining = 250;
-        private int touristImageIndex = 0; //Tourist Manager
+        //private int touristImageIndex = 0; //Tourist Manager
         //Flags
         public bool GamePaused { get; set; } = false;
         public bool GameMenuOpen { get; set; } = false;
         private bool gameStart = true;
         public ErrorState errorState = ErrorState.close_window;  //Error Manager
         //Game Settings
-        private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn  (Tourist Manager)
-        public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered  (Tourist Manager)
-        public const int MIN_TIME_IN_REGION = 5;  //Tourist Manager
-        public const int MAX_TIME_IN_REGION = 10;  //Tourist Manager
+        //private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn  (Tourist Manager)
+        //public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered  (Tourist Manager)
+        //public const int MIN_TIME_IN_REGION = 5;  //Tourist Manager
+        //public const int MAX_TIME_IN_REGION = 10;  //Tourist Manager
         //In-Game Objects
         public PlayerCharacter player;
         private SelectableObject selectedObject;
@@ -69,13 +71,13 @@ namespace WPM
         //public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();  //Globe Manager: GlobeInfo
         
         //Tourist Tracking Lists
-        public List<int> RecentProvinceDestinations { get; set; } = new List<int>();  //Tourist Manager
-        public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();  //Tourist Manager
-        public List<int> RecentCountryDestinations { get; set; } = new List<int>();  //Tourist Manager
+        //public List<int> RecentProvinceDestinations { get; set; } = new List<int>();  //Tourist Manager
+        //public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();  //Tourist Manager
+        //public List<int> RecentCountryDestinations { get; set; } = new List<int>();  //Tourist Manager
         //Map Regions
-        public List<TouristRegion> touristRegions = new List<TouristRegion>();  //Tourist Manager
-        public TouristRegion CurrentRegion { get; set; }  //Tourist Manager
-        private List<TouristRegion> regionsVisited = new List<TouristRegion>();  //Tourist Manager
+        //public List<TouristRegion> touristRegions = new List<TouristRegion>();  //Tourist Manager
+        //public TouristRegion CurrentRegion { get; set; }  //Tourist Manager
+        //private List<TouristRegion> regionsVisited = new List<TouristRegion>();  //Tourist Manager
         //Landmark Lists
         //public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();  //Globe Manager: GlobeInfo
         //public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>(); //Globe Manager: GlobeInfo
@@ -96,8 +98,8 @@ namespace WPM
         public const int CLOSE_APPLICATION = 2;
 
         //Tourist Image Management
-        private string[] touristImageFiles; //Tourist Manager
-        private const int NUMBER_OF_TOURIST_IMAGES = 8; //Tourist Manager
+        //private string[] touristImageFiles; //Tourist Manager
+        //private const int NUMBER_OF_TOURIST_IMAGES = 8; //Tourist Manager
 
         static GameManager _instance;
 
@@ -127,13 +129,14 @@ namespace WPM
             globeManager = FindObjectOfType<GlobeManager>();
             ErrorHandler = errorHandlerObject.GetComponentInChildren(typeof(IErrorHandler)) as IErrorHandler;
             UIManager = uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
         }
 
         void Start()
         {
             cellClicker = globeManager.CellCursorInterface.CellClicker;
 
-            InitTouristRegions();
+            //InitTouristRegions();
 
             // Setup grid events
             /*
@@ -143,7 +146,7 @@ namespace WPM
             */
 
             //Get Prefabs
-            touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
+            //touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             
             //Hide U.I. Panels and Get Their Text Objects
             Transform textObject;
@@ -159,17 +162,6 @@ namespace WPM
             errorMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             Transform scrollViewTextObject = errorPanel.transform.GetChild(1).GetChild(0).GetChild(0);
             stackTraceInputField = scrollViewTextObject.gameObject.GetComponent(typeof(InputField)) as InputField;
-
-            //Set Tourist Images
-            touristImageFiles = new string[8];
-            touristImageFiles[0] = "Images/Tourist1";
-            touristImageFiles[1] = "Images/Tourist2";
-            touristImageFiles[2] = "Images/Tourist3";
-            touristImageFiles[3] = "Images/Tourist4";
-            touristImageFiles[4] = "Images/Tourist5";
-            touristImageFiles[5] = "Images/Tourist6";
-            touristImageFiles[6] = "Images/Tourist7";
-            touristImageFiles[7] = "Images/Tourist8";
         }
 
         void Update()
@@ -254,7 +246,9 @@ namespace WPM
                 {
                     selectableObject.EndOfTurn(turns);
                 }
+            TouristManager.NextTurn(turns);
             //Check if a new tourist needs to appear
+            /*
             for(int i = 0; i < turns; i++)
             {
                 touristCounter++;
@@ -264,6 +258,7 @@ namespace WPM
                     GenerateTourist();
                 }
             }
+            */
         }
 
         
@@ -813,6 +808,7 @@ namespace WPM
         }
         */
         
+        /*
         /// <summary>
         ///  Instantiate all tourist regions and set initial region
         /// </summary>
@@ -1028,7 +1024,9 @@ namespace WPM
             CurrentRegion = northAmericaUSSouthEast;
         }
         //GAME UPDATES
+        */
 
+        /*
         /// <summary> 
         /// Called when a tourist needs to be generated and added to the palyer's inventory
         /// </summary>
@@ -1055,7 +1053,7 @@ namespace WPM
                 touristsInCurrentRegion = 0;
             }
         }
-
+        */
         /// <summary>
         ///  Update the games current score
         /// </summary>

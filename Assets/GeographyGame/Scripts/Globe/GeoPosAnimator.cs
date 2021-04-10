@@ -16,6 +16,8 @@ namespace WPM
         public List<Vector2> latLon;
         WorldMapGlobe map;
         PlayerCharacter playerCharacter;
+        GameManager gameManager;
+        IErrorHandler errorHandler;
         float[] stepLengths;
         int latlonIndex;
         float totalLength;
@@ -23,10 +25,16 @@ namespace WPM
         //private const float MOVE_SPEED = 0.06f;  //For Build
         private const float MOVE_SPEED = 0.01f;  //For Development
 
-        void Awake()
+        private void Awake()
         {
             map = WorldMapGlobe.instance;
             playerCharacter = gameObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
+            gameManager = FindObjectOfType<GameManager>();
+        }
+
+        private void Start()
+        {
+            errorHandler = gameManager.ErrorHandler;
         }
 
         public void ComputePath()
@@ -95,7 +103,15 @@ namespace WPM
                 {
                     latlonIndex++;
                     int newCell = map.GetCellIndex(latLon[latlonIndex]);
-                    playerCharacter.UpdateLocation(newCell);
+                    try
+                    {
+                        playerCharacter.UpdateLocation(newCell);
+                    }
+                    catch(System.Exception ex)
+                    {
+                        errorHandler.catchException(ex);
+                    }
+                    
                     currentProgress = 0;
                     if(latlonIndex >= latLon.Count - 1  || playerCharacter.stop)
                     {

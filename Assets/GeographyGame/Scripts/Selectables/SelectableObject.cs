@@ -11,6 +11,7 @@ namespace WPM
         public bool selected;
         protected WorldMapGlobe map;
         protected GameManager gameManager;
+        protected IErrorHandler errorHandler;
         protected IUIManager uiManager;
         protected PlayerCharacter player;
 
@@ -21,6 +22,11 @@ namespace WPM
             gameManager = FindObjectOfType<GameManager>();
             uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
             player = FindObjectOfType<PlayerCharacter>();
+        }
+
+        public virtual void Start()
+        {
+            errorHandler = gameManager.ErrorHandler;
         }
 
         public virtual void OnMouseDown()
