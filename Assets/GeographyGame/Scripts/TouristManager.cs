@@ -48,6 +48,7 @@ namespace WPM
             touristImageFiles[7] = "Images/Tourist8";
         }
 
+
         public void NextTurn(int turns)
         {
             for (int i = 0; i < turns; i++)

@@ -14,16 +14,17 @@ namespace WPM
     public class GameManager : MonoBehaviour
     {
         #region Variable Declaration 
-        [Header("Player Components")]
+        //[Header("Player Components")]
         public WorldMapGlobe worldGlobeMap;
         public GameObject uiManagerObject;
         public IUIManager UIManager { get; set; }
-        private GlobeManager globeManager;
-        public ICellCursorInterface CellCursorInterface { get; set; }
+        private GlobeManager globeManager;  //WILL NEED INTERFACE LATER
         public GameObject errorHandlerObject;
         public IErrorHandler ErrorHandler { get; set; }
         public GameObject touristManagerObject;
         public ITouristManager TouristManager { get; set; }
+        public GameObject cameraManagerObject;
+        public ICameraManager CameraManager { get; set; }
         public GameObject playerPrefab;
         public GameObject errorPanel;
         public InventoryUI inventoryUI;
@@ -31,6 +32,7 @@ namespace WPM
         public AudioSource dropOffFailure;
         //TO BE SORTED
         private ICellClicker cellClicker;
+        public ICellCursorInterface CellCursorInterface { get; set; }
         //Panel Messages
         private Text errorMessage;  //Error Manager
         private InputField stackTraceInputField; //Error Manager
@@ -46,7 +48,6 @@ namespace WPM
         //Flags
         public bool GamePaused { get; set; } = false;
         public bool GameMenuOpen { get; set; } = false;
-        private bool gameStart = true;
         public ErrorState errorState = ErrorState.close_window;  //Error Manager
         //Game Settings
         //private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn  (Tourist Manager)
@@ -130,53 +131,16 @@ namespace WPM
             ErrorHandler = errorHandlerObject.GetComponentInChildren(typeof(IErrorHandler)) as IErrorHandler;
             UIManager = uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
             TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
+            CameraManager = cameraManagerObject.GetComponent(typeof(ICameraManager)) as ICameraManager;
         }
 
         void Start()
         {
             cellClicker = globeManager.CellCursorInterface.CellClicker;
-
-            //InitTouristRegions();
-
-            // Setup grid events
-            /*
-            worldGlobeMap.OnCellEnter += HandleOnCellEnter;
-            worldGlobeMap.OnCellExit += HandleOnCellExit;
-            worldGlobeMap.OnCellClick += HandleOnCellClick;
-            */
-
-            //Get Prefabs
-            //touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
-            
-            //Hide U.I. Panels and Get Their Text Objects
-            Transform textObject;
-            //GameMenu Panel
-            //gameMenuPanel.SetActive(false);
-            //PopUp Panel
-            //popUpPanel.SetActive(false);
-            //textObject = popUpPanel.transform.GetChild(0);
-            //popUpMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            //Error Message Panel
-            errorPanel.SetActive(false);
-            textObject = errorPanel.transform.GetChild(0);
-            errorMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            Transform scrollViewTextObject = errorPanel.transform.GetChild(1).GetChild(0).GetChild(0);
-            stackTraceInputField = scrollViewTextObject.gameObject.GetComponent(typeof(InputField)) as InputField;
         }
 
         void Update()
         {
-            bool debug = false;
-
-            //This is where you run code that needs to be run after the first step of the game
-            if (gameStart)
-            {
-                gameStart = false;
-                //ClosePopUp();
-            }
-
-            //UpdateHexInfoPanel();
-
             //Open and close in game menu
             if (Input.GetKeyDown("escape"))
             {
@@ -192,28 +156,9 @@ namespace WPM
                         GameMenuOpen = true;
                         GamePaused = true;
                     }
-                }
-                    
+                }      
             }
-
-            //Check what mouse is over
             /*
-            Ray ray;
-            RaycastHit hit;
-
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {
-                print(hit.collider.name);
-                GameObject hitObject = hit.collider.gameObject;
-                SelectableObject hitSelectable = hitObject.GetComponent(typeof(SelectableObject)) as SelectableObject;
-                if (hitSelectable != null)
-                {
-                    HighlightedObject = hitSelectable;
-                }
-            }
-            */
-
             //Check for camera movement
             if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
                 worldGlobeMap.DragTowards(Vector2.up);
@@ -223,7 +168,7 @@ namespace WPM
                 worldGlobeMap.DragTowards(Vector2.left);
             if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
                 worldGlobeMap.DragTowards(Vector2.right);
-
+            */
             //Check if player is clicking out of a popup
             if (Input.GetMouseButton(0) && UIManager.InventoryPopUpUI.TempPopUp == true)
                 UIManager.InventoryPopUpUI.ClearPopUp(false);
@@ -637,21 +582,24 @@ namespace WPM
             return countryIndexes;
         }
         */
-        
+
 
         //CAMERA CONTROLS
+
 
         /// <summary>
         ///  Orient the camera on a given location
         /// </summary>
         /// <param name="vectorLocation"></param> The location to orient on>
         /// <returns></returns> 
+        /*
         public void OrientOnLocation(Vector3 vectorLocation)
         {
             worldGlobeMap.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
             worldGlobeMap.pitch = 0;
             worldGlobeMap.yaw = 0;
         }
+        */
 
         //GLOBE INITIALIZATION
 
@@ -807,7 +755,7 @@ namespace WPM
             //}
         }
         */
-        
+
         /*
         /// <summary>
         ///  Instantiate all tourist regions and set initial region

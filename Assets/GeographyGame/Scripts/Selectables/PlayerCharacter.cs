@@ -29,6 +29,7 @@ namespace WPM
         private const int STARTING_NUMBER_OF_TOURISTS = 2;
         private INavigationUI navigationUI;
         private ITouristManager touristManager;
+        private ICameraManager cameraManager;
         private List<Landmark> landmarksInRange = new List<Landmark>();
 
 
@@ -40,6 +41,7 @@ namespace WPM
 
         public void Start()
         {
+            cameraManager = gameManager.CameraManager;
             objectName = "player";
             //gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
@@ -49,7 +51,7 @@ namespace WPM
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
             cellsInRange = globeParser.GetCellsInRange(cellLocation, travelRange+1);
-            gameManager.OrientOnLocation(vectorLocation);
+            cameraManager.OrientOnLocation(vectorLocation);
             touristManager = gameManager.TouristManager;
 
             //Generate Initial Tourists
@@ -69,7 +71,7 @@ namespace WPM
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                gameManager.OrientOnLocation(vectorLocation);
+                cameraManager.OrientOnLocation(vectorLocation);
             }
             if (Input.GetKeyDown(KeyCode.Backspace))
             {
