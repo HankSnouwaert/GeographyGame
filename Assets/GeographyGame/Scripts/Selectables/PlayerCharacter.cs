@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace WPM
 {
-    public class PlayerCharacter : MappableObject
+    public class PlayerCharacter : MappableObject, ITurnBasedObject
     {
         readonly int travelRange = 30;
         //int distanceTraveled = 0;
@@ -37,6 +37,7 @@ namespace WPM
         {
             base.Awake();
             navigationUI = uiManager.NavigationUI;
+            gameManager.TurnBasedObjects.Add(this);
         }
 
         public void Start()
@@ -145,7 +146,7 @@ namespace WPM
             }
         }
 
-        public override void EndOfTurn(int turns)
+        public void EndOfTurn(int turns)
         {
             /*
             // distanceTraveled = 0;

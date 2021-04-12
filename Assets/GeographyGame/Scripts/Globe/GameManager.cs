@@ -33,6 +33,7 @@ namespace WPM
         //TO BE SORTED
         private ICellClicker cellClicker;
         public ICellCursorInterface CellCursorInterface { get; set; }
+        public List<ITurnBasedObject> TurnBasedObjects { get; set; } = new List<ITurnBasedObject>();
         //Panel Messages
         private Text errorMessage;  //Error Manager
         private InputField stackTraceInputField; //Error Manager
@@ -141,7 +142,7 @@ namespace WPM
 
         void Update()
         {
-            //Open and close in game menu
+            //Esc out of Selected Objects and UI Menus
             if (Input.GetKeyDown("escape"))
             {
                 if (GameMenuOpen)
@@ -171,24 +172,16 @@ namespace WPM
             globalTurnCounter = globalTurnCounter + turns;
             UpdateRemainingTurns(turns*-1);
             //Run any end of turn scripts for the rest of the game's objects
-            SelectableObject []
-            selectableObjects = UnityEngine.Object.FindObjectsOfType<SelectableObject>();
+            foreach(ITurnBasedObject turnBasedObject in TurnBasedObjects)
+            {
+                turnBasedObject.EndOfTurn(turns);
+            }
+            /*
+            SelectableObject[] selectableObjects = FindObjectsOfType<SelectableObject>();
                 foreach(SelectableObject selectableObject in selectableObjects)
                 {
                     selectableObject.EndOfTurn(turns);
                 }
-            TouristManager.NextTurn(turns);
-            //Check if a new tourist needs to appear
-            /*
-            for(int i = 0; i < turns; i++)
-            {
-                touristCounter++;
-                if (touristCounter >= touristSpawnRate)
-                {
-                    touristCounter = 0;
-                    GenerateTourist();
-                }
-            }
             */
         }
 

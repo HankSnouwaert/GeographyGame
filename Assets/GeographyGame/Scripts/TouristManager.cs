@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class TouristManager : MonoBehaviour, ITouristManager
+    public class TouristManager : MonoBehaviour, ITouristManager, ITurnBasedObject
     {
         public TouristRegion CurrentRegion { get; set; }
         public int TouristSpawnRate { get; set; } = 10; //Number of rounds for a tourist to spawn
@@ -33,6 +33,7 @@ namespace WPM
         private void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
+            gameManager.TurnBasedObjects.Add(this);
             errorHandler = gameManager.ErrorHandler;
             touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             InitTouristRegions();
@@ -49,7 +50,7 @@ namespace WPM
         }
 
 
-        public void NextTurn(int turns)
+        public void EndOfTurn(int turns)
         {
             for (int i = 0; i < turns; i++)
             {

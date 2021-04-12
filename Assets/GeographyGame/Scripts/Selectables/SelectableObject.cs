@@ -104,11 +104,5 @@ namespace WPM
         {
 
         }
-
-        public virtual void EndOfTurn(int turns)
-        {
-
-        }
-
     }
 }

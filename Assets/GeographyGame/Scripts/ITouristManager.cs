@@ -11,6 +11,5 @@ namespace WPM
         int TouristSpawnRate { get; set; }
         int TrackingTime { get; set; }
         void GenerateTourist();
-        void NextTurn(int turns);
     }
 }
