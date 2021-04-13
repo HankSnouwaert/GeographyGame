@@ -49,29 +49,7 @@ namespace WPM
         }
         public ISelectableObject HighlightedObject { get; set; } = null;
 
-
-        static GameManager _instance;
-
         #endregion
-
-        /// <summary>
-        /// Instance of the game manager. Use this property to access World Map functionality.
-        /// </summary>
-        public static GameManager instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<GameManager>();
-                    if (_instance == null)
-                    {
-                        Debug.LogWarning("'GameManger' GameObject could not be found in the scene. Make sure it's created with this name before using any map functionality.");
-                    }
-                }
-                return _instance;
-            }
-        }
 
         private void Awake()
         {
