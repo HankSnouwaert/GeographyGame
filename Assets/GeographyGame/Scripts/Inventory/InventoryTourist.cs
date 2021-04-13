@@ -246,13 +246,13 @@ namespace WPM
                             uiManager.CursorOverUI = false;
                             correctProvince = true;
                             uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
-                            gameManager.DropOff(true);
+                            DropOff(true);
                         }
                     }
                     if(correctProvince == false)
                     {
                         uiManager.InventoryPopUpUI.DisplayPopUp("Well this doesn't look right. . . .", false);
-                        gameManager.DropOff(false);
+                        DropOff(false);
                     }
                         
                     break;
@@ -268,7 +268,7 @@ namespace WPM
                         uiManager.CursorOverUI = false;
                         landmarkReached = true;
                         uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
-                        gameManager.DropOff(true);
+                        DropOff(true);
                     }
                     else
                     {
@@ -284,7 +284,7 @@ namespace WPM
                                 uiManager.CursorOverUI = false;
                                 landmarkReached = true;
                                 uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
-                                gameManager.DropOff(true);
+                                DropOff(true);
                             }
                         }
                     }
@@ -292,7 +292,7 @@ namespace WPM
                     if(landmarkReached == false)
                     {
                         uiManager.InventoryPopUpUI.DisplayPopUp("Well this doesn't look right. . . .", false);
-                        gameManager.DropOff(false);
+                        DropOff(false);
                     }
                        
                     break;
@@ -310,13 +310,13 @@ namespace WPM
                             uiManager.CursorOverUI = false;
                             correctCountry = true;
                             uiManager.InventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
-                            gameManager.DropOff(true);
+                            DropOff(true);
                         }
                     }
                     if (correctCountry == false)
                     {
                         uiManager.InventoryPopUpUI.DisplayPopUp("Well this doesn't look right. . . .", false);
-                        gameManager.DropOff(false);
+                        DropOff(false);
                     }
                     break;
                     /*
@@ -381,5 +381,14 @@ namespace WPM
             }
         }
 
+        public void DropOff(bool success)
+        {
+        /*  This will be for drop off sound effects
+        if (success)
+            dropOffSuccess.Play();
+        else
+            dropOffFailure.Play();
+        */
+        }
     }
 }

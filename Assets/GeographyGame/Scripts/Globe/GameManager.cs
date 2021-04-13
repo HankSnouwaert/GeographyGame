@@ -22,11 +22,12 @@ namespace WPM
         public ITouristManager TouristManager { get; set; }
         public GameObject cameraManagerObject;
         public ICameraManager CameraManager { get; set; }
-        //public GameObject playerPrefab;
+        /*
         public GameObject errorPanel;
         public InventoryUI inventoryUI;
         public AudioSource dropOffSuccess;
         public AudioSource dropOffFailure;
+        */
         //TO BE SORTED
         private ICellClicker cellClicker;
         public ICellCursorInterface CellCursorInterface { get; set; }
@@ -232,68 +233,17 @@ namespace WPM
             GamePaused = false;
             GameMenuOpen = false;
         }
-        /*
-        /// <summary> 
-        /// Display a popup notification with a given message
-        /// </summary>
-        /// <param name="displayText"></param> The text to be displayed on the pop up
-        /// are updated by
-        public void DisplayPopUp(string displayText)
-        {
-            popUpPanel.SetActive(true);
-            popUpMessage.text = displayText;
-        }
-
-        /// <summary> 
-        /// Close active pop up
-        /// </summary>
-        public void ClosePopUp()
-        {
-            popUpPanel.SetActive(false);
-        }
-        */
-        /// <summary> 
-        /// Display an error popup with a given error message
-        /// </summary>
-        /// <param name="errorText"></param> The error text to be displayed on the pop up
-        /// are updated by
-        public void DisplayError(string errorText, string stackTraceText)
-        {
-            errorPanel.SetActive(true);
-            errorMessage.text = "Error: " + errorText;
-            stackTraceInputField.text = stackTraceText;
-        }
-
-        /*
-        public void ErrorButton()
-        {
-            errorPanel.SetActive(false);
-            ClosingGUIPanel = true;
-            switch (errorState)
-            {
-                case (ErrorState.close_window):
-                    break;
-                case (ErrorState.restart_scene):
-                    GameReset();
-                    break;
-                case (ErrorState.close_application):
-                    ExitGame();
-                    break;
-                default:
-                    break;
-            }   
-        }
-        */
-
-        public void DropOff(bool success)
-        {
+        
+        
+        //public void DropOff(bool success)
+        //{
             /*  This will be for drop off sound effects
             if (success)
                 dropOffSuccess.Play();
             else
                 dropOffFailure.Play();
             */    
-        }
+        //}
         
     }
 }
