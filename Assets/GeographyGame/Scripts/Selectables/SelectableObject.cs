@@ -37,7 +37,7 @@ namespace WPM
                     Select();
                 else
                 {
-                    if (gameManager.SelectedObject == this)
+                    if (gameManager.SelectedObject == (ISelectableObject)this)
                         Deselect();
                     else
                         gameManager.SelectedObject.ObjectSelected(this);
@@ -66,7 +66,7 @@ namespace WPM
         public virtual void Select()
         {
             if (gameManager.SelectedObject != null)
-                if (gameManager.SelectedObject != this)
+                if (gameManager.SelectedObject != (ISelectableObject)this)
                     gameManager.SelectedObject.Deselect();
 
             gameManager.SelectedObject = this;
@@ -75,17 +75,17 @@ namespace WPM
 
         public virtual void Deselect()
         {
-            if (gameManager.SelectedObject == this)
+            if (gameManager.SelectedObject == (ISelectableObject)this)
                 gameManager.SelectedObject = null;
             Selected = false;
         }
 
-        public virtual void OnSelectableEnter(SelectableObject selectedObject)
+        public virtual void OnSelectableEnter(ISelectableObject selectedObject)
         {
 
         }
 
-        public virtual void ObjectSelected(SelectableObject selectedObject)
+        public virtual void ObjectSelected(ISelectableObject selectedObject)
         {
             
         }

@@ -36,8 +36,8 @@ namespace WPM
         //Game Settings
         //In-Game Objects
         public IPlayerCharacter Player { get; set; }
-        private SelectableObject selectedObject;
-        public SelectableObject SelectedObject
+        private ISelectableObject selectedObject;
+        public ISelectableObject SelectedObject
         {
             get { return selectedObject; }
             set
@@ -47,40 +47,8 @@ namespace WPM
                     cellClicker.NewObjectSelected = true;
             }
         }
-        public SelectableObject HighlightedObject { get; set; } = null;
+        public ISelectableObject HighlightedObject { get; set; } = null;
 
-        //public Dictionary<string, MappableObject> mappedObjects = new Dictionary<string, MappableObject>();  //Globe Manager: GlobeInfo
-        
-        //Tourist Tracking Lists
-        //public List<int> RecentProvinceDestinations { get; set; } = new List<int>();  //Tourist Manager
-        //public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();  //Tourist Manager
-        //public List<int> RecentCountryDestinations { get; set; } = new List<int>();  //Tourist Manager
-        //Map Regions
-        //public List<TouristRegion> touristRegions = new List<TouristRegion>();  //Tourist Manager
-        //public TouristRegion CurrentRegion { get; set; }  //Tourist Manager
-        //private List<TouristRegion> regionsVisited = new List<TouristRegion>();  //Tourist Manager
-        //Landmark Lists
-        //public Dictionary<string, Landmark> culturalLandmarks = new Dictionary<string, Landmark>();  //Globe Manager: GlobeInfo
-        //public Dictionary<string, Landmark> CulturalLandmarksByName { get; } = new Dictionary<string, Landmark>(); //Globe Manager: GlobeInfo
-        //MACROS 
-        //Province Attributes
-        public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3; 
-        public const int POLITICAL_PROVINCE = 0;
-        public const int TERRAIN = 1;
-        public const int CLIMATE = 2;
-        //Mount Points
-        public const int START_POINT = 0;
-        public const int NATURAL_POINT = 1;
-        public const int CULTURAL_POINT = 2;
-        //public const string CELL_PLAYER = "Player";
-        //Error States
-        public const int CLOSE_WINDOW = 0;
-        public const int RESTART_SCENE = 1;
-        public const int CLOSE_APPLICATION = 2;
-
-        //Tourist Image Management
-        //private string[] touristImageFiles; //Tourist Manager
-        //private const int NUMBER_OF_TOURIST_IMAGES = 8; //Tourist Manager
 
         static GameManager _instance;
 
