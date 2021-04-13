@@ -7,7 +7,7 @@ namespace WPM
     public class GlobeManager : MonoBehaviour, IGlobeManager
     {
         private GameManager gameManager;
-        public WorldMapGlobe worldGlobeMap;
+        public WorldMapGlobe WorldGlobeMap { get; set; }
         public IGlobeParser GlobeParser { get; set; }
         public GameObject globeParserObject;
         public ICellCursorInterface CellCursorInterface { get; set; }
@@ -20,7 +20,7 @@ namespace WPM
         private void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
-            worldGlobeMap = gameManager.worldGlobeMap;
+            WorldGlobeMap = FindObjectOfType<WorldMapGlobe>();
             GlobeParser = globeParserObject.GetComponent(typeof(IGlobeParser)) as IGlobeParser;
             CellCursorInterface = cellCursorInterfaceObject.GetComponent(typeof(ICellCursorInterface)) as ICellCursorInterface;
             GlobeInitializer = globeInitializerObject.GetComponent(typeof(IGlobeInitializer)) as IGlobeInitializer;

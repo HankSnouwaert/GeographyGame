@@ -19,13 +19,19 @@ namespace WPM
             mouseOverInfoText = mouseOverInfoComponents[0] as Text;
         }
 
+        public override void Start()
+        {
+            base.Start();
+            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
+        }
+
         public void UpdateUI()
         {
-            if (!uiManager.CursorOverUI && !gameManager.GamePaused && gameManager.worldGlobeMap.countryHighlighted != null && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0 )
+            if (!uiManager.CursorOverUI && !gameManager.GamePaused && globeManager.WorldGlobeMap.countryHighlighted != null && globeManager.WorldGlobeMap.lastHighlightedCellIndex >= 0 )
             {
                 uiObject.SetActive(true);
-                Province province = gameManager.worldGlobeMap.provinceHighlighted;
-                Country country = gameManager.worldGlobeMap.countryHighlighted;
+                Province province = globeManager.WorldGlobeMap.provinceHighlighted;
+                Country country = globeManager.WorldGlobeMap.countryHighlighted;
                 MappableObject highlightedObject = null;
                 if (gameManager.HighlightedObject is MappableObject)
                 {

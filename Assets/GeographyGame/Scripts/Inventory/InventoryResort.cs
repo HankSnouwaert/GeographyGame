@@ -7,7 +7,14 @@ namespace WPM
 
     public class InventoryResort : InventoryItem
     {
-
+        private IGlobeManager globeManager;
+        private WorldMapGlobe worldMapGlobe;
+        public override void Start()
+        {
+            base.Start();
+            globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;
+            worldMapGlobe = globeManager.WorldGlobeMap;
+        }
         public override void Selected()
         {
             base.Selected();
@@ -32,14 +39,14 @@ namespace WPM
 
         public override void OnCellClick(int index)
         {
-            if(gameManager.worldGlobeMap.cells[index].tag == null)
+            if(worldMapGlobe.cells[index].tag == null)
             {
                 //Create Resort
                 var resortPrefab = Resources.Load<GameObject>("Prefabs/Selectables/Resort");
                 var resortObject = Instantiate(resortPrefab);
 
                 Resort resortComponent = resortObject.GetComponent(typeof(Resort)) as Resort;
-                gameManager.worldGlobeMap.AddMarker(resortObject, gameManager.worldGlobeMap.cells[index].sphereCenter, 0.01f, false, 0.0f, true, true);
+                worldMapGlobe.AddMarker(resortObject, worldMapGlobe.cells[index].sphereCenter, 0.01f, false, 0.0f, true, true);
 
                 Deselected();
 

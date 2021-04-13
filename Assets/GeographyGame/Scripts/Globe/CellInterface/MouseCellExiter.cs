@@ -11,12 +11,15 @@ namespace WPM
     {
         private GameManager gameManager;
         private IUIManager uiManager;
+        private IGlobeManager globeManager;
 
         void Start()
-        { 
+        {
+            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
             gameManager = FindObjectOfType<GameManager>();
-            gameManager.worldGlobeMap.OnCellExit += HandleOnCellExit;
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            globeManager = interfaceFactory.GlobeManager;
+            globeManager.WorldGlobeMap.OnCellExit += HandleOnCellExit;
+            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
         }
 
         /// <summary>

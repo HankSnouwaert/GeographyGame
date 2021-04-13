@@ -12,7 +12,11 @@ namespace WPM
         private void Awake()
         {
             globeManager = FindObjectOfType<GlobeManager>();
-            worldGlobeMap = globeManager.worldGlobeMap;
+        }
+
+        private void Start()
+        {
+            worldGlobeMap = globeManager.WorldGlobeMap;
         }
 
         /// <summary> 

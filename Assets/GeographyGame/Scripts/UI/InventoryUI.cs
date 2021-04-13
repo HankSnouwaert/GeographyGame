@@ -24,13 +24,13 @@ namespace WPM
             displayedItemButtons = GetComponentsInChildren<Button>(true);
             displayedItems = new InventoryItem[displayedItemButtons.Length];
             gameManager = FindObjectOfType<GameManager>();
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
         }
 
         void Start()
         {
-
+            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
         }
+
         void Update()
         {
             if(selectedObject != null)

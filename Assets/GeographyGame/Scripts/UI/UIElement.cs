@@ -20,12 +20,13 @@ namespace WPM
         {
             gameManager = FindObjectOfType<GameManager>();
             globeManager = FindObjectOfType<GlobeManager>();
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
             uiObject = gameObject;
         }
 
         public virtual void Start()
         {
+
             mouseCellClicker = globeManager.CellCursorInterface.CellClicker;
         }
 

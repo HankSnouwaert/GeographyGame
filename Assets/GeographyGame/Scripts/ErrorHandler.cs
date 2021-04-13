@@ -15,7 +15,7 @@ namespace WPM
         void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
         }
 
         void Start()

@@ -11,13 +11,20 @@ namespace WPM
     {
         private GameManager gameManager;
         private IUIManager uiManager;
+        private IGlobeManager globeManager;
         private ICellCursorInterface cellCursorInterface;
         void Awake()
         {
-            gameManager = FindObjectOfType<GameManager>();
-            gameManager.worldGlobeMap.OnCellEnter += HandleOnCellEnter;
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
             cellCursorInterface = GetComponent(typeof(ICellCursorInterface)) as ICellCursorInterface;
+        }
+
+        void Start()
+        {
+            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            gameManager = FindObjectOfType<GameManager>();
+            globeManager = interfaceFactory.GlobeManager;
+            uiManager = interfaceFactory.UIManager;
+            globeManager.WorldGlobeMap.OnCellEnter += HandleOnCellEnter;
         }
 
         /// <summary>
@@ -35,7 +42,7 @@ namespace WPM
 
                 gameManager.SelectedObject.OnCellEnter(cellIndex);
                 cellCursorInterface.highlightedCellIndex = cellIndex;
-                cellCursorInterface.highlightedCell = gameManager.worldGlobeMap.cells[cellIndex];
+                cellCursorInterface.highlightedCell = globeManager.WorldGlobeMap.cells[cellIndex];
             }
         }
     }

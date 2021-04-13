@@ -10,6 +10,7 @@ namespace WPM
     public class MouseCellClicker : MonoBehaviour, ICellClicker
     {
         private GameManager gameManager;
+        private IGlobeManager globeManager;
         private IUIManager uiManager;
         private IErrorHandler errorHandler;
         public ICellEnterer cellEnterer;
@@ -19,13 +20,16 @@ namespace WPM
         {
             cellEnterer = GetComponent(typeof(ICellEnterer)) as ICellEnterer;
             gameManager = FindObjectOfType<GameManager>();
-            gameManager.worldGlobeMap.OnCellClick += HandleOnCellClick;
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
+            GameObject[] globeManagerObject = GameObject.FindGameObjectsWithTag("GlobeManager");
+            globeManager = globeManagerObject[0].GetComponent(typeof(IGlobeManager)) as IGlobeManager;
+            globeManager.WorldGlobeMap.OnCellClick += HandleOnCellClick;
+            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;       
         }
+
 
         void Start()
         {
-            errorHandler = gameManager.ErrorHandler;
+            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
         }
 
         /// <summary>

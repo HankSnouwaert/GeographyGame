@@ -11,9 +11,14 @@ namespace WPM
         private WorldMapGlobe worldGlobeMap;
         private void Awake()
         {
-            globeManager = FindObjectOfType<GlobeManager>();
-            worldGlobeMap = globeManager.worldGlobeMap;
+            globeManager = FindObjectOfType<GlobeManager>(); 
         }
+
+        private void Start()
+        {
+            worldGlobeMap = globeManager.WorldGlobeMap;
+        }
+
         /// <summary> 
         /// Get all provinces that overlap with a given cell
         /// Inputs:

@@ -34,7 +34,7 @@ namespace WPM
 
         private void Start()
         {
-            errorHandler = gameManager.ErrorHandler;
+            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
         }
 
         public void ComputePath()

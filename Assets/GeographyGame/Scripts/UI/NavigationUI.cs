@@ -13,6 +13,8 @@ namespace WPM
         private Button[] buttonComponents;
         private Text[] textComponents;
         private Text displayText;
+        private IGlobeManager globeManager;
+        private WorldMapGlobe worldMapGlobe;
         // Start is called before the first frame update
         public override void Awake()
         {
@@ -22,6 +24,13 @@ namespace WPM
             dropOffButtonObject = dropOffButton.gameObject;
             textComponents = uiObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
+        }
+
+        public override void Start()
+        {
+            base.Start();
+            globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;
+            worldMapGlobe = globeManager.WorldGlobeMap;
         }
 
         public void UpdateNavigationDisplay(List<Province> provinces, List<Country> countries, List<MappableObject> nearbyObjects)
@@ -61,7 +70,7 @@ namespace WPM
                     {
                         string politicalProvince = provinces[0].attrib["PoliticalProvince"];
                         string climate = provinces[0].attrib["ClimateGroup"];
-                        if (gameManager.worldGlobeMap.countries[provinces[0].countryIndex].name == "United States of America")
+                        if (worldMapGlobe.countries[provinces[0].countryIndex].name == "United States of America")
                             nameType = "State: ";
                         else
                             nameType = "Province: ";
@@ -74,7 +83,7 @@ namespace WPM
                         {
                             string politicalProvince = province.attrib["PoliticalProvince"];
                             string climate = province.attrib["ClimateGroup"];
-                            if (gameManager.worldGlobeMap.countries[province.countryIndex].name == "United States of America")
+                            if (worldMapGlobe.countries[province.countryIndex].name == "United States of America")
                                 nameType = "State: ";
                             else
                                 nameType = "Province: ";

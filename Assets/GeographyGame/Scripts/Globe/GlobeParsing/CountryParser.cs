@@ -13,11 +13,11 @@ namespace WPM
         private void Awake()
         {
             globeManager = FindObjectOfType<GlobeManager>();
-            worldGlobeMap = globeManager.worldGlobeMap;
         }
         private void Start()
         {
             provinceParser = globeManager.GlobeParser.ProvinceParser;
+            worldGlobeMap = globeManager.WorldGlobeMap;
         }
         /// <summary> 
         /// Get all countries within a certain range (measured in cells) of a target cell

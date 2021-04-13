@@ -20,13 +20,13 @@ namespace WPM
         public virtual void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
-            uiManager = gameManager.uiManagerObject.GetComponent(typeof(IUIManager)) as IUIManager;
             player = FindObjectOfType<PlayerCharacter>();
         }
 
         public virtual void Start()
         {
-            errorHandler = gameManager.ErrorHandler;
+            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
+            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler; 
         }
 
         public virtual void OnMouseDown()

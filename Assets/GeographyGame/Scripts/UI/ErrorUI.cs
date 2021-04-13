@@ -16,7 +16,6 @@ namespace WPM
         public override void Awake()
         {
             base.Awake();
-            errorHandler = gameManager.ErrorHandler;
             Transform textObject = uiObject.transform.GetChild(0);
             uiObject.SetActive(false);
             textObject = uiObject.transform.GetChild(0);
@@ -25,6 +24,12 @@ namespace WPM
             stackTraceInputField = scrollViewTextObject.gameObject.GetComponent(typeof(InputField)) as InputField;
             Transform buttonObject = uiObject.transform.GetChild(2);
             errorButton = buttonObject.gameObject.GetComponent(typeof(Button)) as Button;
+        }
+
+        public override void Start()
+        {
+            base.Start();
+            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
         }
 
         public override void CloseUI()

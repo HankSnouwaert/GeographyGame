@@ -17,8 +17,12 @@ namespace WPM
         {
             gameManager = FindObjectOfType<GameManager>();
             globeManager = FindObjectOfType<GlobeManager>();
-            worldGlobeMap = globeManager.worldGlobeMap;
-            errorHandler = gameManager.ErrorHandler;
+        }
+
+        private void Start()
+        {
+            worldGlobeMap = globeManager.WorldGlobeMap;
+            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
         }
 
         // Update is called once per frame

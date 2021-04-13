@@ -34,7 +34,6 @@ namespace WPM
         {
             gameManager = FindObjectOfType<GameManager>();
             gameManager.TurnBasedObjects.Add(this);
-            errorHandler = gameManager.ErrorHandler;
             touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             InitTouristRegions();
             //Set Tourist Images
@@ -49,6 +48,10 @@ namespace WPM
             touristImageFiles[7] = "Images/Tourist8";
         }
 
+        private void Start()
+        {
+            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
+        }
 
         public void EndOfTurn(int turns)
         {

@@ -7,12 +7,14 @@ namespace WPM
 {
     public class GlobeInitializer : MonoBehaviour, IGlobeInitializer
     {
+        public GameObject playerPrefab;
         private GameManager gameManager;
         private WorldMapGlobe worldGlobeMap;
         private GlobeManager globeManager;
         private IGlobeInfo globeInfo;
         readonly string startingCountry = "United States of America";
         readonly string startingProvince = "North Carolina";
+        private string landmarkFilePath = "Prefabs/Landmarks/";
         //MACROS
         //Province Attributes
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
@@ -28,10 +30,10 @@ namespace WPM
         {
             gameManager = FindObjectOfType<GameManager>();
             globeManager = FindObjectOfType<GlobeManager>();
-            worldGlobeMap = globeManager.worldGlobeMap;
         }
         private void Start()
         {
+            worldGlobeMap = globeManager.WorldGlobeMap;
             globeInfo = globeManager.GlobeInfo;
         }
 
@@ -160,7 +162,7 @@ namespace WPM
             {
                 if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
                 {
-                    GameObject playerObject = Instantiate(gameManager.playerPrefab);
+                    GameObject playerObject = Instantiate(playerPrefab);
                     gameManager.player = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
                     int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                     gameManager.player.cellLocation = startingCellIndex;
@@ -178,7 +180,7 @@ namespace WPM
                     string mountPointName = mountPoint.name;
                     string tempName = mountPointName.Replace("The", "");
                     tempName = tempName.Replace(" ", "");
-                    var model = Resources.Load<GameObject>("Prefabs/Landmarks/" + tempName);
+                    var model = Resources.Load<GameObject>(landmarkFilePath + tempName);
                     var modelClone = Instantiate(model);
                     Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                     landmarkComponent.mountPoint = mountPoint;

@@ -15,12 +15,18 @@ namespace WPM
 
         public void Awake()
         {
-            gameManager = FindObjectOfType<GameManager>();
-            worldGlobeMap = gameManager.worldGlobeMap;
             ProvinceParser = GetComponent(typeof(IProvinceParser)) as IProvinceParser;
             CountryParser = GetComponent(typeof(ICountryParser)) as ICountryParser;
             LandmarkParser = GetComponent(typeof(ILandmarkParser)) as ILandmarkParser;
         }
+
+        public void Start()
+        {
+            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            gameManager = FindObjectOfType<GameManager>();
+            worldGlobeMap = interfaceFactory.GlobeManager.WorldGlobeMap;
+        }
+
         /// <summary> 
         /// Get all cells within a certain range (measured in cells) of a target cell
         /// Inputs:

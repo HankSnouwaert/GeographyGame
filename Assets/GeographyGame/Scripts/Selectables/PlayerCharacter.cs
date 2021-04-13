@@ -36,12 +36,13 @@ namespace WPM
         public override void Awake()
         {
             base.Awake();
-            navigationUI = uiManager.NavigationUI;
             gameManager.TurnBasedObjects.Add(this);
         }
 
-        public void Start()
+        public override void Start()
         {
+            base.Start();
+            navigationUI = uiManager.NavigationUI;
             cameraManager = gameManager.CameraManager;
             objectName = "player";
             //gameManager = GameManager.instance;
@@ -245,9 +246,9 @@ namespace WPM
             if (selected)
             {
                 map.SetCellColor(cellLocation, Color.green, true);
-                if (!uiManager.CursorOverUI && gameManager.worldGlobeMap.lastHighlightedCellIndex >= 0)
+                if (!uiManager.CursorOverUI && globeManager.WorldGlobeMap.lastHighlightedCellIndex >= 0)
                 {
-                    OnCellEnter(gameManager.worldGlobeMap.lastHighlightedCellIndex);
+                    OnCellEnter(globeManager.WorldGlobeMap.lastHighlightedCellIndex);
                 }
             }
 
