@@ -36,7 +36,7 @@ namespace WPM
             if(selectedObject != null)
             {
                 //Check if the inventory has been selected while the GUI still thinks it's selected
-                if (inventorySelected && !displayedItems[selectedItemIndex].selected)
+                if (inventorySelected && !displayedItems[selectedItemIndex].Selected)
                 {
                     //Check if the EventSystem still thinks the inventory item is selected
                     if (EventSystem.current.currentSelectedGameObject == selectedObject)
@@ -123,7 +123,7 @@ namespace WPM
             {
                 if (i == selectedItemIndex && inventorySelected)
                 {
-                    item.Deselected();
+                    item.Deselect();
                     EventSystem.current.SetSelectedGameObject(null);
                     inventorySelected = false;
                     selectedObject = null;
@@ -166,13 +166,13 @@ namespace WPM
             //inventoryNumber--;
             if (inventoryNumber <= numberofItems && inventoryNumber >= 0)
             {
-                if (displayedItems[inventoryNumber].selected)
+                if (displayedItems[inventoryNumber].Selected)
                 {
-                    displayedItems[inventoryNumber].Deselected();  
+                    displayedItems[inventoryNumber].Deselect();  
                 }
                 else
                 {
-                    displayedItems[inventoryNumber].Selected();
+                    displayedItems[inventoryNumber].Select();
                 }   
             }
             inventorySelected = true;

@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class MappableObject : SelectableObject
+    public class MappableObject : SelectableObject, IMappableObject
     {
-        public int cellLocation;
-        public Vector3 vectorLocation;
-        public Vector2[] latlon;
-        public List<Country> countriesOccupied = new List<Country>();
-        public List<Province> provincesOccupied = new List<Province>();
-        public List<string> politicalProvincesOccupied = new List<string>();
-        public List<string> climatesOccupied = new List<string>();
+        public int CellLocation { get; set; }
+        public Vector3 VectorLocation { get; set; }
+        public Vector2[] Latlon { get; set; }
+        public List<Country> CountriesOccupied { get; set; } = new List<Country>();
+        public List<Province> ProvincesOccupied { get; set; } = new List<Province>();
+        public List<string> PoliticalProvincesOccupied { get; set; } = new List<string>();
+        public List<string> ClimatesOccupied { get; set; } = new List<string>();
         protected GlobeManager globeManager;
         protected IGlobeParser globeParser;
 
@@ -25,12 +25,12 @@ namespace WPM
 
         public virtual void UpdateLocation(int newCellIndex)
         {
-            if(cellLocation != -1)
-                map.cells[cellLocation].occupants.Remove(this);
-            cellLocation = newCellIndex;
-            map.cells[cellLocation].occupants.Add(this);
-            vectorLocation = map.cells[cellLocation].sphereCenter;
-            latlon = map.cells[cellLocation].latlon;
+            if(CellLocation != -1)
+                map.cells[CellLocation].occupants.Remove(this);
+            CellLocation = newCellIndex;
+            map.cells[CellLocation].occupants.Add(this);
+            VectorLocation = map.cells[CellLocation].sphereCenter;
+            Latlon = map.cells[CellLocation].latlon;
 
             UpdateCountriesOccupied();
             UpdateProvincesOccupied();
@@ -40,36 +40,36 @@ namespace WPM
 
         private void UpdateCountriesOccupied()
         {
-            countriesOccupied.Clear();
-            List<int> countryIndexes = globeParser.CountryParser.GetCountriesInCell(cellLocation);
+            CountriesOccupied.Clear();
+            List<int> countryIndexes = globeParser.CountryParser.GetCountriesInCell(CellLocation);
             foreach (int countryIndex in countryIndexes)
             {
-                countriesOccupied.Add(globeManager.WorldGlobeMap.countries[countryIndex]);
+                CountriesOccupied.Add(globeManager.WorldGlobeMap.countries[countryIndex]);
             }
         }
         private void UpdateProvincesOccupied()
         {
-            provincesOccupied.Clear();
-            List<int> provinceIndexes = globeParser.ProvinceParser.GetProvicesInCell(cellLocation);
+            ProvincesOccupied.Clear();
+            List<int> provinceIndexes = globeParser.ProvinceParser.GetProvicesInCell(CellLocation);
             foreach (int provinceIndex in provinceIndexes)
             {
-                provincesOccupied.Add(globeManager.WorldGlobeMap.provinces[provinceIndex]);
+                ProvincesOccupied.Add(globeManager.WorldGlobeMap.provinces[provinceIndex]);
             }
         }
         private void UpdatePoliticalProvincesOccupied()
         {
-            politicalProvincesOccupied.Clear();
-            foreach (Province province in provincesOccupied)
+            PoliticalProvincesOccupied.Clear();
+            foreach (Province province in ProvincesOccupied)
             {
-                politicalProvincesOccupied.Add(province.attrib["PoliticalProvince"]);
+                PoliticalProvincesOccupied.Add(province.attrib["PoliticalProvince"]);
             }
         }
         private void UpdateClimatesOccupied()
         {
-            climatesOccupied.Clear();
-            foreach (Province province in provincesOccupied)
+            ClimatesOccupied.Clear();
+            foreach (Province province in ProvincesOccupied)
             {
-                climatesOccupied.Add(province.attrib["ClimateGroup"]);
+                ClimatesOccupied.Add(province.attrib["ClimateGroup"]);
             }
         }
     }

@@ -16,45 +16,26 @@ namespace WPM
         #region Variable Declaration 
         //[Header("Player Components")]
         private IUIManager UIManager { get; set; }
-        private IGlobeManager globeManager; 
+        private IGlobeManager GlobeManager { get; set; } 
         private IErrorHandler ErrorHandler { get; set; }
         public GameObject touristManagerObject;
         public ITouristManager TouristManager { get; set; }
         public GameObject cameraManagerObject;
         public ICameraManager CameraManager { get; set; }
-        /*
-        public GameObject errorPanel;
-        public InventoryUI inventoryUI;
-        public AudioSource dropOffSuccess;
-        public AudioSource dropOffFailure;
-        */
         //TO BE SORTED
         private ICellClicker cellClicker;
         public ICellCursorInterface CellCursorInterface { get; set; }
         public List<ITurnBasedObject> TurnBasedObjects { get; set; } = new List<ITurnBasedObject>();
-        //Panel Messages
-        private Text errorMessage;  //Error Manager
-        private InputField stackTraceInputField; //Error Manager
-        //Prefabs
-        //private InventoryTourist touristPrefab; //Tourist Manager
         //Counters
         private int globalTurnCounter = 0; 
-        //private int touristCounter = 0; //Tourist Manager
         public int score = 0;
-        //private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1  (Tourist Manager)
         private int turnsRemaining = 250;
-        //private int touristImageIndex = 0; //Tourist Manager
         //Flags
         public bool GamePaused { get; set; } = false;
         public bool GameMenuOpen { get; set; } = false;
-        public ErrorState errorState = ErrorState.close_window;  //Error Manager
         //Game Settings
-        //private int touristSpawnRate = 10; //Number of rounds for a tourist to spawn  (Tourist Manager)
-        //public int TrackingTime { get; } = 10; //Number of rounds a tourist is remembered  (Tourist Manager)
-        //public const int MIN_TIME_IN_REGION = 5;  //Tourist Manager
-        //public const int MAX_TIME_IN_REGION = 10;  //Tourist Manager
         //In-Game Objects
-        public PlayerCharacter player;
+        public IPlayerCharacter Player { get; set; }
         private SelectableObject selectedObject;
         public SelectableObject SelectedObject
         {
@@ -133,10 +114,10 @@ namespace WPM
         void Start()
         {
             InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
-            globeManager = interfaceFactory.GlobeManager;
+            GlobeManager = interfaceFactory.GlobeManager;
             ErrorHandler = interfaceFactory.ErrorHandler;
             UIManager = interfaceFactory.UIManager;
-            cellClicker = globeManager.CellCursorInterface.CellClicker;
+            cellClicker = GlobeManager.CellCursorInterface.CellClicker;
         }
 
         void Update()
@@ -149,7 +130,7 @@ namespace WPM
                 else
                 {
                     if (selectedObject != null)
-                        selectedObject.Deselected();
+                        selectedObject.Deselect();
                     else
                     {
                         UIManager.GameMenuUI.OpenUI();
@@ -233,17 +214,5 @@ namespace WPM
             GamePaused = false;
             GameMenuOpen = false;
         }
-        
-        
-        //public void DropOff(bool success)
-        //{
-            /*  This will be for drop off sound effects
-            if (success)
-                dropOffSuccess.Play();
-            else
-                dropOffFailure.Play();
-            */    
-        //}
-        
     }
 }

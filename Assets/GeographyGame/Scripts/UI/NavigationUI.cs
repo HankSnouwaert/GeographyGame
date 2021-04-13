@@ -33,13 +33,13 @@ namespace WPM
             worldMapGlobe = globeManager.WorldGlobeMap;
         }
 
-        public void UpdateNavigationDisplay(List<Province> provinces, List<Country> countries, List<MappableObject> nearbyObjects)
+        public void UpdateNavigationDisplay(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects)
         {
             NavigationText = CreateNavigationInfoString(provinces, countries, nearbyObjects);
             SetDisplayText(NavigationText);
         }
 
-        public string CreateNavigationInfoString(List<Province> provinces, List<Country> countries, List<MappableObject> nearbyObjects)
+        public string CreateNavigationInfoString(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects)
         {
             string createdString = "";
             if (countries != null)
@@ -96,12 +96,12 @@ namespace WPM
                 //Check to see if there's a highlighted object
                 if (nearbyObjects != null)
                 {
-                    if (!nearbyObjects.Contains(gameManager.player))
+                    if (!nearbyObjects.Contains(gameManager.Player))
                     {
                         foreach (MappableObject nearbyObject in nearbyObjects)
                         {
                             //Add the landmark to the string
-                            createdString = createdString + System.Environment.NewLine + "Landmarks: " + nearbyObject.objectName;
+                            createdString = createdString + System.Environment.NewLine + "Landmarks: " + nearbyObject.ObjectName;
                         }
                     }
                 }

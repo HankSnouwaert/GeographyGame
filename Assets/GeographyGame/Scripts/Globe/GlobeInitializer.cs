@@ -163,17 +163,17 @@ namespace WPM
                 if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
                 {
                     GameObject playerObject = Instantiate(playerPrefab);
-                    gameManager.player = playerObject.GetComponent(typeof(PlayerCharacter)) as PlayerCharacter;
+                    gameManager.Player = playerObject.GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
                     int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
-                    gameManager.player.cellLocation = startingCellIndex;
-                    gameManager.player.latlon = worldGlobeMap.cells[startingCellIndex].latlon;
+                    gameManager.Player.CellLocation = startingCellIndex;
+                    gameManager.Player.Latlon = worldGlobeMap.cells[startingCellIndex].latlon;
                     Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
-                    gameManager.player.vectorLocation = startingLocation;
-                    float playerSize = gameManager.player.GetSize();
+                    gameManager.Player.VectorLocation = startingLocation;
+                    float playerSize = gameManager.Player.GetSize();
                     worldGlobeMap.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
-                    string playerID = gameManager.player.GetInstanceID().ToString();
-                    worldGlobeMap.cells[startingCellIndex].occupants.Add(gameManager.player);
-                    globeInfo.MappedObjects.Add(playerID, gameManager.player);
+                    //string playerID = gameManager.Player.GetInstanceID().ToString();
+                    worldGlobeMap.cells[startingCellIndex].occupants.Add(gameManager.Player);
+                    //globeInfo.MappedObjects.Add(playerID, gameManager.Player);
                 }
                 if (mountPoint.type == CULTURAL_POINT) //&& loadedMapSettings.culturalLandmarks)
                 {
@@ -184,7 +184,7 @@ namespace WPM
                     var modelClone = Instantiate(model);
                     Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                     landmarkComponent.mountPoint = mountPoint;
-                    landmarkComponent.objectName = mountPointName;
+                    landmarkComponent.ObjectName = mountPointName;
                     landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
                     landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
                     landmarkComponent.cell.canCross = false;
@@ -193,7 +193,7 @@ namespace WPM
                     worldGlobeMap.cells[landmarkComponent.cellIndex].occupants.Add(landmarkComponent);
                     globeInfo.MappedObjects.Add(landmarkID, landmarkComponent);
                     globeInfo.CulturalLandmarks.Add(landmarkID, landmarkComponent);
-                    globeInfo.CulturalLandmarksByName.Add(landmarkComponent.objectName, landmarkComponent);
+                    globeInfo.CulturalLandmarksByName.Add(landmarkComponent.ObjectName, landmarkComponent);
                 }
             }
         }

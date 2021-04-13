@@ -14,7 +14,7 @@ namespace WPM {
         /// <summary>
         /// A list of mappable objects occupying the cell
         /// </summary>
-        public List<MappableObject> occupants = new List<MappableObject>();
+        public List<IMappableObject> occupants = new List<IMappableObject>();
 
         #endregion
 

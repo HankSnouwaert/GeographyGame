@@ -15,9 +15,9 @@ namespace WPM
             globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;
             worldMapGlobe = globeManager.WorldGlobeMap;
         }
-        public override void Selected()
+        public override void Select()
         {
-            base.Selected();
+            base.Select();
             int debug = inventoryLocation;
             /*
             var croppedTexture = new Texture2D((int)inventoryIcon.rect.width, (int)inventoryIcon.rect.height);
@@ -31,9 +31,9 @@ namespace WPM
             */
         }
 
-        public override void Deselected()
+        public override void Deselect()
         {
-            base.Deselected();
+            base.Deselect();
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
 
@@ -48,7 +48,7 @@ namespace WPM
                 Resort resortComponent = resortObject.GetComponent(typeof(Resort)) as Resort;
                 worldMapGlobe.AddMarker(resortObject, worldMapGlobe.cells[index].sphereCenter, 0.01f, false, 0.0f, true, true);
 
-                Deselected();
+                Deselect();
 
                 //Remove Resort from Inventory
                 inventoryUI.RemoveItem(inventoryLocation);
@@ -56,7 +56,7 @@ namespace WPM
             else
             {
                 //Cell Occupied
-                Deselected();
+                Deselect();
             }
         }
     }

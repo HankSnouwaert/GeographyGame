@@ -57,7 +57,7 @@ namespace WPM
             mouseOverInfoText.text = MouseOverInfoString;
         }
 
-        public string CreateMouseOverInfoString(Province province, Country country, MappableObject highlightedObject)
+        public string CreateMouseOverInfoString(Province province, Country country, IMappableObject highlightedObject)
         {
             if (province != null)
             {
@@ -72,12 +72,12 @@ namespace WPM
                 createdString = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;
 
                 //Check to see if there's a highlighted object
-                if (highlightedObject != null && highlightedObject != gameManager.player)
+                if (highlightedObject != null && highlightedObject != gameManager.Player)
                 {
-                    if (highlightedObject.objectName != null)
+                    if (highlightedObject.ObjectName != null)
                     {
                         //Add the landmark to the string
-                        createdString = createdString + System.Environment.NewLine + "Landmark: " + gameManager.HighlightedObject.objectName;
+                        createdString = createdString + System.Environment.NewLine + "Landmark: " + gameManager.HighlightedObject.ObjectName;
                     }
                 }
                 //Display the string

@@ -6,8 +6,8 @@ namespace WPM
     {
         string NavigationText { get; set; }
 
-        string CreateNavigationInfoString(List<Province> provinces, List<Country> countries, List<MappableObject> nearbyObjects);
+        string CreateNavigationInfoString(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects);
         void SetDisplayText(string displayString);
-        void UpdateNavigationDisplay(List<Province> provinces, List<Country> countries, List<MappableObject> nearbyObjects);
+        void UpdateNavigationDisplay(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects);
     }
 }

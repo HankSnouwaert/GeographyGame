@@ -87,7 +87,7 @@ namespace WPM
             if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
                 touristImageIndex = 0;
             //Add tourist to player's inventory
-            gameManager.player.AddItem(tourist, 0);
+            gameManager.Player.AddItem(tourist, 0);
             //Check if a region switch is needed
             touristsInCurrentRegion++;
             int rand = Random.Range(MIN_TIME_IN_REGION, MAX_TIME_IN_REGION);

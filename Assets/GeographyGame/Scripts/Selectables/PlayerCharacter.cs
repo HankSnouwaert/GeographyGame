@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace WPM
 {
-    public class PlayerCharacter : MappableObject, ITurnBasedObject
+    public class PlayerCharacter : MappableObject, ITurnBasedObject, IPlayerCharacter
     {
         readonly int travelRange = 30;
         //int distanceTraveled = 0;
@@ -44,7 +44,7 @@ namespace WPM
             base.Start();
             navigationUI = uiManager.NavigationUI;
             cameraManager = gameManager.CameraManager;
-            objectName = "player";
+            ObjectName = "player";
             //gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
@@ -52,8 +52,8 @@ namespace WPM
             inventoryUI = InventoryPanel.GetComponent(typeof(InventoryUI)) as InventoryUI;
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
-            cellsInRange = globeParser.GetCellsInRange(cellLocation, travelRange+1);
-            cameraManager.OrientOnLocation(vectorLocation);
+            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange+1);
+            cameraManager.OrientOnLocation(VectorLocation);
             touristManager = gameManager.TouristManager;
 
             //Generate Initial Tourists
@@ -61,7 +61,7 @@ namespace WPM
             {
                 touristManager.GenerateTourist();
             }
-            UpdateLocation(cellLocation);
+            UpdateLocation(CellLocation);
         }
 
         public float GetSize()
@@ -73,7 +73,7 @@ namespace WPM
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                cameraManager.OrientOnLocation(vectorLocation);
+                cameraManager.OrientOnLocation(VectorLocation);
             }
             if (Input.GetKeyDown(KeyCode.Backspace))
             {
@@ -86,19 +86,19 @@ namespace WPM
             base.OnMouseDown();
         }
 
-        public override void Selected()
+        public override void Select()
         {
-            base.Selected();
-            map.SetCellColor(cellLocation, Color.green, true);
+            base.Select();
+            map.SetCellColor(CellLocation, Color.green, true);
             SetCellCosts();
         }
 
-        public override void Deselected()
+        public override void Deselect()
         {
-            base.Deselected();
+            base.Deselect();
             ClearCellCosts();
             map.ClearCells(true, false, false);
-            selected = false;
+            Selected = false;
         }
 
         public override void OnCellEnter(int index)
@@ -110,7 +110,7 @@ namespace WPM
                 //map.SetCellColor(cellLocation, Color.green, true);
                 try
                 {
-                    pathIndices = DrawPath(cellLocation, index);
+                    pathIndices = DrawPath(CellLocation, index);
                 }
                 catch (Exception ex)
                 {
@@ -120,15 +120,15 @@ namespace WPM
 
                 if (pathIndices != null)
                 {
-                    pathIndices.Insert(0, cellLocation);
+                    pathIndices.Insert(0, CellLocation);
                 }
-                map.SetCellColor(cellLocation, Color.green, true);
+                map.SetCellColor(CellLocation, Color.green, true);
             }
         }
 
         public override void OnCellClick(int index)
         {
-            if (index == cellLocation)
+            if (index == CellLocation)
             {
                 if (moving)
                     stop = true;
@@ -215,7 +215,7 @@ namespace WPM
         public override void UpdateLocation(int newCellIndex)
         {
             //Update distance travelled
-            int neighborIndex = map.GetCellNeighbourIndex(cellLocation, newCellIndex);
+            int neighborIndex = map.GetCellNeighbourIndex(CellLocation, newCellIndex);
 
             base.UpdateLocation(newCellIndex);
 
@@ -228,11 +228,11 @@ namespace WPM
                     landmarksInRange.AddRange(landmarkList);
             }
 
-            List<MappableObject> mappableLandmarks = landmarksInRange.Cast<MappableObject>().ToList();
+            List<IMappableObject> mappableLandmarks = landmarksInRange.Cast<IMappableObject>().ToList();
 
-            navigationUI.UpdateNavigationDisplay(provincesOccupied, countriesOccupied, mappableLandmarks);
+            navigationUI.UpdateNavigationDisplay(ProvincesOccupied, CountriesOccupied, mappableLandmarks);
             //Update Turns
-            int turns = map.GetCellNeighbourCost(cellLocation, neighborIndex);
+            int turns = map.GetCellNeighbourCost(CellLocation, neighborIndex);
             gameManager.NextTurn(turns);
         }
 
@@ -243,9 +243,9 @@ namespace WPM
         {
             pathIndices.Clear();
             map.ClearCells(true, false, false);
-            if (selected)
+            if (Selected)
             {
-                map.SetCellColor(cellLocation, Color.green, true);
+                map.SetCellColor(CellLocation, Color.green, true);
                 if (!uiManager.CursorOverUI && globeManager.WorldGlobeMap.lastHighlightedCellIndex >= 0)
                 {
                     OnCellEnter(globeManager.WorldGlobeMap.lastHighlightedCellIndex);
@@ -254,7 +254,7 @@ namespace WPM
 
             ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = globeParser.GetCellsInRange(cellLocation, travelRange + 1);
+            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange + 1);
             SetCellCosts();
 
             moving = false;
@@ -349,7 +349,6 @@ namespace WPM
 
             return true;
         }
-
         public void RemoveItem(int itemLocation)
         {
             inventory.RemoveAt(itemLocation);

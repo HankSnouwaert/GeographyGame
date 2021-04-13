@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class SelectableObject : MonoBehaviour
+    public class SelectableObject : MonoBehaviour, ISelectableObject
     {
-        public string objectName;
-        public bool selected;
+        public string ObjectName { get; set; }
+        public bool Selected { get; set; }
         protected WorldMapGlobe map;
         protected GameManager gameManager;
         protected IErrorHandler errorHandler;
@@ -34,11 +34,11 @@ namespace WPM
             if (!uiManager.CursorOverUI)
             {
                 if (gameManager.SelectedObject == null)
-                    Selected();
+                    Select();
                 else
                 {
                     if (gameManager.SelectedObject == this)
-                        Deselected();
+                        Deselect();
                     else
                         gameManager.SelectedObject.ObjectSelected(this);
                 }
@@ -63,21 +63,21 @@ namespace WPM
             }
         }
 
-        public virtual void Selected()
+        public virtual void Select()
         {
             if (gameManager.SelectedObject != null)
                 if (gameManager.SelectedObject != this)
-                    gameManager.SelectedObject.Deselected();
+                    gameManager.SelectedObject.Deselect();
 
             gameManager.SelectedObject = this;
-            selected = true;
+            Selected = true;
         }
 
-        public virtual void Deselected()
+        public virtual void Deselect()
         {
             if (gameManager.SelectedObject == this)
                 gameManager.SelectedObject = null;
-            selected = false;
+            Selected = false;
         }
 
         public virtual void OnSelectableEnter(SelectableObject selectedObject)

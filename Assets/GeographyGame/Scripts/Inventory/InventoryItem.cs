@@ -24,16 +24,16 @@ namespace WPM
             //spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public override void Selected()
+        public override void Select()
         {
-            base.Selected();
+            base.Select();
             //EventSystem.current.SetSelectedGameObject(gameObject);
             //spriteRenderer.color = selectedColor;
         }
 
-        public override void Deselected()
+        public override void Deselect()
         {
-            base.Deselected();
+            base.Deselect();
             //EventSystem.current.SetSelectedGameObject(null);
             
             //spriteRenderer.color = normalColor;
