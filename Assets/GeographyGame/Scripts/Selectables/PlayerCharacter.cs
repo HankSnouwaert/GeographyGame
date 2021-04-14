@@ -30,13 +30,13 @@ namespace WPM
         private INavigationUI navigationUI;
         private ITouristManager touristManager;
         private ICameraManager cameraManager;
+        private ITurnsManager turnsManager;
         private List<Landmark> landmarksInRange = new List<Landmark>();
 
 
         public override void Awake()
         {
             base.Awake();
-            gameManager.TurnBasedObjects.Add(this);
         }
 
         public override void Start()
@@ -44,6 +44,8 @@ namespace WPM
             base.Start();
             navigationUI = uiManager.NavigationUI;
             cameraManager = gameManager.CameraManager;
+            turnsManager = gameManager.TurnsManager;
+            turnsManager.TurnBasedObjects.Add(this);
             ObjectName = "player";
             //gameManager = GameManager.instance;
             map = WorldMapGlobe.instance;
@@ -233,7 +235,7 @@ namespace WPM
             navigationUI.UpdateNavigationDisplay(ProvincesOccupied, CountriesOccupied, mappableLandmarks);
             //Update Turns
             int turns = map.GetCellNeighbourCost(CellLocation, neighborIndex);
-            gameManager.NextTurn(turns);
+            turnsManager.NextTurn(turns);
         }
 
         /// <summary>

@@ -19,6 +19,7 @@ namespace WPM
         private InventoryTourist touristPrefab;
         private GameManager gameManager;
         private IErrorHandler errorHandler;
+        private ITurnsManager turnsManager;
         private List<TouristRegion> touristRegions = new List<TouristRegion>(); 
         private int touristCounter = 0;
         private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
@@ -33,7 +34,8 @@ namespace WPM
         private void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
-            gameManager.TurnBasedObjects.Add(this);
+            turnsManager = gameManager.TurnsManager;
+            turnsManager.TurnBasedObjects.Add(this);
             touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             InitTouristRegions();
             //Set Tourist Images

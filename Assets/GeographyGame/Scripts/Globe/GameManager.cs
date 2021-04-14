@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace WPM
 {
-    public class GameManager : MonoBehaviour
+    public class GameManager : MonoBehaviour, IGameManager, IScoreManager
     {
         #region Variable Declaration
         [Header("Child Objects")]
@@ -19,18 +19,20 @@ namespace WPM
         private GameObject touristManagerObject;
         [SerializeField]
         private GameObject cameraManagerObject;
+        [SerializeField]
+        private GameObject turnsManagerObject;
         //Child Interfaces
         public ITouristManager TouristManager { get; protected set; }
         public ICameraManager CameraManager { get; protected set; }
+        public ITurnsManager TurnsManager { get; protected set; }
+        public IScoreManager ScoreManager { get; protected set; }
         //Private Interfaces
         private IUIManager uiManager;
         private IGlobeManager globeManager;
         private IErrorHandler errorHandler;
         private ICellClicker cellClicker;
         //Counters
-        private int globalTurnCounter = 0; 
         public int Score { get; protected set; } = 0;
-        public int TurnsRemaining { get; protected set; } = 250;
         //Flags
         public bool GamePaused { get; set; } = false;
         //In-Game Objects
@@ -47,7 +49,7 @@ namespace WPM
             }
         } 
         public ISelectableObject HighlightedObject { get; set; } = null;
-        public List<ITurnBasedObject> TurnBasedObjects { get; set; } = new List<ITurnBasedObject>();
+
 
         #endregion
 
@@ -55,6 +57,8 @@ namespace WPM
         {
             TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
             CameraManager = cameraManagerObject.GetComponent(typeof(ICameraManager)) as ICameraManager;
+            TurnsManager = turnsManagerObject.GetComponent(typeof(ITurnsManager)) as ITurnsManager;
+            ScoreManager = this;
             SelectedObject = null;
         }
 
@@ -87,37 +91,7 @@ namespace WPM
             }
         }
 
-        /// <summary>
-        /// Called whenever a new turn happens in game. Multiple turns can pass at once.
-        /// Inputs:
-        ///     turns: How many turns are passing
-        /// </summary>
-        public void NextTurn(int turns)
-        {
-            globalTurnCounter = globalTurnCounter + turns;
-            UpdateRemainingTurns(turns*-1);
-            //Run any end of turn scripts for the rest of the game's objects
-            foreach(ITurnBasedObject turnBasedObject in TurnBasedObjects)
-            {
-                turnBasedObject.EndOfTurn(turns);
-            }
-        }
-
-        /// <summary> 
-        /// Update the turns remaining until the game ends and check if game has ended
-        /// </summary>
-        /// <param name="turnModification"></param> The number of turns the reminaing turns
-        /// are updated by
-        private void UpdateRemainingTurns(int turnModification)
-        {
-            TurnsRemaining = TurnsRemaining + turnModification;
-            if (TurnsRemaining <= 0)
-            {
-                TurnsRemaining = 0;
-                GameOver();
-            }
-            uiManager.TurnsUI.UpdateDisplayedRemainingTurns(TurnsRemaining);
-        }
+       
 
         /// <summary>
         ///  Update the games current score
