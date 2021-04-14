@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace WPM
 {
-    public class GameManager : MonoBehaviour, IGameManager, IScoreManager
+    public class GameManager : MonoBehaviour, IGameManager
     {
         #region Variable Declaration
         [Header("Child Objects")]
@@ -21,6 +21,8 @@ namespace WPM
         private GameObject cameraManagerObject;
         [SerializeField]
         private GameObject turnsManagerObject;
+        [SerializeField]
+        private GameObject scoreManagerObject;
         //Child Interfaces
         public ITouristManager TouristManager { get; protected set; }
         public ICameraManager CameraManager { get; protected set; }
@@ -31,8 +33,6 @@ namespace WPM
         private IGlobeManager globeManager;
         private IErrorHandler errorHandler;
         private ICellClicker cellClicker;
-        //Counters
-        public int Score { get; protected set; } = 0;
         //Flags
         public bool GamePaused { get; set; } = false;
         //In-Game Objects
@@ -50,7 +50,6 @@ namespace WPM
         } 
         public ISelectableObject HighlightedObject { get; set; } = null;
 
-
         #endregion
 
         private void Awake()
@@ -58,7 +57,7 @@ namespace WPM
             TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
             CameraManager = cameraManagerObject.GetComponent(typeof(ICameraManager)) as ICameraManager;
             TurnsManager = turnsManagerObject.GetComponent(typeof(ITurnsManager)) as ITurnsManager;
-            ScoreManager = this;
+            ScoreManager = scoreManagerObject.GetComponent(typeof(IScoreManager)) as IScoreManager;
             SelectedObject = null;
         }
 
@@ -89,19 +88,6 @@ namespace WPM
                     }
                 }      
             }
-        }
-
-       
-
-        /// <summary>
-        ///  Update the games current score
-        /// </summary>
-        /// <param name="scoreModification"></param> The amount the score should be changed by>
-        /// <returns></returns> 
-        public void UpdateScore(int scoreModification)
-        {
-            Score = Score + scoreModification;
-            uiManager.ScoreUI.UpdateDisplayedScore(Score);
         }
 
         /// <summary> 

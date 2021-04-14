@@ -9,6 +9,7 @@ namespace WPM
     {
         private Text[] textComponents;
         private Text displayText;
+        private IScoreManager scoreManager;
         public override void Awake()
         {
             base.Awake();
@@ -19,6 +20,7 @@ namespace WPM
         public override void Start()
         {
             base.Start();
+            scoreManager = gameManager.ScoreManager;
             CloseUI();
         }
 
@@ -30,7 +32,7 @@ namespace WPM
 
         private void SetGameOverMessage()
         {
-            displayText.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + gameManager.Score;
+            displayText.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + scoreManager.Score;
         }
 
         public void ResetGameSelected()
