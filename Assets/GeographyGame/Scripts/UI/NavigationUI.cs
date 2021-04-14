@@ -24,6 +24,7 @@ namespace WPM
             dropOffButtonObject = dropOffButton.gameObject;
             textComponents = uiObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
+            UIOpen = true;
         }
 
         public override void Start()

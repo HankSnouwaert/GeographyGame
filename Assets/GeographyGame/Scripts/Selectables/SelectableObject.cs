@@ -14,6 +14,7 @@ namespace WPM
         protected IErrorHandler errorHandler;
         protected IUIManager uiManager;
         protected PlayerCharacter player;
+        protected bool selectionEnabled = false;
 
         // Start is called before the first frame update
 
@@ -26,40 +27,50 @@ namespace WPM
         public virtual void Start()
         {
             uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
-            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler; 
+            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
+            selectionEnabled = true;
         }
 
         public virtual void OnMouseDown()
         {
-            if (!uiManager.CursorOverUI)
+            if (selectionEnabled)
             {
-                if (gameManager.SelectedObject == null)
-                    Select();
-                else
+                if (!uiManager.CursorOverUI)
                 {
-                    if (gameManager.SelectedObject == (ISelectableObject)this)
-                        Deselect();
+                    if (gameManager.SelectedObject == null)
+                        Select();
                     else
-                        gameManager.SelectedObject.ObjectSelected(this);
+                    {
+                        if (gameManager.SelectedObject == (ISelectableObject)this)
+                            Deselect();
+                        else
+                            gameManager.SelectedObject.ObjectSelected(this);
+                    }
                 }
             }
         }
 
         public virtual void OnMouseEnter()
         {
-            if (!uiManager.CursorOverUI)
+            if (selectionEnabled)
             {
-                gameManager.HighlightedObject = this;
-                //uiManager.MouseOverInfoUI.UpdateHexInfoPanel();
+                if (!uiManager.CursorOverUI)
+                {
+                    gameManager.HighlightedObject = this;
+                    //uiManager.MouseOverInfoUI.UpdateHexInfoPanel();
+                }
             }
         }
 
         public virtual void OnMouseExit()
         {
-            if (!uiManager.CursorOverUI)
+            if (selectionEnabled)
             {
-                gameManager.HighlightedObject = null;
-                //gameManager.UpdateHexInfoPanel();
+                if (!uiManager.CursorOverUI)
+                {
+                    gameManager.HighlightedObject = null;
+                    //gameManager.UpdateHexInfoPanel();
+                }
             }
         }
 

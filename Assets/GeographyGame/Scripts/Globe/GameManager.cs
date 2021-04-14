@@ -13,27 +13,26 @@ namespace WPM
 {
     public class GameManager : MonoBehaviour
     {
-        #region Variable Declaration 
-        //[Header("Player Components")]
-        private IUIManager UIManager { get; set; }
-        private IGlobeManager GlobeManager { get; set; } 
-        private IErrorHandler ErrorHandler { get; set; }
-        public GameObject touristManagerObject;
-        public ITouristManager TouristManager { get; set; }
-        public GameObject cameraManagerObject;
-        public ICameraManager CameraManager { get; set; }
-        //TO BE SORTED
+        #region Variable Declaration
+        [Header("Child Objects")]
+        [SerializeField]
+        private GameObject touristManagerObject;
+        [SerializeField]
+        private GameObject cameraManagerObject;
+        //Child Interfaces
+        public ITouristManager TouristManager { get; protected set; }
+        public ICameraManager CameraManager { get; protected set; }
+        //Private Interfaces
+        private IUIManager uiManager;
+        private IGlobeManager globeManager;
+        private IErrorHandler errorHandler;
         private ICellClicker cellClicker;
-        public ICellCursorInterface CellCursorInterface { get; set; }
-        public List<ITurnBasedObject> TurnBasedObjects { get; set; } = new List<ITurnBasedObject>();
         //Counters
         private int globalTurnCounter = 0; 
-        public int score = 0;
-        private int turnsRemaining = 250;
+        public int Score { get; protected set; } = 0;
+        public int TurnsRemaining { get; protected set; } = 250;
         //Flags
         public bool GamePaused { get; set; } = false;
-        public bool GameMenuOpen { get; set; } = false;
-        //Game Settings
         //In-Game Objects
         public IPlayerCharacter Player { get; set; }
         private ISelectableObject selectedObject;
@@ -46,8 +45,9 @@ namespace WPM
                 if (selectedObject != null)
                     cellClicker.NewObjectSelected = true;
             }
-        }
+        } 
         public ISelectableObject HighlightedObject { get; set; } = null;
+        public List<ITurnBasedObject> TurnBasedObjects { get; set; } = new List<ITurnBasedObject>();
 
         #endregion
 
@@ -55,15 +55,16 @@ namespace WPM
         {
             TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
             CameraManager = cameraManagerObject.GetComponent(typeof(ICameraManager)) as ICameraManager;
+            SelectedObject = null;
         }
 
         void Start()
         {
             InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
-            GlobeManager = interfaceFactory.GlobeManager;
-            ErrorHandler = interfaceFactory.ErrorHandler;
-            UIManager = interfaceFactory.UIManager;
-            cellClicker = GlobeManager.CellCursorInterface.CellClicker;
+            globeManager = interfaceFactory.GlobeManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            uiManager = interfaceFactory.UIManager;
+            cellClicker = globeManager.CellCursorInterface.CellClicker;
         }
 
         void Update()
@@ -71,16 +72,15 @@ namespace WPM
             //Esc out of Selected Objects and UI Menus
             if (Input.GetKeyDown("escape"))
             {
-                if (GameMenuOpen)
-                    UIManager.ExitCurrentUI();
+                if (uiManager.GameMenuUI.UIOpen)
+                    uiManager.ExitCurrentUI();
                 else
                 {
                     if (selectedObject != null)
                         selectedObject.Deselect();
                     else
                     {
-                        UIManager.GameMenuUI.OpenUI();
-                        GameMenuOpen = true;
+                        uiManager.GameMenuUI.OpenUI();
                         GamePaused = true;
                     }
                 }      
@@ -110,13 +110,13 @@ namespace WPM
         /// are updated by
         private void UpdateRemainingTurns(int turnModification)
         {
-            turnsRemaining = turnsRemaining + turnModification;
-            if (turnsRemaining <= 0)
+            TurnsRemaining = TurnsRemaining + turnModification;
+            if (TurnsRemaining <= 0)
             {
-                turnsRemaining = 0;
+                TurnsRemaining = 0;
                 GameOver();
             }
-            UIManager.TurnsUI.UpdateDisplayedRemainingTurns(turnsRemaining);
+            uiManager.TurnsUI.UpdateDisplayedRemainingTurns(TurnsRemaining);
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace WPM
         /// <returns></returns> 
         public void UpdateScore(int scoreModification)
         {
-            score = score + scoreModification;
-            UIManager.ScoreUI.UpdateDisplayedScore(score);
+            Score = Score + scoreModification;
+            uiManager.ScoreUI.UpdateDisplayedScore(Score);
         }
 
         /// <summary> 
@@ -135,7 +135,7 @@ namespace WPM
         /// </summary>
         public void GameOver()
         {
-            UIManager.GameOver();
+            uiManager.GameOver();
             GamePaused = true;
         }
 
@@ -158,7 +158,6 @@ namespace WPM
         public void ResumeGame()
         {
             GamePaused = false;
-            GameMenuOpen = false;
         }
     }
 }

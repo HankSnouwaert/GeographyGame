@@ -14,6 +14,11 @@ namespace WPM
             base.Awake();
             textComponents = uiObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
+        }
+
+        public override void Start()
+        {
+            base.Start();
             CloseUI();
         }
 
@@ -25,7 +30,7 @@ namespace WPM
 
         private void SetGameOverMessage()
         {
-            displayText.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + gameManager.score;
+            displayText.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + gameManager.Score;
         }
 
         public void ResetGameSelected()

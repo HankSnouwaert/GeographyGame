@@ -14,31 +14,33 @@ namespace WPM
         protected IUIManager uiManager;
         protected ICellClicker mouseCellClicker;
         protected GameObject uiObject;
+        public bool UIOpen { get; set; }
 
         // Start is called before the first frame update
         public virtual void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
             globeManager = FindObjectOfType<GlobeManager>();
-            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
             uiObject = gameObject;
         }
 
         public virtual void Start()
         {
-
             mouseCellClicker = globeManager.CellCursorInterface.CellClicker;
+            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
         }
 
         public virtual void OpenUI()
         {
             uiObject.SetActive(true);
+            UIOpen = true;
         }
 
         public virtual void CloseUI()
         {
             uiObject.SetActive(false);
             uiManager.ClosingUI = true;
+            UIOpen = false;
         }
         
         /*

@@ -17,7 +17,6 @@ namespace WPM
         {
             base.Awake();
             Transform textObject = uiObject.transform.GetChild(0);
-            uiObject.SetActive(false);
             textObject = uiObject.transform.GetChild(0);
             errorMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
             Transform scrollViewTextObject = uiObject.transform.GetChild(1).GetChild(0).GetChild(0);
@@ -30,6 +29,7 @@ namespace WPM
         {
             base.Start();
             errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
+            CloseUI();
         }
 
         public override void CloseUI()

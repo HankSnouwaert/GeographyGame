@@ -14,7 +14,6 @@ namespace WPM
         public override void Awake()
         {
             base.Awake();
-            uiObject.SetActive(false);
             mouseOverInfoComponents = uiObject.GetComponentsInChildren<Text>();
             mouseOverInfoText = mouseOverInfoComponents[0] as Text;
         }
@@ -22,7 +21,7 @@ namespace WPM
         public override void Start()
         {
             base.Start();
-            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            CloseUI();
         }
 
         public void UpdateUI()

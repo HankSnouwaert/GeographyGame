@@ -5,6 +5,7 @@
     /// </summary>
     public interface IUIElement
     {
+        bool UIOpen { get; set; }
         void CloseUI();
         void OpenUI();
     }

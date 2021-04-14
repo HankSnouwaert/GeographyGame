@@ -17,6 +17,7 @@ namespace WPM
             base.Awake();
             textComponents = uiObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
+            UIOpen = true;
         }
             
         public void UpdateDisplayedScore(int newScore)

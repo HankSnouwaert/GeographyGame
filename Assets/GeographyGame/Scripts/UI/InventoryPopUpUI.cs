@@ -20,6 +20,12 @@ namespace WPM
             displayText = textComponents[0];
         }
 
+        public override void Start()
+        {
+            base.Start();
+            CloseUI();
+        }
+
         public void DisplayPopUp(string displayString, bool persistant)
         {
             OpenUI();

@@ -19,17 +19,16 @@ namespace WPM
         void Awake()
         {
             cellEnterer = GetComponent(typeof(ICellEnterer)) as ICellEnterer;
-            gameManager = FindObjectOfType<GameManager>();
-            GameObject[] globeManagerObject = GameObject.FindGameObjectsWithTag("GlobeManager");
-            globeManager = globeManagerObject[0].GetComponent(typeof(IGlobeManager)) as IGlobeManager;
-            globeManager.WorldGlobeMap.OnCellClick += HandleOnCellClick;
-            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;       
         }
-
 
         void Start()
         {
-            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
+            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            gameManager = FindObjectOfType<GameManager>();
+            globeManager = interfaceFactory.GlobeManager;
+            uiManager = interfaceFactory.UIManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            globeManager.WorldGlobeMap.OnCellClick += HandleOnCellClick;
         }
 
         /// <summary>

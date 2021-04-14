@@ -10,8 +10,9 @@ namespace WPM
         private Text[] textComponents;
         private Text displayText;
 
-        void Start()
+        public override void Start()
         {
+            base.Start();
             CloseUI();
         }
         public void ReturnToGameSelected()
