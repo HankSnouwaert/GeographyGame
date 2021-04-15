@@ -33,8 +33,10 @@ namespace WPM
         private IGlobeManager globeManager;
         private IErrorHandler errorHandler;
         private ICellClicker cellClicker;
+        private IGameMenuUI gameMenuUI;
         //Flags
         public bool GamePaused { get; set; } = false;
+        private bool componentMissing = false;
         //In-Game Objects
         public IPlayerCharacter Player { get; set; }
         private ISelectableObject selectedObject;
@@ -54,10 +56,18 @@ namespace WPM
 
         private void Awake()
         {
-            TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
-            CameraManager = cameraManagerObject.GetComponent(typeof(ICameraManager)) as ICameraManager;
-            TurnsManager = turnsManagerObject.GetComponent(typeof(ITurnsManager)) as ITurnsManager;
-            ScoreManager = scoreManagerObject.GetComponent(typeof(IScoreManager)) as IScoreManager;
+            try
+            {
+                TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
+                CameraManager = cameraManagerObject.GetComponent(typeof(ICameraManager)) as ICameraManager;
+                TurnsManager = turnsManagerObject.GetComponent(typeof(ITurnsManager)) as ITurnsManager;
+                ScoreManager = scoreManagerObject.GetComponent(typeof(IScoreManager)) as IScoreManager;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
+            
             SelectedObject = null;
         }
 
@@ -67,7 +77,23 @@ namespace WPM
             globeManager = interfaceFactory.GlobeManager;
             errorHandler = interfaceFactory.ErrorHandler;
             uiManager = interfaceFactory.UIManager;
-            cellClicker = globeManager.CellCursorInterface.CellClicker;
+
+            if(componentMissing)
+            {
+                errorHandler.reportError("GameManager component missing", ErrorState.restart_scene);
+            }
+
+            ICellCursorInterface cellCursorInterface = globeManager.CellCursorInterface;
+            if (cellCursorInterface == null)
+                errorHandler.reportError("CellCursorInterface Missing", ErrorState.restart_scene);
+
+            cellClicker = cellCursorInterface.CellClicker;
+            if (cellClicker == null )
+                errorHandler.reportError("CellClicker Missing", ErrorState.restart_scene);
+
+            gameMenuUI = uiManager.GameMenuUI;
+            if(gameMenuUI == null)
+                errorHandler.reportError("Game Menu UI Missing", ErrorState.restart_scene);
         }
 
         void Update()
@@ -75,7 +101,7 @@ namespace WPM
             //Esc out of Selected Objects and UI Menus
             if (Input.GetKeyDown("escape"))
             {
-                if (uiManager.GameMenuUI.UIOpen)
+                if (gameMenuUI.UIOpen)
                     uiManager.ExitCurrentUI();
                 else
                 {
@@ -83,7 +109,7 @@ namespace WPM
                         selectedObject.Deselect();
                     else
                     {
-                        uiManager.GameMenuUI.OpenUI();
+                        gameMenuUI.OpenUI();
                         GamePaused = true;
                     }
                 }      
@@ -115,6 +141,9 @@ namespace WPM
             Application.Quit();
         }
 
+        /// <summary> 
+        /// Called when the game is unpaused
+        /// </summary>
         public void ResumeGame()
         {
             GamePaused = false;

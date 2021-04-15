@@ -22,7 +22,7 @@ namespace WPM
         /// </summary>
         /// <param name="ex"></param> The exception to report to the user>
         /// <returns></returns> 
-        void catchException(Exception ex);
+        void catchException(Exception ex, ErrorState state = ErrorState.close_window);
 
         /// <summary>
         ///  Execute the error responce determined by the error handler's error state

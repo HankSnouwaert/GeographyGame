@@ -44,7 +44,7 @@ namespace WPM
         /// </summary>
         /// <param name="ex"></param> The exception to report to the user>
         /// <returns></returns> 
-        public void catchException(System.Exception ex)
+        public void catchException(Exception ex, ErrorState state)
         {
             string combinedStackTrace = ex.StackTrace;
             var inner = ex.InnerException;
@@ -53,7 +53,6 @@ namespace WPM
                 combinedStackTrace = combinedStackTrace + inner.StackTrace;
                 inner = inner.InnerException;
             }
-            ErrorState = ErrorState.close_window;
             errorUI.setErrorMessage(ex.Message);
             errorUI.setStackTrace(combinedStackTrace);
             errorUI.OpenUI();
