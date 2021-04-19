@@ -6,54 +6,107 @@ using UnityEngine.UI;
 namespace WPM
 {
 
-    public class ErrorUI : UIElement, IErrorUI
+    public class ErrorUI : MonoBehaviour, IErrorUI
     {
+        public bool UIOpen { get; set; }
         private Text errorMessage;
         private InputField stackTraceInputField;
         private Button errorButton;
         private IErrorHandler errorHandler;
+        private IUIManager uiManager;
+        private bool errorUIAwake = false;
+        private bool errorUIStarted = false;
+        private InterfaceFactory interfaceFactory;
+        private bool componentMissing = false;
 
-        public override void Awake()
+        public void Awake()
         {
-            base.Awake();
-            Transform textObject = uiObject.transform.GetChild(0);
-            textObject = uiObject.transform.GetChild(0);
-            errorMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
-            Transform scrollViewTextObject = uiObject.transform.GetChild(1).GetChild(0).GetChild(0);
-            stackTraceInputField = scrollViewTextObject.gameObject.GetComponent(typeof(InputField)) as InputField;
-            Transform buttonObject = uiObject.transform.GetChild(2);
-            errorButton = buttonObject.gameObject.GetComponent(typeof(Button)) as Button;
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if(interfaceFactory == null)
+                gameObject.SetActive(false);
+            try
+            {
+                Transform textObject = gameObject.transform.GetChild(0);
+                textObject = gameObject.transform.GetChild(0);
+                errorMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+                Transform scrollViewTextObject = gameObject.transform.GetChild(1).GetChild(0).GetChild(0);
+                stackTraceInputField = scrollViewTextObject.gameObject.GetComponent(typeof(InputField)) as InputField;
+                Transform buttonObject = gameObject.transform.GetChild(2);
+                errorButton = buttonObject.gameObject.GetComponent(typeof(Button)) as Button;
+                errorUIAwake = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            } 
         }
 
-        public override void Start()
+        public void Start()
         {
-            base.Start();
-            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
-            CloseUI();
+            if (!errorUIAwake)
+                Awake();
+            errorHandler = interfaceFactory.ErrorHandler;
+            uiManager = interfaceFactory.UIManager;  //UI Manager is optional
+            if (errorHandler == null)
+            {
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                errorUIStarted = true;
+                if (componentMissing)
+                    errorHandler.ReportError("Error UI component missing", ErrorState.restart_scene);
+            }
+            
         }
 
-        public override void CloseUI()
+        public void OpenUI()
         {
-            base.CloseUI();
+            gameObject.SetActive(true);
+            UIOpen = true;
+        }
+
+        public void CloseUI()
+        {
+            if (!errorUIStarted)
+                Start();
+
+            gameObject.SetActive(false);
             setErrorMessage("");
             setStackTrace("");
+            UIOpen = false;
+
+            if (uiManager != null)
+                uiManager.ClosingUI = true;
         }
 
         public void setErrorMessage(string message)
         {
-            errorMessage.text = message;
+            if (!errorUIStarted)
+                Start();
+            if(errorMessage != null)
+                errorMessage.text = message;
+            else
+                errorHandler.EmergencyExit("Error Message componenent missing");
         }
 
         public void setStackTrace(string stackTrace)
         {
-            stackTraceInputField.text = stackTrace;
+            if (!errorUIStarted)
+                Start();
+            if(stackTraceInputField != null)
+                stackTraceInputField.text = stackTrace;
+            else
+                errorHandler.EmergencyExit("Stack Trace componenent missing");
         }
 
         public void errorUIClosed()
         {
-            errorHandler.errorResponse();
+            if (errorHandler != null)
+                errorHandler.ErrorResponse();
+            else
+                gameObject.SetActive(false);
         }
-
     }
 
 }

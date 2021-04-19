@@ -39,6 +39,7 @@ namespace WPM
         private bool componentMissing = false;
         //In-Game Objects
         public IPlayerCharacter Player { get; set; }
+        private InterfaceFactory interfaceFactory;
         private ISelectableObject selectedObject;
         public ISelectableObject SelectedObject
         {
@@ -56,6 +57,9 @@ namespace WPM
 
         private void Awake()
         {
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if(interfaceFactory == null)
+                gameObject.SetActive(false);
             try
             {
                 TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
@@ -73,27 +77,32 @@ namespace WPM
 
         void Start()
         {
-            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
             globeManager = interfaceFactory.GlobeManager;
             errorHandler = interfaceFactory.ErrorHandler;
             uiManager = interfaceFactory.UIManager;
-
-            if(componentMissing)
+            if(globeManager == null || errorHandler == null || uiManager == null)
             {
-                errorHandler.reportError("GameManager component missing", ErrorState.restart_scene);
+                gameObject.SetActive(false);
             }
+            else
+            {
+                if (componentMissing)
+                {
+                    errorHandler.ReportError("GameManager component missing", ErrorState.restart_scene);
+                }
 
-            ICellCursorInterface cellCursorInterface = globeManager.CellCursorInterface;
-            if (cellCursorInterface == null)
-                errorHandler.reportError("CellCursorInterface Missing", ErrorState.restart_scene);
+                ICellCursorInterface cellCursorInterface = globeManager.CellCursorInterface;
+                if (cellCursorInterface == null)
+                    errorHandler.ReportError("CellCursorInterface Missing", ErrorState.restart_scene);
 
-            cellClicker = cellCursorInterface.CellClicker;
-            if (cellClicker == null )
-                errorHandler.reportError("CellClicker Missing", ErrorState.restart_scene);
+                cellClicker = cellCursorInterface.CellClicker;
+                if (cellClicker == null)
+                    errorHandler.ReportError("CellClicker Missing", ErrorState.restart_scene);
 
-            gameMenuUI = uiManager.GameMenuUI;
-            if(gameMenuUI == null)
-                errorHandler.reportError("Game Menu UI Missing", ErrorState.restart_scene);
+                gameMenuUI = uiManager.GameMenuUI;
+                if (gameMenuUI == null)
+                    errorHandler.ReportError("Game Menu UI Missing", ErrorState.restart_scene);
+            }
         }
 
         void Update()

@@ -15,19 +15,25 @@ namespace WPM
         /// <param name="message"></param> The error message for the user>
         /// <param name="state"<>/param> The state the error handler should be set to>
         /// <returns></returns> 
-        void reportError(string message, ErrorState state);
+        void ReportError(string message, ErrorState state);
 
         /// <summary>
         ///  Report an unanticipated exception
         /// </summary>
         /// <param name="ex"></param> The exception to report to the user>
+        /// <param name="state"<>/param> The state the error handler should be set to>
         /// <returns></returns> 
-        void catchException(Exception ex, ErrorState state = ErrorState.close_window);
+        void CatchException(Exception ex, ErrorState state = ErrorState.close_window);
 
         /// <summary>
         ///  Execute the error responce determined by the error handler's error state
         /// </summary>
-        void errorResponse();
+        void ErrorResponse();
 
+        /// <summary>
+        ///  Prints an error message and aborts the application
+        ///  <paramref name="message"/> The message to be reported
+        /// </summary>
+        void EmergencyExit(string message);
     }
 }

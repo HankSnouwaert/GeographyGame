@@ -116,7 +116,7 @@ namespace WPM
                 }
                 catch (Exception ex)
                 {
-                    errorHandler.catchException(ex);
+                    errorHandler.CatchException(ex);
                 }
 
 

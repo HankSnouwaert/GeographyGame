@@ -52,7 +52,7 @@ namespace WPM
                     }
                     catch (System.Exception ex)
                     {
-                        errorHandler.catchException(ex);
+                        errorHandler.CatchException(ex);
                     }
             }
 

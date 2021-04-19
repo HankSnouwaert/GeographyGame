@@ -63,7 +63,7 @@ namespace WPM
             }
             catch(System.Exception ex)
             {
-                errorHandler.catchException(ex);
+                errorHandler.CatchException(ex);
             }
 
             uiManager.InventoryPopUpUI.DisplayPopUp("Hey there!  I want to see " + destinationName + "!", false);
@@ -137,7 +137,7 @@ namespace WPM
                 }
                 catch (System.Exception ex)
                 {
-                    errorHandler.reportError("Error Setting Province Destination: " + provinceChoices[destinationIndex], ErrorState.close_window);
+                    errorHandler.ReportError("Error Setting Province Destination: " + provinceChoices[destinationIndex], ErrorState.close_window);
                     return;
                 }
                 destinationName = provinceDestination.name;
@@ -158,7 +158,7 @@ namespace WPM
                 }
                 catch (System.Exception ex)
                 {
-                    errorHandler.reportError(landmarkChoices[destinationIndex] + " does not exist", ErrorState.close_window);
+                    errorHandler.ReportError(landmarkChoices[destinationIndex] + " does not exist", ErrorState.close_window);
                     return;
                 }
                 destinationName = landmarkDestination.ObjectName;
@@ -178,7 +178,7 @@ namespace WPM
                 }
                 catch (System.Exception ex)
                 {
-                    errorHandler.reportError(countryChoices[destinationIndex] + " does not exist", ErrorState.close_window);
+                    errorHandler.ReportError(countryChoices[destinationIndex] + " does not exist", ErrorState.close_window);
                     return;
                 }
                 destinationName = countryDestination.name;
@@ -190,7 +190,7 @@ namespace WPM
             }
             else
             {
-                errorHandler.reportError("Unable to Set Tourist Destination.", ErrorState.restart_scene);
+                errorHandler.ReportError("Unable to Set Tourist Destination.", ErrorState.restart_scene);
             }
         }
 
