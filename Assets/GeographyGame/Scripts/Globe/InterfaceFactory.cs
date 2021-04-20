@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace WPM
 {
+    /// <summary> 
+    /// Used to store references to the highest level game objects
+    /// </summary>
     public class InterfaceFactory : MonoBehaviour
     {
         [SerializeField]

@@ -1,5 +1,8 @@
 ﻿namespace WPM
 {
+    /// <summary> 
+    /// UI used to display error information to user
+    /// </summary>
     public interface IErrorUI 
     {
         /// <summary>

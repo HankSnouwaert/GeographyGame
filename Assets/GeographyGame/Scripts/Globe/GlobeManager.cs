@@ -69,12 +69,15 @@ namespace WPM
             gameManager = interfaceFactory.GameManager;
             if (errorHandler == null || gameManager == null)
                 gameObject.SetActive(false);
-            if (worldMapGlobeMissing)
-                errorHandler.ReportError("World Map Globe Missing", ErrorState.close_application);
-            if (componentMissing)
-                errorHandler.ReportError("Component Missing", ErrorState.restart_scene);
+            else
+            {
+                if (worldMapGlobeMissing)
+                    errorHandler.ReportError("World Map Globe Missing", ErrorState.close_application);
+                if (componentMissing)
+                    errorHandler.ReportError("Component Missing", ErrorState.restart_scene);
 
-            GlobeInitializer.ApplyGlobeSettings();
+                GlobeInitializer.ApplyGlobeSettings();
+            }
         }
     }
 }

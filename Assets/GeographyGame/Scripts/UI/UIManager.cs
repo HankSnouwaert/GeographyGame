@@ -7,6 +7,7 @@ namespace WPM
 {
     public class UIManager : MonoBehaviour, IUIManager
     {
+        [Header("Child Objects")]
         [SerializeField]
         private GameObject mouseOverInfoUIObject;
         [SerializeField]
@@ -25,48 +26,96 @@ namespace WPM
         private GameObject gameMenuUIObject; 
         [SerializeField]
         private GameObject inventoryPopUpUIObject;
-
-        public IMouseOverInfoUI MouseOverInfoUI { get; set; }
-        public INavigationUI NavigationUI { get; set; }
-        public IDropOffUI DropOffUI { get; set; }
-        public IScoreUI ScoreUI { get; set; }
-        public ITurnsUI TurnsUI { get; set; }
-        public IGameOverUI GameOverUI { get; set; }
-        public IGameMenuUI GameMenuUI { get; set; }
-        public IInventoryPopUpUI InventoryPopUpUI { get; set; }
-
-        public bool CursorOverUI { get; set; }
+        //Child Interfaces
+        public IMouseOverInfoUI MouseOverInfoUI { get; protected set; }
+        public INavigationUI NavigationUI { get; protected set; }
+        public IDropOffUI DropOffUI { get; protected set; }
+        public IScoreUI ScoreUI { get; protected set; }
+        public ITurnsUI TurnsUI { get; protected set; }
+        public IGameOverUI GameOverUI { get; protected set; }
+        public IGameMenuUI GameMenuUI { get; protected set; }
+        public IInventoryPopUpUI InventoryPopUpUI { get; protected set; }
+        //Public Flags
+        public bool CursorOverUI { get; set; } = false;
         public bool ClosingUI { get; set; } = false;
-
-        private GameManager gameManager;
-        private GlobeManager globeManager;
+        //Local Interface References
+        private IGameManager gameManager;
+        private IGlobeManager globeManager;
         private ICellCursorInterface cellCursorInterface;
+        //Error Checking
+        private IErrorHandler errorHandler;
+        private InterfaceFactory interfaceFactory;
+        private bool componentMissing = false;
 
-
-        // Start is called before the first frame update
         void Awake()
         {
-            //ErrorUI = errorUIObject.GetComponent(typeof(IErrorUI)) as IErrorUI;
-            MouseOverInfoUI = mouseOverInfoUIObject.GetComponent(typeof(IMouseOverInfoUI)) as IMouseOverInfoUI;
-            NavigationUI = navigationUIObject.GetComponent(typeof(INavigationUI)) as INavigationUI;
-            DropOffUI = dropOffUIObject.GetComponent(typeof(IDropOffUI)) as IDropOffUI;
-            ScoreUI = scoreUIObject.GetComponent(typeof(IScoreUI)) as IScoreUI;
-            TurnsUI = turnsUIObject.GetComponent(typeof(ITurnsUI)) as ITurnsUI;
-            GameOverUI = gameOverUIObject.GetComponent(typeof(IGameOverUI)) as IGameOverUI;
-            GameMenuUI = gameMenuUIObject.GetComponent(typeof(IGameMenuUI)) as IGameMenuUI;
-            InventoryPopUpUI = inventoryPopUpUIObject.GetComponent(typeof(IInventoryPopUpUI)) as IInventoryPopUpUI;
-            gameManager = FindObjectOfType<GameManager>();
-            globeManager = FindObjectOfType<GlobeManager>(); 
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
+            try
+            {
+                MouseOverInfoUI = mouseOverInfoUIObject.GetComponent(typeof(IMouseOverInfoUI)) as IMouseOverInfoUI;
+                if (MouseOverInfoUI == null)
+                    componentMissing = true;
+
+                NavigationUI = navigationUIObject.GetComponent(typeof(INavigationUI)) as INavigationUI;
+                if (NavigationUI == null)
+                    componentMissing = true;
+
+                DropOffUI = dropOffUIObject.GetComponent(typeof(IDropOffUI)) as IDropOffUI;
+                if (DropOffUI == null)
+                    componentMissing = true;
+
+                ScoreUI = scoreUIObject.GetComponent(typeof(IScoreUI)) as IScoreUI;
+                if (ScoreUI == null)
+                    componentMissing = true;
+
+                TurnsUI = turnsUIObject.GetComponent(typeof(ITurnsUI)) as ITurnsUI;
+                if (TurnsUI == null)
+                    componentMissing = true;
+
+                GameOverUI = gameOverUIObject.GetComponent(typeof(IGameOverUI)) as IGameOverUI;
+                if (GameOverUI == null)
+                    componentMissing = true;
+
+                GameMenuUI = gameMenuUIObject.GetComponent(typeof(IGameMenuUI)) as IGameMenuUI;
+                if (GameMenuUI == null)
+                    componentMissing = true;
+
+                InventoryPopUpUI = inventoryPopUpUIObject.GetComponent(typeof(IInventoryPopUpUI)) as IInventoryPopUpUI;
+                if (InventoryPopUpUI == null)
+                    componentMissing = true;
+
+                //Inventory UI needs to be added here when I refactor it
+                if (inventoryUIObject == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
         }
 
         void Start()
         {
-            cellCursorInterface = globeManager.CellCursorInterface;
+            gameManager = interfaceFactory.GameManager;
+            globeManager = interfaceFactory.GlobeManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            if (gameManager == null || globeManager == null || errorHandler == null)
+                gameObject.SetActive(false);
+            else
+            {
+                cellCursorInterface = globeManager.CellCursorInterface;
+                if (cellCursorInterface == null)
+                    errorHandler.ReportError("CellCurserInterface no found", ErrorState.restart_scene);
+            }
+            
         }
 
         void Update()
         {
             CursorOverUI = CheckForMouseOverUI();
+            //Make sure the player doesn't click through a UI while closing it
             if (ClosingUI)
             {
                 ClosingUI = false;
@@ -82,24 +131,6 @@ namespace WPM
                 InventoryPopUpUI.ClearPopUp(false);
         }
 
-        public bool CheckForMouseOverUI()
-        {
-            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-            pointerEventData.position = Input.mousePosition;
-
-            List<RaycastResult> raycastResultList = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
-            for (int i = 0; i < raycastResultList.Count; i++)
-            {
-                if (raycastResultList[i].gameObject.GetComponent<IUIElement>() == null)
-                {
-                    raycastResultList.RemoveAt(i);
-                    i--;
-                }
-            }
-            return raycastResultList.Count > 0;
-        }
-
         public void GameOver()
         {
             mouseOverInfoUIObject.SetActive(false);
@@ -107,13 +138,48 @@ namespace WPM
             inventoryPopUpUIObject.SetActive(false);
             GameOverUI.OpenUI();
         }
-
-        public void ExitCurrentUI()
+        
+        /// <summary>
+        ///  Determines if the cursor is over a UI elements
+        ///  NOTE: Most of this code was copyed from an online example
+        /// </summary>
+        private bool CheckForMouseOverUI()
         {
-            if (gameMenuUIObject.activeSelf)
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            if (pointerEventData == null)
             {
-                GameMenuUI.RestartGameSelected();
+                errorHandler.ReportError("Invalid Pointer Event Data", ErrorState.close_window);
+                return false;
             }
+            pointerEventData.position = Input.mousePosition;
+   
+            if (pointerEventData.position == null)
+            {
+                errorHandler.ReportError("Invalid Pointer Event Data", ErrorState.close_window);
+                return false;
+            }
+
+            List<RaycastResult> raycastResultList = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
+            try
+            {
+                for (int i = 0; i < raycastResultList.Count; i++)
+                {
+                    if (raycastResultList[i].gameObject.GetComponent<IUIElement>() == null)
+                    {
+                        raycastResultList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            catch
+            {
+                errorHandler.ReportError("Error Checking for Mouse Over UI", ErrorState.close_window);
+                return false;
+            }
+            return raycastResultList.Count > 0;
         }
+
+        
     }
 }

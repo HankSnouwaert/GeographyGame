@@ -1,5 +1,8 @@
 ﻿namespace WPM
 {
+    /// <summary> 
+    /// Interface used to access extended functionality for interacting with world map globe
+    /// </summary>
     public interface IGlobeManager
     {
         /// <summary> 

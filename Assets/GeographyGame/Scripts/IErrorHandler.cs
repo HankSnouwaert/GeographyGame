@@ -2,6 +2,9 @@
 
 namespace WPM
 {
+    /// <summary> 
+    /// Used for general purpose error handling
+    /// </summary>
     public interface IErrorHandler
     {
         /// <summary>

@@ -1,5 +1,8 @@
 ﻿namespace WPM
 {
+    /// <summary> 
+    /// Interface used to hold general game state information and acces to manager interfaces
+    /// </summary>
     public interface IGameManager
     {
         /// <summary> 
