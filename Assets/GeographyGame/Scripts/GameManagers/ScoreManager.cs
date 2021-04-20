@@ -6,11 +6,36 @@ namespace WPM
 {
     public class ScoreManager : MonoBehaviour, IScoreManager
     {
+        //Public Variables
         public int Score { get; protected set; } = 0;
+        //Local Interface References
         private IUIManager uiManager;
+        private IScoreUI scoreUI;
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
+
+        void Awake()
+        {
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
+        }
+
         void Start()
         {
-            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
+            uiManager = interfaceFactory.UIManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            if (errorHandler == null || uiManager == null)
+            {
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                scoreUI = uiManager.ScoreUI;
+                if (scoreUI == null)
+                    errorHandler.ReportError("Score UI Missing", ErrorState.close_window);
+            }
         }
 
         /// <summary>
@@ -21,7 +46,8 @@ namespace WPM
         public void UpdateScore(int scoreModification)
         {
             Score = Score + scoreModification;
-            uiManager.ScoreUI.UpdateDisplayedScore(Score);
+            if(scoreUI != null)
+                scoreUI.UpdateDisplayedScore(Score);
         }
     }
 }
