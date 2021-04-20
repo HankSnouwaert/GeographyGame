@@ -31,7 +31,6 @@ namespace WPM
         //Local Interface References
         private IUIManager uiManager;
         private IGlobeManager globeManager;
-        private IErrorHandler errorHandler;
         private ICellClicker cellClicker;
         private IGameMenuUI gameMenuUI;
         //Flags
@@ -52,6 +51,7 @@ namespace WPM
         public ISelectableObject HighlightedObject { get; set; } = null;
         //Error Checking
         private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
         private bool componentMissing = false;
 
         #endregion
