@@ -6,15 +6,18 @@ namespace WPM
     public class ErrorHandler : MonoBehaviour, IErrorHandler
     {
         [SerializeField] private GameObject errorUIObject;
+        public ErrorState ErrorState { get; set; } = ErrorState.no_error;
+        //Error Data
+        private Exception exception;
+        private string errorMessage;
+        //External Interfaces
         private IGameManager gameManager;
         private IUIManager uiManager;
         private IErrorUI errorUI;
         private IGlobeManager globeManager;
-        private Exception exception;
-        private string errorMessage;
+        //Error Checking
         private bool errorUIInitialized = false;
-        private InterfaceFactory interfaceFactory;
-        public ErrorState ErrorState { get; set; } = ErrorState.no_error;
+        private InterfaceFactory interfaceFactory; 
         
         void Awake()
         {
@@ -62,9 +65,14 @@ namespace WPM
             if (!errorUIInitialized)
                 Awake();
             ErrorState = state;
-            errorUI.setErrorMessage(message);
-            errorUI.setStackTrace(Environment.StackTrace);
-            errorUI.OpenUI();
+            if(errorUI != null)
+            {
+                errorUI.setErrorMessage(message);
+                errorUI.setStackTrace(Environment.StackTrace);
+                errorUI.OpenUI();
+            }
+            else
+                EmergencyExit("Error UI Script Not Found");
         }
 
         /// <summary>
@@ -76,31 +84,34 @@ namespace WPM
         /// <returns></returns> 
         public void CatchException(Exception ex, ErrorState state)
         {
-            ErrorState = state;
-
             if (!errorUIInitialized)
                 Awake();
 
+            ErrorState = state;
             string combinedStackTrace;
-            
-            if (ex == null)
+            if(errorUI != null)
             {
-                errorUI.setErrorMessage("Exception Missing");
+                if (ex == null)
+                {
+                    errorUI.setErrorMessage("Exception Missing");
+                }
+                else
+                {
+                    combinedStackTrace = ex.StackTrace;
+                    var inner = ex.InnerException;
+                    while (inner != null)
+                    {
+                        combinedStackTrace = combinedStackTrace + inner.StackTrace;
+                        inner = inner.InnerException;
+                    }
+                    errorUI.setErrorMessage(ex.Message);
+                    errorUI.setStackTrace(combinedStackTrace);
+                }
+
+                errorUI.OpenUI();
             }
             else
-            {
-                combinedStackTrace = ex.StackTrace;
-                var inner = ex.InnerException;
-                while (inner != null)
-                {
-                    combinedStackTrace = combinedStackTrace + inner.StackTrace;
-                    inner = inner.InnerException;
-                }
-                errorUI.setErrorMessage(ex.Message);
-                errorUI.setStackTrace(combinedStackTrace);
-            }  
-            
-            errorUI.OpenUI();
+                EmergencyExit("Error UI Script Not Found");
         }
 
         /// <summary>
@@ -111,25 +122,29 @@ namespace WPM
             if (!errorUIInitialized)
                 Awake();
 
-            switch (ErrorState)
+            if(errorUI != null)
             {
-                case (ErrorState.close_window):
-                    errorUI.CloseUI();
-                    break;
+                switch (ErrorState)
+                {
+                    case (ErrorState.close_window):
+                        errorUI.CloseUI();
+                        break;
 
-                case (ErrorState.restart_scene):
-                    gameManager.GameReset();
-                    break;
+                    case (ErrorState.restart_scene):
+                        gameManager.GameReset();
+                        break;
 
-                case (ErrorState.close_application):
-                    gameManager.ExitGame();
-                    break;
+                    case (ErrorState.close_application):
+                        gameManager.ExitGame();
+                        break;
 
-                default:
-                    gameManager.ExitGame();
-                    break;
+                    default:
+                        gameManager.ExitGame();
+                        break;
+                }
             }
-                
+            else
+                EmergencyExit("Error UI Script Not Found");
         }
 
         public void EmergencyExit(string message)

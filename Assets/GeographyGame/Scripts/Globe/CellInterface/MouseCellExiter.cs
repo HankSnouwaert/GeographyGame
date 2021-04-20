@@ -18,7 +18,7 @@ namespace WPM
             InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
             gameManager = FindObjectOfType<GameManager>();
             globeManager = interfaceFactory.GlobeManager;
-            globeManager.WorldGlobeMap.OnCellExit += HandleOnCellExit;
+            globeManager.WorldMapGlobe.OnCellExit += HandleOnCellExit;
             uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
         }
 

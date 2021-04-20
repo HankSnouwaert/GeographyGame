@@ -31,7 +31,7 @@ namespace WPM
         {
             base.Start();
             globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;
-            worldMapGlobe = globeManager.WorldGlobeMap;
+            worldMapGlobe = globeManager.WorldMapGlobe;
         }
 
         public void UpdateNavigationDisplay(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects)

@@ -9,11 +9,15 @@ namespace WPM
     public class ErrorUI : MonoBehaviour, IErrorUI
     {
         public bool UIOpen { get; set; }
+
+        //Component Objects
         private Text errorMessage;
         private InputField stackTraceInputField;
         private Button errorButton;
+        //External Interfaces
         private IErrorHandler errorHandler;
         private IUIManager uiManager;
+        //Error Checking
         private bool errorUIAwake = false;
         private bool errorUIStarted = false;
         private InterfaceFactory interfaceFactory;
@@ -26,13 +30,23 @@ namespace WPM
                 gameObject.SetActive(false);
             try
             {
+                //Get Component Objects
                 Transform textObject = gameObject.transform.GetChild(0);
                 textObject = gameObject.transform.GetChild(0);
                 errorMessage = textObject.gameObject.GetComponent(typeof(Text)) as Text;
+                if (errorMessage == null)
+                    componentMissing = true;
+
                 Transform scrollViewTextObject = gameObject.transform.GetChild(1).GetChild(0).GetChild(0);
                 stackTraceInputField = scrollViewTextObject.gameObject.GetComponent(typeof(InputField)) as InputField;
+                if (stackTraceInputField == null)
+                    componentMissing = true;
+
                 Transform buttonObject = gameObject.transform.GetChild(2);
                 errorButton = buttonObject.gameObject.GetComponent(typeof(Button)) as Button;
+                if (errorButton == null)
+                    componentMissing = true;
+
                 errorUIAwake = true;
             }
             catch
@@ -45,6 +59,7 @@ namespace WPM
         {
             if (!errorUIAwake)
                 Awake();
+            //Get External Interfaces
             errorHandler = interfaceFactory.ErrorHandler;
             uiManager = interfaceFactory.UIManager;  //UI Manager is optional
             if (errorHandler == null)
@@ -52,12 +67,12 @@ namespace WPM
                 gameObject.SetActive(false);
             }
             else
-            {
-                errorUIStarted = true;
+            {    
                 if (componentMissing)
-                    errorHandler.ReportError("Error UI component missing", ErrorState.restart_scene);
+                    errorHandler.EmergencyExit("Error UI component missing");
+                else
+                    errorUIStarted = true;
             }
-            
         }
 
         public void OpenUI()
@@ -84,6 +99,7 @@ namespace WPM
         {
             if (!errorUIStarted)
                 Start();
+
             if(errorMessage != null)
                 errorMessage.text = message;
             else
@@ -94,6 +110,7 @@ namespace WPM
         {
             if (!errorUIStarted)
                 Start();
+
             if(stackTraceInputField != null)
                 stackTraceInputField.text = stackTrace;
             else

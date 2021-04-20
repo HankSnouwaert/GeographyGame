@@ -44,7 +44,7 @@ namespace WPM
             List<int> countryIndexes = globeParser.CountryParser.GetCountriesInCell(CellLocation);
             foreach (int countryIndex in countryIndexes)
             {
-                CountriesOccupied.Add(globeManager.WorldGlobeMap.countries[countryIndex]);
+                CountriesOccupied.Add(globeManager.WorldMapGlobe.countries[countryIndex]);
             }
         }
         private void UpdateProvincesOccupied()
@@ -53,7 +53,7 @@ namespace WPM
             List<int> provinceIndexes = globeParser.ProvinceParser.GetProvicesInCell(CellLocation);
             foreach (int provinceIndex in provinceIndexes)
             {
-                ProvincesOccupied.Add(globeManager.WorldGlobeMap.provinces[provinceIndex]);
+                ProvincesOccupied.Add(globeManager.WorldMapGlobe.provinces[provinceIndex]);
             }
         }
         private void UpdatePoliticalProvincesOccupied()

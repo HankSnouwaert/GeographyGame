@@ -6,14 +6,19 @@ namespace WPM
 {
     public class InterfaceFactory : MonoBehaviour
     {
-        public GameObject gameManagerObject;
-        public IGameManager GameManager { get; set; }
-        public GameObject uiManagerObject;
-        public IUIManager UIManager { get; set; }
-        public GameObject errorHandlerObject;
-        public IErrorHandler ErrorHandler { get; set; }
-        public GameObject globeManagerObject;
-        public IGlobeManager GlobeManager { get; set; }
+        [SerializeField]
+        private GameObject gameManagerObject;
+        [SerializeField]
+        private GameObject uiManagerObject;
+        [SerializeField]
+        private GameObject errorHandlerObject;
+        [SerializeField]
+        private GameObject globeManagerObject;
+
+        public IGameManager GameManager { get; protected set; }
+        public IUIManager UIManager { get; protected set; }
+        public IErrorHandler ErrorHandler { get; protected set; }
+        public IGlobeManager GlobeManager { get; protected set; }
 
         void Awake()
         {

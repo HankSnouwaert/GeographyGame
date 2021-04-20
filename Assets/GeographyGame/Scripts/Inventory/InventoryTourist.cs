@@ -133,7 +133,7 @@ namespace WPM
                 destinationType = PROVINCE;
                 try
                 {
-                    provinceDestination = globeManager.WorldGlobeMap.provinces[provinceChoices[destinationIndex]];
+                    provinceDestination = globeManager.WorldMapGlobe.provinces[provinceChoices[destinationIndex]];
                 }
                 catch (System.Exception ex)
                 {
@@ -174,7 +174,7 @@ namespace WPM
                 destinationIndex = destinationIndex - provinceChoices.Count - landmarkChoices.Count;
                 try
                 { 
-                countryDestination = globeManager.WorldGlobeMap.countries[countryChoices[destinationIndex]]; //ERROR: Index Out of Range Exception
+                countryDestination = globeManager.WorldMapGlobe.countries[countryChoices[destinationIndex]]; //ERROR: Index Out of Range Exception
                 }
                 catch (System.Exception ex)
                 {
@@ -231,7 +231,7 @@ namespace WPM
         {
             //Clear the Event System so that it gets updated with the tourist if the drop off fails
             EventSystem.current.SetSelectedGameObject(null);
-            Cell playerCell = globeManager.WorldGlobeMap.cells[player.CellLocation];
+            Cell playerCell = globeManager.WorldMapGlobe.cells[player.CellLocation];
             switch (destinationType)
             {
                 case PROVINCE:
@@ -239,7 +239,7 @@ namespace WPM
                     bool correctProvince = false;
                     foreach (int province in selectedProvinces)
                     {
-                        if(globeManager.WorldGlobeMap.provinces[province] == provinceDestination)
+                        if(globeManager.WorldMapGlobe.provinces[province] == provinceDestination)
                         {
                             Deselect();
                             //Remove Tourist from Inventory
@@ -274,7 +274,7 @@ namespace WPM
                     }
                     else
                     {
-                        Cell[] selectedCellNeighbours = globeManager.WorldGlobeMap.GetCellNeighbours(playerCell.index);
+                        Cell[] selectedCellNeighbours = globeManager.WorldMapGlobe.GetCellNeighbours(playerCell.index);
                         foreach (Cell cell in selectedCellNeighbours)
                         {
                             if (cell == landmarkDestination.cell)
@@ -303,7 +303,7 @@ namespace WPM
                     bool correctCountry = false;
                     foreach (int countryIndex in selectedCountries)
                     {
-                        if (globeManager.WorldGlobeMap.countries[countryIndex] == countryDestination)
+                        if (globeManager.WorldMapGlobe.countries[countryIndex] == countryDestination)
                         {
                             Deselect();
                             //Remove Tourist from Inventory

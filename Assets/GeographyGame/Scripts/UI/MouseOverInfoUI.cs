@@ -26,11 +26,11 @@ namespace WPM
 
         public void UpdateUI()
         {
-            if (!uiManager.CursorOverUI && !gameManager.GamePaused && globeManager.WorldGlobeMap.countryHighlighted != null && globeManager.WorldGlobeMap.lastHighlightedCellIndex >= 0 )
+            if (!uiManager.CursorOverUI && !gameManager.GamePaused && globeManager.WorldMapGlobe.countryHighlighted != null && globeManager.WorldMapGlobe.lastHighlightedCellIndex >= 0 )
             {
                 uiObject.SetActive(true);
-                Province province = globeManager.WorldGlobeMap.provinceHighlighted;
-                Country country = globeManager.WorldGlobeMap.countryHighlighted;
+                Province province = globeManager.WorldMapGlobe.provinceHighlighted;
+                Country country = globeManager.WorldMapGlobe.countryHighlighted;
                 MappableObject highlightedObject = null;
                 if (gameManager.HighlightedObject is MappableObject)
                 {

@@ -8,7 +8,7 @@ namespace WPM
     public class ProvinceParser : MonoBehaviour, IProvinceParser
     {
         private GlobeManager globeManager;
-        private WorldMapGlobe worldGlobeMap;
+        private WorldMapGlobe worldMapGlobe;
         private void Awake()
         {
             globeManager = FindObjectOfType<GlobeManager>(); 
@@ -16,7 +16,7 @@ namespace WPM
 
         private void Start()
         {
-            worldGlobeMap = globeManager.WorldGlobeMap;
+            worldMapGlobe = globeManager.WorldMapGlobe;
         }
 
         /// <summary> 
@@ -35,29 +35,29 @@ namespace WPM
             int neighborIndex;
 
             //Create a list of points including each vertex of the cell and its center point
-            List<Vector3> cellPoints = worldGlobeMap.cells[cellIndex].vertices.ToList();
-            cellPoints.Add(worldGlobeMap.cells[cellIndex].sphereCenter);
+            List<Vector3> cellPoints = worldMapGlobe.cells[cellIndex].vertices.ToList();
+            cellPoints.Add(worldMapGlobe.cells[cellIndex].sphereCenter);
 
             foreach (Vector3 cellPoint in cellPoints)
             {
-                provinceIndex = worldGlobeMap.GetProvinceIndex(cellPoint);
+                provinceIndex = worldMapGlobe.GetProvinceIndex(cellPoint);
                 //Check if cell point is on a province
                 if (provinceIndex == -1)
                 {
                     //Get closest province to point if it is not centered on one
-                    provinceIndex = worldGlobeMap.GetProvinceNearPoint(cellPoint);
+                    provinceIndex = worldMapGlobe.GetProvinceNearPoint(cellPoint);
                 }
                 //Add the province, if it is not already in the province list
                 if (!foundProvinceIndexes.Contains(provinceIndex))
                     foundProvinceIndexes.Add(provinceIndex);
 
                 //Check to see if neighbours of province overlap with cell
-                List<Province> provinceNeighbours = worldGlobeMap.ProvinceNeighbours(provinceIndex);
+                List<Province> provinceNeighbours = worldMapGlobe.ProvinceNeighbours(provinceIndex);
                 bool provinceOverlaps;
                 foreach (Province neighbor in provinceNeighbours)
                 {
                     countryIndex = neighbor.countryIndex;
-                    neighborIndex = worldGlobeMap.GetProvinceIndex(countryIndex, neighbor.name);
+                    neighborIndex = worldMapGlobe.GetProvinceIndex(countryIndex, neighbor.name);
                     //Make sure you haven't already checked the province, this saves time
                     if (!checkedProvinceIndexes.Contains(neighborIndex))
                     {
@@ -68,7 +68,7 @@ namespace WPM
                         {
                             foreach (Vector3 spherePoint in region.spherePoints)
                             {
-                                if (worldGlobeMap.GetCellIndex(spherePoint) == cellIndex)
+                                if (worldMapGlobe.GetCellIndex(spherePoint) == cellIndex)
                                 {
                                     provinceOverlaps = true;
                                     break;
@@ -101,7 +101,7 @@ namespace WPM
         {
             int range = cellRange.Length;
 
-            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
+            if (range < 0 || startCell < 0 || worldMapGlobe.cells.Count() < startCell)
             {
                 //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetProvincesInRange");
@@ -135,7 +135,7 @@ namespace WPM
                     foreach (int cellIndex in hexRing)
                     {
                         //Check if there is a path from the start cell to this one
-                        if (worldGlobeMap.FindPath(startCell, cellIndex) != null)
+                        if (worldMapGlobe.FindPath(startCell, cellIndex) != null)
                         {
                             provincesInHex = GetProvicesInCell(cellIndex);
                             foreach (int provinceIndex in provincesInHex)

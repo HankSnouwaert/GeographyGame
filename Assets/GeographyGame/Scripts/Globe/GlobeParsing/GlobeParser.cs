@@ -8,7 +8,7 @@ namespace WPM
     public class GlobeParser : MonoBehaviour, IGlobeParser
     {
         private GameManager gameManager;
-        private WorldMapGlobe worldGlobeMap;
+        private WorldMapGlobe worldMapGlobe;
         public IProvinceParser ProvinceParser { get; set; }
         public ICountryParser CountryParser { get; set; }
         public ILandmarkParser LandmarkParser { get; set; }
@@ -24,7 +24,7 @@ namespace WPM
         {
             InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
             gameManager = FindObjectOfType<GameManager>();
-            worldGlobeMap = interfaceFactory.GlobeManager.WorldGlobeMap;
+            worldMapGlobe = interfaceFactory.GlobeManager.WorldMapGlobe;
         }
 
         /// <summary> 
@@ -38,7 +38,7 @@ namespace WPM
         /// </summary>
         public List<int>[] GetCellsInRange(int startCell, int range = 0)
         {
-            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
+            if (range < 0 || startCell < 0 || worldMapGlobe.cells.Count() < startCell)
             {
                 //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetCellsInRange");
@@ -52,7 +52,7 @@ namespace WPM
                                                           //Add the startCell to List0
             cells[0] = new List<int>();
             cells[0].Add(startCell);
-            worldGlobeMap.cells[startCell].flag = true;
+            worldMapGlobe.cells[startCell].flag = true;
 
             if (range > 0)
             {
@@ -60,7 +60,7 @@ namespace WPM
                 //And add them to List0
                 distance++;
                 cells[distance] = new List<int>();
-                foreach (Cell neighbour in worldGlobeMap.GetCellNeighbours(startCell))
+                foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(startCell))
                 {
                     cells[0].Add(neighbour.index);
                     cells[distance].Add(neighbour.index);
@@ -76,7 +76,7 @@ namespace WPM
                 cells[distance] = new List<int>();
                 foreach (int cell in cells[distance - 1])
                 {
-                    foreach (Cell neighbour in worldGlobeMap.GetCellNeighbours(cell))
+                    foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell))
                     {
                         if (!neighbour.flag)
                         {
@@ -90,7 +90,7 @@ namespace WPM
             //Lower all cell flags
             foreach (int cell in cells[0])
             {
-                worldGlobeMap.cells[cell].flag = false;
+                worldMapGlobe.cells[cell].flag = false;
             }
             return cells;
         }

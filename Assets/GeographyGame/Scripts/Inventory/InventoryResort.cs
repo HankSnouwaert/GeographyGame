@@ -13,7 +13,7 @@ namespace WPM
         {
             base.Start();
             globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;
-            worldMapGlobe = globeManager.WorldGlobeMap;
+            worldMapGlobe = globeManager.WorldMapGlobe;
         }
         public override void Select()
         {

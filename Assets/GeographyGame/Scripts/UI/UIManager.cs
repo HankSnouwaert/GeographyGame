@@ -7,27 +7,37 @@ namespace WPM
 {
     public class UIManager : MonoBehaviour, IUIManager
     {
-        [SerializeField] private GameObject errorUIObject;
-        public IErrorUI ErrorUI { get; set; }
-        [SerializeField] private GameObject mouseOverInfoUIObject;
+        [SerializeField]
+        private GameObject mouseOverInfoUIObject;
+        [SerializeField]
+        private GameObject inventoryUIObject;
+        [SerializeField]
+        private GameObject navigationUIObject;
+        [SerializeField]
+        private GameObject dropOffUIObject;
+        [SerializeField]
+        private GameObject scoreUIObject; 
+        [SerializeField]
+        private GameObject turnsUIObject;
+        [SerializeField]
+        private GameObject gameOverUIObject;
+        [SerializeField]
+        private GameObject gameMenuUIObject; 
+        [SerializeField]
+        private GameObject inventoryPopUpUIObject;
+
         public IMouseOverInfoUI MouseOverInfoUI { get; set; }
-        [SerializeField] private GameObject inventoryUIObject;
-        [SerializeField] public GameObject navigationUIObject;
         public INavigationUI NavigationUI { get; set; }
-        [SerializeField] public GameObject dropOffUIObject;
         public IDropOffUI DropOffUI { get; set; }
-        [SerializeField] public GameObject scoreUIObject;
         public IScoreUI ScoreUI { get; set; }
-        [SerializeField] public GameObject turnsUIObject;
         public ITurnsUI TurnsUI { get; set; }
-        [SerializeField] public GameObject gameOverUIObject;
         public IGameOverUI GameOverUI { get; set; }
-        [SerializeField] public GameObject gameMenuUIObject;
         public IGameMenuUI GameMenuUI { get; set; }
-        [SerializeField] public GameObject inventoryPopUpUIObject;
         public IInventoryPopUpUI InventoryPopUpUI { get; set; }
+
         public bool CursorOverUI { get; set; }
         public bool ClosingUI { get; set; } = false;
+
         private GameManager gameManager;
         private GlobeManager globeManager;
         private ICellCursorInterface cellCursorInterface;
@@ -36,7 +46,7 @@ namespace WPM
         // Start is called before the first frame update
         void Awake()
         {
-            ErrorUI = errorUIObject.GetComponent(typeof(IErrorUI)) as IErrorUI;
+            //ErrorUI = errorUIObject.GetComponent(typeof(IErrorUI)) as IErrorUI;
             MouseOverInfoUI = mouseOverInfoUIObject.GetComponent(typeof(IMouseOverInfoUI)) as IMouseOverInfoUI;
             NavigationUI = navigationUIObject.GetComponent(typeof(INavigationUI)) as INavigationUI;
             DropOffUI = dropOffUIObject.GetComponent(typeof(IDropOffUI)) as IDropOffUI;
@@ -92,7 +102,6 @@ namespace WPM
 
         public void GameOver()
         {
-            errorUIObject.SetActive(false);
             mouseOverInfoUIObject.SetActive(false);
             inventoryUIObject.SetActive(false);
             inventoryPopUpUIObject.SetActive(false);

@@ -8,7 +8,7 @@ namespace WPM
     public class CountryParser : MonoBehaviour, ICountryParser
     {
         private GlobeManager globeManager;
-        private WorldMapGlobe worldGlobeMap;
+        private WorldMapGlobe worldMapGlobe;
         private IProvinceParser provinceParser;
         private void Awake()
         {
@@ -17,7 +17,7 @@ namespace WPM
         private void Start()
         {
             provinceParser = globeManager.GlobeParser.ProvinceParser;
-            worldGlobeMap = globeManager.WorldGlobeMap;
+            worldMapGlobe = globeManager.WorldMapGlobe;
         }
         /// <summary> 
         /// Get all countries within a certain range (measured in cells) of a target cell
@@ -32,7 +32,7 @@ namespace WPM
         {
             int range = cellRange.Length;
 
-            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
+            if (range < 0 || startCell < 0 || worldMapGlobe.cells.Count() < startCell)
             {
                 //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetProvincesInRange");
@@ -51,7 +51,7 @@ namespace WPM
             {
                 foreach (int provinceIndex in provinceIndexes[i])
                 {
-                    province = worldGlobeMap.provinces[provinceIndex];
+                    province = worldMapGlobe.provinces[provinceIndex];
                     if (!foundCountryIndexes.Contains(province.countryIndex))
                     {
                         foundCountryIndexes.Add(province.countryIndex);
@@ -91,7 +91,7 @@ namespace WPM
             Province province;
             foreach (int provinceIndex in provinceIndexes)
             {
-                province = worldGlobeMap.provinces[provinceIndex];
+                province = worldMapGlobe.provinces[provinceIndex];
                 countryIndex = province.countryIndex;
                 if (!countryIndexes.Contains(countryIndex))
                 {

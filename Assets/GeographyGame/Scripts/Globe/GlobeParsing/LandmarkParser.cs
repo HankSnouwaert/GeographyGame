@@ -8,7 +8,7 @@ namespace WPM
     public class LandmarkParser : MonoBehaviour, ILandmarkParser
     {
         private GlobeManager globeManager;
-        private WorldMapGlobe worldGlobeMap;
+        private WorldMapGlobe worldMapGlobe;
         private void Awake()
         {
             globeManager = FindObjectOfType<GlobeManager>();
@@ -16,7 +16,7 @@ namespace WPM
 
         private void Start()
         {
-            worldGlobeMap = globeManager.WorldGlobeMap;
+            worldMapGlobe = globeManager.WorldMapGlobe;
         }
 
         /// <summary> 
@@ -29,7 +29,7 @@ namespace WPM
         public List<Landmark> GetLandmarksInCell(int cellIndex)
         {
             List<Landmark> landmarks = new List<Landmark>();
-            foreach (MappableObject mappableObject in worldGlobeMap.cells[cellIndex].occupants)
+            foreach (MappableObject mappableObject in worldMapGlobe.cells[cellIndex].occupants)
             {
                 if (mappableObject is Landmark)
                 {
@@ -53,7 +53,7 @@ namespace WPM
         {
             int range = cellRange.Length;
 
-            if (range < 0 || startCell < 0 || worldGlobeMap.cells.Count() < startCell)
+            if (range < 0 || startCell < 0 || worldMapGlobe.cells.Count() < startCell)
             {
                 //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetCellsInRange");

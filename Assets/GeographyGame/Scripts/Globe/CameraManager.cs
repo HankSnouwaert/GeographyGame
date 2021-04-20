@@ -21,7 +21,7 @@ namespace WPM
 
         private void Start()
         {
-            worldGlobeMap = globeManager.WorldGlobeMap;
+            worldGlobeMap = globeManager.WorldMapGlobe;
             errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
         }
 

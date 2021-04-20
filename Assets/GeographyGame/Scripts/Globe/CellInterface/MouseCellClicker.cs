@@ -28,7 +28,7 @@ namespace WPM
             globeManager = interfaceFactory.GlobeManager;
             uiManager = interfaceFactory.UIManager;
             errorHandler = interfaceFactory.ErrorHandler;
-            globeManager.WorldGlobeMap.OnCellClick += HandleOnCellClick;
+            globeManager.WorldMapGlobe.OnCellClick += HandleOnCellClick;
         }
 
         /// <summary>

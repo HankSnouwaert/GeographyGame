@@ -24,7 +24,7 @@ namespace WPM
             gameManager = FindObjectOfType<GameManager>();
             globeManager = interfaceFactory.GlobeManager;
             uiManager = interfaceFactory.UIManager;
-            globeManager.WorldGlobeMap.OnCellEnter += HandleOnCellEnter;
+            globeManager.WorldMapGlobe.OnCellEnter += HandleOnCellEnter;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace WPM
 
                 gameManager.SelectedObject.OnCellEnter(cellIndex);
                 cellCursorInterface.highlightedCellIndex = cellIndex;
-                cellCursorInterface.highlightedCell = globeManager.WorldGlobeMap.cells[cellIndex];
+                cellCursorInterface.highlightedCell = globeManager.WorldMapGlobe.cells[cellIndex];
             }
         }
     }

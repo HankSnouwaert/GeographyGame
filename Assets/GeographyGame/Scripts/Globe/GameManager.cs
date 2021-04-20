@@ -28,7 +28,7 @@ namespace WPM
         public ICameraManager CameraManager { get; protected set; }
         public ITurnsManager TurnsManager { get; protected set; }
         public IScoreManager ScoreManager { get; protected set; }
-        //Private Interfaces
+        //Local Interface References
         private IUIManager uiManager;
         private IGlobeManager globeManager;
         private IErrorHandler errorHandler;
@@ -36,10 +36,8 @@ namespace WPM
         private IGameMenuUI gameMenuUI;
         //Flags
         public bool GamePaused { get; set; } = false;
-        private bool componentMissing = false;
         //In-Game Objects
         public IPlayerCharacter Player { get; set; }
-        private InterfaceFactory interfaceFactory;
         private ISelectableObject selectedObject;
         public ISelectableObject SelectedObject
         {
@@ -52,6 +50,9 @@ namespace WPM
             }
         } 
         public ISelectableObject HighlightedObject { get; set; } = null;
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private bool componentMissing = false;
 
         #endregion
 
@@ -63,15 +64,22 @@ namespace WPM
             try
             {
                 TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
+                if(TouristManager == null)
+                    componentMissing = true;
                 CameraManager = cameraManagerObject.GetComponent(typeof(ICameraManager)) as ICameraManager;
+                if (CameraManager == null)
+                    componentMissing = true;
                 TurnsManager = turnsManagerObject.GetComponent(typeof(ITurnsManager)) as ITurnsManager;
+                if (TurnsManager == null)
+                    componentMissing = true;
                 ScoreManager = scoreManagerObject.GetComponent(typeof(IScoreManager)) as IScoreManager;
+                if (ScoreManager == null)
+                    componentMissing = true;
             }
             catch
             {
                 componentMissing = true;
             }
-            
             SelectedObject = null;
         }
 
@@ -121,7 +129,7 @@ namespace WPM
                         gameMenuUI.OpenUI();
                         GamePaused = true;
                     }
-                }      
+                }
             }
         }
 

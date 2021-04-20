@@ -9,7 +9,7 @@ namespace WPM
     {
         public GameObject playerPrefab;
         private GameManager gameManager;
-        private WorldMapGlobe worldGlobeMap;
+        private WorldMapGlobe worldMapGlobe;
         private GlobeManager globeManager;
         private IGlobeInfo globeInfo;
         readonly string startingCountry = "United States of America";
@@ -33,7 +33,7 @@ namespace WPM
         }
         private void Start()
         {
-            worldGlobeMap = globeManager.WorldGlobeMap;
+            worldMapGlobe = globeManager.WorldMapGlobe;
             globeInfo = globeManager.GlobeInfo;
         }
 
@@ -56,11 +56,11 @@ namespace WPM
             provinceSettings[TERRAIN] = false;
             provinceSettings[CLIMATE] = false;
 
-            foreach (Country country in worldGlobeMap.countries)
+            foreach (Country country in worldMapGlobe.countries)
             {
                 if (country.continent == "North America")
                 {
-                    int countryNameIndex = worldGlobeMap.GetCountryIndex(country.name);
+                    int countryNameIndex = worldMapGlobe.GetCountryIndex(country.name);
                     MergeProvinces(country, provinceSettings);
                     IntantiateMappables(country);
                 }
@@ -71,11 +71,11 @@ namespace WPM
 
         private void MergeProvinces(Country country, bool[] provinceSettings)
         {
-            int countryNameIndex = worldGlobeMap.GetCountryIndex(country.name);
+            int countryNameIndex = worldMapGlobe.GetCountryIndex(country.name);
             if (countryNameIndex >= 0)
             {
                 //Get all provinces for country and loop through them
-                Province[] provinces = worldGlobeMap.countries[countryNameIndex].provinces;
+                Province[] provinces = worldMapGlobe.countries[countryNameIndex].provinces;
                 int index = 0;
                 Province province;
                 string[] provinceAttributes = new string[NUMBER_OF_PROVINCE_ATTRIBUTES];
@@ -90,8 +90,8 @@ namespace WPM
                     provinceAttributes[CLIMATE] = province.attrib["Climate"];
                     if (provinceAttributes[CLIMATE] == null) provinceAttributes[CLIMATE] = "";
                     //Get all neighbors for province and loop through them
-                    int provinceIndex = worldGlobeMap.GetProvinceIndex(countryNameIndex, province.name);
-                    List<Province> neighbors = worldGlobeMap.ProvinceNeighboursOfMainRegion(provinceIndex);
+                    int provinceIndex = worldMapGlobe.GetProvinceIndex(countryNameIndex, province.name);
+                    List<Province> neighbors = worldMapGlobe.ProvinceNeighboursOfMainRegion(provinceIndex);
                     foreach (Province neighbor in neighbors)
                     {
                         //Check that neighbor is in same country
@@ -131,7 +131,7 @@ namespace WPM
                             if (mergeNeighbor)
                             {
                                 //Merge provinces
-                                worldGlobeMap.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
+                                worldMapGlobe.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
                                 List<Province> provinceList = provinces.ToList();
                                 provinceList.Remove(neighbor);
                                 provinces = provinceList.ToArray();
@@ -148,31 +148,31 @@ namespace WPM
                     index++;
                 }
             }
-            worldGlobeMap.drawAllProvinces = false;
+            worldMapGlobe.drawAllProvinces = false;
         }
 
         private void IntantiateMappables(Country country)
         {
-            int countryNameIndex = worldGlobeMap.GetCountryIndex(country.name);
+            int countryNameIndex = worldMapGlobe.GetCountryIndex(country.name);
             //worldGlobeMap.ReloadMountPointsData();
             List<MountPoint> countryMountPoints = new List<MountPoint>();
-            int mountPointCount = worldGlobeMap.GetMountPoints(countryNameIndex, countryMountPoints);
+            int mountPointCount = worldMapGlobe.GetMountPoints(countryNameIndex, countryMountPoints);
 
             foreach (MountPoint mountPoint in countryMountPoints)
             {
-                if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldGlobeMap.GetProvinceIndex(startingCountry, startingProvince))
+                if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldMapGlobe.GetProvinceIndex(startingCountry, startingProvince))
                 {
                     GameObject playerObject = Instantiate(playerPrefab);
                     gameManager.Player = playerObject.GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
-                    int startingCellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
+                    int startingCellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
                     gameManager.Player.CellLocation = startingCellIndex;
-                    gameManager.Player.Latlon = worldGlobeMap.cells[startingCellIndex].latlon;
-                    Vector3 startingLocation = worldGlobeMap.cells[startingCellIndex].sphereCenter;
+                    gameManager.Player.Latlon = worldMapGlobe.cells[startingCellIndex].latlon;
+                    Vector3 startingLocation = worldMapGlobe.cells[startingCellIndex].sphereCenter;
                     gameManager.Player.VectorLocation = startingLocation;
                     float playerSize = gameManager.Player.GetSize();
-                    worldGlobeMap.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
+                    worldMapGlobe.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
                     //string playerID = gameManager.Player.GetInstanceID().ToString();
-                    worldGlobeMap.cells[startingCellIndex].occupants.Add(gameManager.Player);
+                    worldMapGlobe.cells[startingCellIndex].occupants.Add(gameManager.Player);
                     //globeInfo.MappedObjects.Add(playerID, gameManager.Player);
                 }
                 if (mountPoint.type == CULTURAL_POINT) //&& loadedMapSettings.culturalLandmarks)
@@ -185,12 +185,12 @@ namespace WPM
                     Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                     landmarkComponent.mountPoint = mountPoint;
                     landmarkComponent.ObjectName = mountPointName;
-                    landmarkComponent.cellIndex = worldGlobeMap.GetCellIndex(mountPoint.localPosition);
-                    landmarkComponent.cell = worldGlobeMap.cells[landmarkComponent.cellIndex];
+                    landmarkComponent.cellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
+                    landmarkComponent.cell = worldMapGlobe.cells[landmarkComponent.cellIndex];
                     landmarkComponent.cell.canCross = false;
-                    worldGlobeMap.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
+                    worldMapGlobe.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
                     string landmarkID = landmarkComponent.GetInstanceID().ToString();
-                    worldGlobeMap.cells[landmarkComponent.cellIndex].occupants.Add(landmarkComponent);
+                    worldMapGlobe.cells[landmarkComponent.cellIndex].occupants.Add(landmarkComponent);
                     globeInfo.MappedObjects.Add(landmarkID, landmarkComponent);
                     globeInfo.CulturalLandmarks.Add(landmarkID, landmarkComponent);
                     globeInfo.CulturalLandmarksByName.Add(landmarkComponent.ObjectName, landmarkComponent);

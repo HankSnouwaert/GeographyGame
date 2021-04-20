@@ -248,9 +248,9 @@ namespace WPM
             if (Selected)
             {
                 map.SetCellColor(CellLocation, Color.green, true);
-                if (!uiManager.CursorOverUI && globeManager.WorldGlobeMap.lastHighlightedCellIndex >= 0)
+                if (!uiManager.CursorOverUI && globeManager.WorldMapGlobe.lastHighlightedCellIndex >= 0)
                 {
-                    OnCellEnter(globeManager.WorldGlobeMap.lastHighlightedCellIndex);
+                    OnCellEnter(globeManager.WorldMapGlobe.lastHighlightedCellIndex);
                 }
             }
 
