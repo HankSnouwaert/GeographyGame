@@ -1,7 +1,7 @@
 ﻿namespace WPM
 {
     /// <summary> 
-    /// Interface used to hold general game state information and acces to manager interfaces
+    /// Interface used to hold general game state information and access to manager and player interfaces
     /// </summary>
     public interface IGameManager
     {
@@ -25,10 +25,6 @@
         /// Object the cursor is currently over
         /// </summary>
         ISelectableObject HighlightedObject { get; set; }
-        /// <summary> 
-        /// Interface used to access the player fucntionality
-        /// </summary>
-        IPlayerCharacter Player { get; set; }
         /// <summary> 
         /// Object currently selected by player
         /// </summary>

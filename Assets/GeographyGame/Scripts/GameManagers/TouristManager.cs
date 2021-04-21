@@ -6,9 +6,13 @@ namespace WPM
 {
     public class TouristManager : MonoBehaviour, ITouristManager, ITurnBasedObject
     {
-        public TouristRegion CurrentRegion { get; set; }
-        public int TouristSpawnRate { get; set; } = 10; //Number of rounds for a tourist to spawn
-        public int TrackingTime { get; set; } = 10; //Number of rounds a tourist is remembered (Currently Unused)
+        [SerializeField]
+        private InventoryTourist touristPrefab;
+
+       //Protected Public Variables
+       public TouristRegion CurrentRegion { get; protected set; }
+        public int TouristSpawnRate { get; protected set; } = 10; //Number of rounds for a tourist to spawn
+        public int TrackingTime { get; protected set; } = 10; //Number of rounds a tourist is remembered (Currently Unused)
         //Tourist Tracking Lists
         public List<int> RecentProvinceDestinations { get; set; } = new List<int>();  
         public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();  
@@ -16,7 +20,8 @@ namespace WPM
 
         //private List<TouristRegion> regionsVisited = new List<TouristRegion>(); (Currently Unused)
 
-        private InventoryTourist touristPrefab;
+
+        //private InventoryTourist touristPrefab;
         private GameManager gameManager;
         private IErrorHandler errorHandler;
         private ITurnsManager turnsManager;
@@ -34,8 +39,6 @@ namespace WPM
         private void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
-            turnsManager = gameManager.TurnsManager;
-            turnsManager.TurnBasedObjects.Add(this);
             touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             InitTouristRegions();
             //Set Tourist Images
@@ -52,6 +55,8 @@ namespace WPM
 
         private void Start()
         {
+            turnsManager = gameManager.TurnsManager;
+            turnsManager.TurnBasedObjects.Add(this);
             errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
         }
 
@@ -89,7 +94,7 @@ namespace WPM
             if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
                 touristImageIndex = 0;
             //Add tourist to player's inventory
-            gameManager.Player.AddItem(tourist, 0);
+            gameManager.PlayerManager.Player.AddItem(tourist, 0);
             //Check if a region switch is needed
             touristsInCurrentRegion++;
             int rand = Random.Range(MIN_TIME_IN_REGION, MAX_TIME_IN_REGION);

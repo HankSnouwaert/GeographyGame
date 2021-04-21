@@ -12,6 +12,7 @@ namespace WPM
         private WorldMapGlobe worldMapGlobe;
         private GlobeManager globeManager;
         private IGlobeInfo globeInfo;
+        private IPlayerManager playerManager;
         readonly string startingCountry = "United States of America";
         readonly string startingProvince = "North Carolina";
         private string landmarkFilePath = "Prefabs/Landmarks/";
@@ -35,6 +36,7 @@ namespace WPM
         {
             worldMapGlobe = globeManager.WorldMapGlobe;
             globeInfo = globeManager.GlobeInfo;
+            playerManager = gameManager.PlayerManager;
         }
 
         public void ApplyGlobeSettings()
@@ -162,6 +164,10 @@ namespace WPM
             {
                 if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldMapGlobe.GetProvinceIndex(startingCountry, startingProvince))
                 {
+                    int startingCellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
+                    Cell startingCell = worldMapGlobe.cells[startingCellIndex];
+                    bool playerInstantiated = playerManager.IntantiatePlayer(startingCell);
+                    /*
                     GameObject playerObject = Instantiate(playerPrefab);
                     gameManager.Player = playerObject.GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
                     int startingCellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
@@ -174,6 +180,7 @@ namespace WPM
                     //string playerID = gameManager.Player.GetInstanceID().ToString();
                     worldMapGlobe.cells[startingCellIndex].occupants.Add(gameManager.Player);
                     //globeInfo.MappedObjects.Add(playerID, gameManager.Player);
+                    */
                 }
                 if (mountPoint.type == CULTURAL_POINT) //&& loadedMapSettings.culturalLandmarks)
                 {

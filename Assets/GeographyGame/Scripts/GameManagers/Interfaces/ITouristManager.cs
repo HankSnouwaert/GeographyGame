@@ -4,12 +4,12 @@ namespace WPM
 {
     public interface ITouristManager
     {
-        TouristRegion CurrentRegion { get; set; }
+        TouristRegion CurrentRegion { get; }
         List<int> RecentProvinceDestinations { get; set; }
         List<string> RecentLandmarkDestinations { get; set; }
         List<int> RecentCountryDestinations { get; set; }
-        int TouristSpawnRate { get; set; }
-        int TrackingTime { get; set; }
+        int TouristSpawnRate { get; }
+        int TrackingTime { get; }
         void GenerateTourist();
     }
 }

@@ -16,6 +16,8 @@ namespace WPM
         #region Variable Declaration
         [Header("Child Objects")]
         [SerializeField]
+        private GameObject playerManagerObject;
+        [SerializeField]
         private GameObject touristManagerObject;
         [SerializeField]
         private GameObject cameraManagerObject;
@@ -24,6 +26,7 @@ namespace WPM
         [SerializeField]
         private GameObject scoreManagerObject;
         //Child Interfaces
+        public IPlayerManager PlayerManager { get; protected set; }
         public ITouristManager TouristManager { get; protected set; }
         public ICameraManager CameraManager { get; protected set; }
         public ITurnsManager TurnsManager { get; protected set; }
@@ -36,7 +39,7 @@ namespace WPM
         //Flags
         public bool GamePaused { get; set; } = false;
         //In-Game Objects
-        public IPlayerCharacter Player { get; set; }
+        //public IPlayerCharacter Player { get; set; }
         private ISelectableObject selectedObject;
         public ISelectableObject SelectedObject
         {
@@ -63,6 +66,9 @@ namespace WPM
                 gameObject.SetActive(false);
             try
             {
+                PlayerManager = playerManagerObject.GetComponent(typeof(IPlayerManager)) as IPlayerManager;
+                if (PlayerManager == null)
+                    componentMissing = true;
                 TouristManager = touristManagerObject.GetComponent(typeof(ITouristManager)) as ITouristManager;
                 if(TouristManager == null)
                     componentMissing = true;
