@@ -71,7 +71,7 @@ namespace WPM
                 createdString = "Country: " + country.name + System.Environment.NewLine + nameType + politicalProvince;
 
                 //Check to see if there's a highlighted object
-                if (highlightedObject != null && highlightedObject != gameManager.PlayerManager.Player)
+                if (highlightedObject != null && highlightedObject != gameManager.PlayerManager.PlayerCharacter)
                 {
                     if (highlightedObject.ObjectName != null)
                     {

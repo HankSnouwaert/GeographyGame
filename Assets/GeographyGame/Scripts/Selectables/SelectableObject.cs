@@ -7,71 +7,34 @@ namespace WPM
 {
     public class SelectableObject : MonoBehaviour, ISelectableObject
     {
+        //Public Variables
         public string ObjectName { get; set; }
         public bool Selected { get; set; }
-        protected WorldMapGlobe map;
-        protected GameManager gameManager;
-        protected IErrorHandler errorHandler;
-        protected IUIManager uiManager;
-        protected PlayerCharacter player;
+        //Interal Interface References
+        protected IGameManager gameManager;
+        //Flag to determine if the object can be selected
         protected bool selectionEnabled = false;
+        //Error Checking
+        protected InterfaceFactory interfaceFactory;
+        protected IErrorHandler errorHandler;
 
-        // Start is called before the first frame update
-
-        public virtual void Awake()
+        protected virtual void Awake()
         {
-            gameManager = FindObjectOfType<GameManager>();
-            player = FindObjectOfType<PlayerCharacter>();
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
         }
 
-        public virtual void Start()
+        protected virtual void Start()
         {
-            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
-            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
-            selectionEnabled = true;
-        }
-
-        public virtual void OnMouseDown()
-        {
-            if (selectionEnabled)
+            errorHandler = interfaceFactory.ErrorHandler;
+            gameManager = interfaceFactory.GameManager;
+            if (gameManager == null || errorHandler == null)
             {
-                if (!uiManager.CursorOverUI)
-                {
-                    if (gameManager.SelectedObject == null)
-                        Select();
-                    else
-                    {
-                        if (gameManager.SelectedObject == (ISelectableObject)this)
-                            Deselect();
-                        else
-                            gameManager.SelectedObject.ObjectSelected(this);
-                    }
-                }
+                gameObject.SetActive(false);
             }
-        }
-
-        public virtual void OnMouseEnter()
-        {
-            if (selectionEnabled)
-            {
-                if (!uiManager.CursorOverUI)
-                {
-                    gameManager.HighlightedObject = this;
-                    //uiManager.MouseOverInfoUI.UpdateHexInfoPanel();
-                }
-            }
-        }
-
-        public virtual void OnMouseExit()
-        {
-            if (selectionEnabled)
-            {
-                if (!uiManager.CursorOverUI)
-                {
-                    gameManager.HighlightedObject = null;
-                    //gameManager.UpdateHexInfoPanel();
-                }
-            }
+            else
+                selectionEnabled = true;
         }
 
         public virtual void Select()
@@ -91,19 +54,14 @@ namespace WPM
             Selected = false;
         }
 
-        public virtual void OnSelectableEnter(ISelectableObject selectedObject)
+        public virtual void OnSelectableEnter(ISelectableObject selectableObject)
         {
 
         }
 
-        public virtual void ObjectSelected(ISelectableObject selectedObject)
+        public virtual void OtherObjectSelected(ISelectableObject selectedObject)
         {
             
-        }
-
-        public virtual void MouseEnter()
-        {
-
         }
 
         public virtual void OnCellEnter(int index)

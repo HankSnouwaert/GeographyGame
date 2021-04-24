@@ -34,12 +34,12 @@ namespace WPM
         private List<Landmark> landmarksInRange = new List<Landmark>();
 
 
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
         }
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             navigationUI = uiManager.NavigationUI;
@@ -48,13 +48,13 @@ namespace WPM
             turnsManager.TurnBasedObjects.Add(this);
             ObjectName = "player";
             //gameManager = GameManager.instance;
-            map = WorldMapGlobe.instance;
+            worldMapGlobe = WorldMapGlobe.instance;
             anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
             InventoryPanel = GameObject.Find("Canvas/InventoryPanel");
             inventoryUI = InventoryPanel.GetComponent(typeof(InventoryUI)) as InventoryUI;
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
-            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange+1);
+            cellsInRange = globeParser.GetCellsInRange(CellLocation.index, travelRange+1);
             cameraManager.OrientOnLocation(VectorLocation);
             touristManager = gameManager.TouristManager;
 
@@ -63,7 +63,7 @@ namespace WPM
             {
                 touristManager.GenerateTourist();
             }
-            UpdateLocation(CellLocation);
+            UpdateLocation(CellLocation.index);
         }
 
         public float GetSize()
@@ -83,7 +83,7 @@ namespace WPM
             }
         }
 
-        public override void OnMouseDown()
+        protected override void OnMouseDown()
         {
             base.OnMouseDown();
         }
@@ -91,7 +91,7 @@ namespace WPM
         public override void Select()
         {
             base.Select();
-            map.SetCellColor(CellLocation, Color.green, true);
+            worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
             SetCellCosts();
         }
 
@@ -99,7 +99,7 @@ namespace WPM
         {
             base.Deselect();
             ClearCellCosts();
-            map.ClearCells(true, false, false);
+            worldMapGlobe.ClearCells(true, false, false);
             Selected = false;
         }
 
@@ -108,11 +108,11 @@ namespace WPM
             if (!anim.auto)
             {
                 //Attempt to display path to new location
-                map.ClearCells(true, false, false);
+                worldMapGlobe.ClearCells(true, false, false);
                 //map.SetCellColor(cellLocation, Color.green, true);
                 try
                 {
-                    pathIndices = DrawPath(CellLocation, index);
+                    pathIndices = DrawPath(CellLocation.index, index);
                 }
                 catch (Exception ex)
                 {
@@ -122,15 +122,15 @@ namespace WPM
 
                 if (pathIndices != null)
                 {
-                    pathIndices.Insert(0, CellLocation);
+                    pathIndices.Insert(0, CellLocation.index);
                 }
-                map.SetCellColor(CellLocation, Color.green, true);
+                worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
             }
         }
 
         public override void OnCellClick(int index)
         {
-            if (index == CellLocation)
+            if (index == CellLocation.index)
             {
                 if (moving)
                     stop = true;
@@ -171,24 +171,24 @@ namespace WPM
         List<int> DrawPath(int startCellIndex, int endCellIndex)
         {
             List<int> cellIndices;
-            cellIndices = map.FindPath(startCellIndex, endCellIndex);
-            map.ClearCells(true, false, false);
+            cellIndices = worldMapGlobe.FindPath(startCellIndex, endCellIndex);
+            worldMapGlobe.ClearCells(true, false, false);
 
             if (cellIndices == null)
                 return null;   // no path found
 
             //Check that there is enough remaining movement to travel path
             //Start by getting the cost between the starting cell and the first cell in the path
-            int neighborIndex = map.GetCellNeighbourIndex(startCellIndex, cellIndices[0]);
-            int pathCost = map.GetCellNeighbourCost(startCellIndex, neighborIndex);
+            int neighborIndex = worldMapGlobe.GetCellNeighbourIndex(startCellIndex, cellIndices[0]);
+            int pathCost = worldMapGlobe.GetCellNeighbourCost(startCellIndex, neighborIndex);
             int i = 0;
             //Get the cumlative cost for the rest of the path
             foreach(int cellIndex in cellIndices)
             {
                 if (i < (cellIndices.Count - 1))
                 {
-                    neighborIndex = map.GetCellNeighbourIndex(cellIndices[i], cellIndices[i + 1]);
-                    pathCost = pathCost + map.GetCellNeighbourCost(cellIndices[i], neighborIndex);
+                    neighborIndex = worldMapGlobe.GetCellNeighbourIndex(cellIndices[i], cellIndices[i + 1]);
+                    pathCost = pathCost + worldMapGlobe.GetCellNeighbourCost(cellIndices[i], neighborIndex);
                     i++;
                 }
             }
@@ -199,10 +199,10 @@ namespace WPM
             //Path Successful
             // Color starting cell, end cell and path
             if (pathCost == travelRange)
-                map.SetCellColor(cellIndices, Color.red, true);
+                worldMapGlobe.SetCellColor(cellIndices, Color.red, true);
             else
-                map.SetCellColor(cellIndices, Color.grey, true);
-            map.SetCellColor(startCellIndex, Color.green, true);
+                worldMapGlobe.SetCellColor(cellIndices, Color.grey, true);
+            worldMapGlobe.SetCellColor(startCellIndex, Color.green, true);
             
           //map.SetCellColor(endCellIndex, Color.red, true);
 
@@ -217,7 +217,7 @@ namespace WPM
         public override void UpdateLocation(int newCellIndex)
         {
             //Update distance travelled
-            int neighborIndex = map.GetCellNeighbourIndex(CellLocation, newCellIndex);
+            int neighborIndex = worldMapGlobe.GetCellNeighbourIndex(CellLocation.index, newCellIndex);
 
             base.UpdateLocation(newCellIndex);
 
@@ -234,7 +234,7 @@ namespace WPM
 
             navigationUI.UpdateNavigationDisplay(ProvincesOccupied, CountriesOccupied, mappableLandmarks);
             //Update Turns
-            int turns = map.GetCellNeighbourCost(CellLocation, neighborIndex);
+            int turns = worldMapGlobe.GetCellNeighbourCost(CellLocation.index, neighborIndex);
             turnsManager.NextTurn(turns);
         }
 
@@ -244,10 +244,10 @@ namespace WPM
         public void FinishedPathFinding()
         {
             pathIndices.Clear();
-            map.ClearCells(true, false, false);
+            worldMapGlobe.ClearCells(true, false, false);
             if (Selected)
             {
-                map.SetCellColor(CellLocation, Color.green, true);
+                worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
                 if (!uiManager.CursorOverUI && globeManager.WorldMapGlobe.lastHighlightedCellIndex >= 0)
                 {
                     OnCellEnter(globeManager.WorldMapGlobe.lastHighlightedCellIndex);
@@ -256,7 +256,7 @@ namespace WPM
 
             ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange + 1);
+            cellsInRange = globeParser.GetCellsInRange(CellLocation.index, travelRange + 1);
             SetCellCosts();
 
             moving = false;
@@ -271,8 +271,8 @@ namespace WPM
             foreach (int cell in cellsInRange[0])
             {
                 //Get Cell Attributes from Province
-                int provinceIndex = map.GetProvinceNearPoint(map.cells[cell].sphereCenter);
-                Province province = map.provinces[provinceIndex];
+                int provinceIndex = worldMapGlobe.GetProvinceNearPoint(worldMapGlobe.cells[cell].sphereCenter);
+                Province province = worldMapGlobe.provinces[provinceIndex];
 
                 //Loop Through Each Neighbor and Set the Cost from the Neighbor to the Cell
                 string climateAttribute = province.attrib["ClimateGroup"];
@@ -281,11 +281,11 @@ namespace WPM
                     bool cellOccupied = false;
                     //Check if cell is occupied
                     //if (map.cells[cell].tag != null)
-                    if(map.cells[cell].occupants.Any() || map.cells[cell].occupants == null)
+                    if(worldMapGlobe.cells[cell].occupants.Any() || worldMapGlobe.cells[cell].occupants == null)
                     {
                        //Check if cell is occupied by something other than the player
                        //if(map.cells[cell].tag != GetInstanceID().ToString())
-                       if(!map.cells[cell].occupants.Contains(this))
+                       if(!worldMapGlobe.cells[cell].occupants.Contains(this))
                        {
                             cellOccupied = true;
                        }
@@ -293,14 +293,14 @@ namespace WPM
                     int cost = climateCosts[climateAttribute];
                     if (cost == IMPASSABLE || cellOccupied)  
                     {
-                        map.SetCellCanCross(cell, false);
+                        worldMapGlobe.SetCellCanCross(cell, false);
                     }
                     else
                     {
-                        map.SetCellCanCross(cell, true);
-                        foreach (Cell neighbour in map.GetCellNeighbours(cell))
+                        worldMapGlobe.SetCellCanCross(cell, true);
+                        foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell))
                         {
-                            map.SetCellNeighbourCost(neighbour.index, cell, cost, false);
+                            worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell, cost, false);
                         }
                         
                     }
@@ -315,10 +315,10 @@ namespace WPM
         {
             foreach (int cell in cellsInRange[0])
             {
-                map.SetCellCanCross(cell, true);
-                foreach (Cell neighbour in map.GetCellNeighbours(cell))
+                worldMapGlobe.SetCellCanCross(cell, true);
+                foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell))
                 {
-                    map.SetCellNeighbourCost(neighbour.index, cell, 0, false);
+                    worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell, 0, false);
                 }
             }
         }

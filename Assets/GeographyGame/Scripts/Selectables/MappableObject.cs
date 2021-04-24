@@ -6,70 +6,149 @@ namespace WPM
 {
     public class MappableObject : SelectableObject, IMappableObject
     {
-        public int CellLocation { get; set; }
+        //Public Variables
+        public Cell CellLocation { get; set; }
         public Vector3 VectorLocation { get; set; }
         public Vector2[] Latlon { get; set; }
         public List<Country> CountriesOccupied { get; set; } = new List<Country>();
         public List<Province> ProvincesOccupied { get; set; } = new List<Province>();
         public List<string> PoliticalProvincesOccupied { get; set; } = new List<string>();
         public List<string> ClimatesOccupied { get; set; } = new List<string>();
-        protected GlobeManager globeManager;
+        //Internal Interface References
+        protected WorldMapGlobe worldMapGlobe;
+        protected IGlobeManager globeManager;
+        protected IUIManager uiManager;
         protected IGlobeParser globeParser;
+        protected ICountryParser countryParser;
+        protected IProvinceParser provinceParser;
 
-        public override void Awake()
+        protected override void Start()
         {
-            base.Awake();
-            globeManager = FindObjectOfType<GlobeManager>();
-            globeParser = globeManager.GlobeParser;
+            base.Start();
+            if (gameObject.activeSelf)
+            {
+                globeManager = interfaceFactory.GlobeManager;
+                uiManager = interfaceFactory.UIManager;
+                if (globeManager == null || uiManager == null)
+                    gameObject.SetActive(false);
+                else
+                {
+                    worldMapGlobe = globeManager.WorldMapGlobe;
+                    if (worldMapGlobe == null)
+                        errorHandler.ReportError("World Map Globe Missing", ErrorState.restart_scene);
+
+                    globeParser = globeManager.GlobeParser;
+                    if (globeParser == null)
+                        errorHandler.ReportError("Globe Parser missing", ErrorState.restart_scene);
+                    else
+                    {
+                        countryParser = globeParser.CountryParser;
+                        if(countryParser == null)
+                            errorHandler.ReportError("Country Parser missing", ErrorState.restart_scene);
+                        provinceParser = globeParser.ProvinceParser;
+                        if(provinceParser == null)
+                            errorHandler.ReportError("Province Parser missing", ErrorState.restart_scene);
+                    }
+                }
+            }   
+        }
+
+        protected virtual void OnMouseDown()
+        {
+            if (selectionEnabled && !uiManager.CursorOverUI)
+            {
+                if (gameManager.SelectedObject == null)
+                    Select();
+                else
+                {
+                    if (gameManager.SelectedObject == (ISelectableObject)this)
+                        Deselect();
+                    else
+                        gameManager.SelectedObject.OtherObjectSelected(this);
+                }
+            }
+        }
+
+        protected virtual void OnMouseEnter()
+        {
+            if (!uiManager.CursorOverUI && selectionEnabled)
+            {
+                gameManager.HighlightedObject = this;
+            }
+        }
+
+        protected virtual void OnMouseExit()
+        {
+            if (selectionEnabled && !uiManager.CursorOverUI)
+            {
+                gameManager.HighlightedObject = null;
+            }
         }
 
         public virtual void UpdateLocation(int newCellIndex)
         {
-            if(CellLocation != -1)
-                map.cells[CellLocation].occupants.Remove(this);
-            CellLocation = newCellIndex;
-            map.cells[CellLocation].occupants.Add(this);
-            VectorLocation = map.cells[CellLocation].sphereCenter;
-            Latlon = map.cells[CellLocation].latlon;
+            if (worldMapGlobe.cells[newCellIndex] == null)
+                errorHandler.ReportError("Cell does not exist", ErrorState.close_window);
+            else
+            {
+                if (CellLocation != null)
+                    CellLocation.occupants.Remove(this);
+                CellLocation = worldMapGlobe.cells[newCellIndex];
+                CellLocation.occupants.Add(this);
+                VectorLocation = CellLocation.sphereCenter;
+                Latlon = CellLocation.latlon;
 
-            UpdateCountriesOccupied();
-            UpdateProvincesOccupied();
-            UpdatePoliticalProvincesOccupied();
-            UpdateClimatesOccupied();
+                UpdateCountriesOccupied();
+                UpdateProvincesOccupied();
+                UpdatePoliticalProvincesOccupied();
+                UpdateClimatesOccupied();
+            }
+            
         }
 
         private void UpdateCountriesOccupied()
         {
-            CountriesOccupied.Clear();
-            List<int> countryIndexes = globeParser.CountryParser.GetCountriesInCell(CellLocation);
-            foreach (int countryIndex in countryIndexes)
+            if(CellLocation != null)
             {
-                CountriesOccupied.Add(globeManager.WorldMapGlobe.countries[countryIndex]);
+                CountriesOccupied.Clear();
+                List<int> countryIndexes = countryParser.GetCountriesInCell(CellLocation.index);
+                foreach (int countryIndex in countryIndexes)
+                {
+                    CountriesOccupied.Add(globeManager.WorldMapGlobe.countries[countryIndex]);
+                }
             }
         }
+
         private void UpdateProvincesOccupied()
         {
-            ProvincesOccupied.Clear();
-            List<int> provinceIndexes = globeParser.ProvinceParser.GetProvicesInCell(CellLocation);
-            foreach (int provinceIndex in provinceIndexes)
+            if (CellLocation != null)
             {
-                ProvincesOccupied.Add(globeManager.WorldMapGlobe.provinces[provinceIndex]);
+                ProvincesOccupied.Clear();
+                List<int> provinceIndexes = provinceParser.GetProvicesInCell(CellLocation.index);
+                foreach (int provinceIndex in provinceIndexes)
+                {
+                    ProvincesOccupied.Add(globeManager.WorldMapGlobe.provinces[provinceIndex]);
+                }
             }
         }
+
         private void UpdatePoliticalProvincesOccupied()
         {
             PoliticalProvincesOccupied.Clear();
             foreach (Province province in ProvincesOccupied)
             {
-                PoliticalProvincesOccupied.Add(province.attrib["PoliticalProvince"]);
+                if(!PoliticalProvincesOccupied.Contains(province.attrib["PoliticalProvince"]))
+                    PoliticalProvincesOccupied.Add(province.attrib["PoliticalProvince"]);
             }
         }
+
         private void UpdateClimatesOccupied()
         {
             ClimatesOccupied.Clear();
             foreach (Province province in ProvincesOccupied)
             {
-                ClimatesOccupied.Add(province.attrib["ClimateGroup"]);
+                if (!ClimatesOccupied.Contains(province.attrib["ClimateGroup"]))
+                    ClimatesOccupied.Add(province.attrib["ClimateGroup"]);
             }
         }
     }

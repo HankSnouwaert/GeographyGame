@@ -6,6 +6,10 @@
     public interface IGameManager
     {
         /// <summary> 
+        /// Interface used to intantiate and access the player object
+        /// </summary>
+        IPlayerManager PlayerManager { get; }
+        /// <summary> 
         /// Interface used to access in-game camera functionality
         /// </summary>
         ICameraManager CameraManager { get; }

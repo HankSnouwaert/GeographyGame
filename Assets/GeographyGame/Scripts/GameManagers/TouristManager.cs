@@ -9,55 +9,73 @@ namespace WPM
         [SerializeField]
         private InventoryTourist touristPrefab;
 
-       //Protected Public Variables
-       public TouristRegion CurrentRegion { get; protected set; }
+        //Protected Public Variables
+        public TouristRegion CurrentRegion { get; protected set; }
         public int TouristSpawnRate { get; protected set; } = 10; //Number of rounds for a tourist to spawn
         public int TrackingTime { get; protected set; } = 10; //Number of rounds a tourist is remembered (Currently Unused)
         //Tourist Tracking Lists
         public List<int> RecentProvinceDestinations { get; set; } = new List<int>();  
         public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();  
-        public List<int> RecentCountryDestinations { get; set; } = new List<int>();  
+        public List<int> RecentCountryDestinations { get; set; } = new List<int>();
 
         //private List<TouristRegion> regionsVisited = new List<TouristRegion>(); (Currently Unused)
 
-
-        //private InventoryTourist touristPrefab;
-        private GameManager gameManager;
-        private IErrorHandler errorHandler;
+        //Local Interface References
+        private IGameManager gameManager;
         private ITurnsManager turnsManager;
+        private IUIManager uiManager;
+        //Internal Variables
         private List<TouristRegion> touristRegions = new List<TouristRegion>(); 
         private int touristCounter = 0;
         private int touristsInCurrentRegion = -2;  //This number is the starting number of tourists * -1
         private int touristImageIndex = 0;
+        //Constants
         private const int MIN_TIME_IN_REGION = 5;  
         private const int MAX_TIME_IN_REGION = 10;
         //Tourist Image Management
         private string[] touristImageFiles; 
-        private const int NUMBER_OF_TOURIST_IMAGES = 8; 
-        
+        private const int NUMBER_OF_TOURIST_IMAGES = 8;
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
+        private bool componentMissing = false;
 
         private void Awake()
         {
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
+
+            if (touristPrefab == null)
+                componentMissing = true;
+
             gameManager = FindObjectOfType<GameManager>();
-            touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
+            //touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             InitTouristRegions();
-            //Set Tourist Images
-            touristImageFiles = new string[8];
-            touristImageFiles[0] = "Images/Tourist1";
-            touristImageFiles[1] = "Images/Tourist2";
-            touristImageFiles[2] = "Images/Tourist3";
-            touristImageFiles[3] = "Images/Tourist4";
-            touristImageFiles[4] = "Images/Tourist5";
-            touristImageFiles[5] = "Images/Tourist6";
-            touristImageFiles[6] = "Images/Tourist7";
-            touristImageFiles[7] = "Images/Tourist8";
+            InitTouristImages();
         }
 
         private void Start()
         {
-            turnsManager = gameManager.TurnsManager;
-            turnsManager.TurnBasedObjects.Add(this);
-            errorHandler = FindObjectOfType<InterfaceFactory>().ErrorHandler;
+            gameManager = interfaceFactory.GameManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            if(gameManager == null || errorHandler == null)
+            {
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                turnsManager = gameManager.TurnsManager;
+                if (turnsManager == null)
+                    errorHandler.ReportError("Turns Manager missing", ErrorState.restart_scene);
+                else
+                {
+                    if(turnsManager.TurnBasedObjects == null)
+                        errorHandler.ReportError("Turn based objects list not initialized", ErrorState.restart_scene);
+                    else
+                        turnsManager.TurnBasedObjects.Add(this);
+                }
+            }
         }
 
         public void EndOfTurn(int turns)
@@ -68,14 +86,7 @@ namespace WPM
                 if (touristCounter >= TouristSpawnRate)
                 {
                     touristCounter = 0;
-                    try
-                    {
-                        GenerateTourist();
-                    }
-                    catch (System.Exception ex)
-                    {
-                        errorHandler.CatchException(ex);
-                    }
+                    GenerateTourist();
                 }
             }
         }
@@ -94,7 +105,7 @@ namespace WPM
             if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
                 touristImageIndex = 0;
             //Add tourist to player's inventory
-            gameManager.PlayerManager.Player.AddItem(tourist, 0);
+            gameManager.PlayerManager.PlayerCharacter.AddItem(tourist, 0);
             //Check if a region switch is needed
             touristsInCurrentRegion++;
             int rand = Random.Range(MIN_TIME_IN_REGION, MAX_TIME_IN_REGION);
@@ -322,5 +333,21 @@ namespace WPM
             CurrentRegion = northAmericaUSSouthEast;
         }
 
+        /// <summary> 
+        /// Initializes array with file locations of tourist images
+        /// </summary>
+        private void InitTouristImages()
+        {
+            //Set Tourist Images
+            touristImageFiles = new string[8];
+            touristImageFiles[0] = "Images/Tourist1";
+            touristImageFiles[1] = "Images/Tourist2";
+            touristImageFiles[2] = "Images/Tourist3";
+            touristImageFiles[3] = "Images/Tourist4";
+            touristImageFiles[4] = "Images/Tourist5";
+            touristImageFiles[5] = "Images/Tourist6";
+            touristImageFiles[6] = "Images/Tourist7";
+            touristImageFiles[7] = "Images/Tourist8";
+        }
     }
 }

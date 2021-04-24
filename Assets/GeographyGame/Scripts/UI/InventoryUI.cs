@@ -191,7 +191,7 @@ namespace WPM
                 displayedItems[inventoryNumber].MouseEnter();
             }
         }
-
+        
         public void ItemMouseExit()
         {
             //gameManager.ClosePopUp();

@@ -8,7 +8,7 @@
         /// <summary> 
         /// The player character object
         /// </summary>
-        IPlayerCharacter Player { get; }
+        IPlayerCharacter PlayerCharacter { get; }
 
         /// <summary> 
         /// Intantiate the player character in a given cell

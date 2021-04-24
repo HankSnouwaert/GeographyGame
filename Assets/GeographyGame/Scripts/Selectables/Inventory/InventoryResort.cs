@@ -9,7 +9,7 @@ namespace WPM
     {
         private IGlobeManager globeManager;
         private WorldMapGlobe worldMapGlobe;
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;

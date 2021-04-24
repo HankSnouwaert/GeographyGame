@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace WPM
 {
 
-    public class InventoryItem : SelectableObject
+    public class InventoryItem : SelectableObject, IInventoryItem
     {
         public Sprite inventoryIcon;
         //public Color selectedColor = new Color(194, 194, 194, 0);
@@ -16,32 +16,34 @@ namespace WPM
         public int inventoryLocation;
         protected InventoryUI inventoryUI;
         protected SpriteRenderer spriteRenderer;
+        protected IPlayerCharacter playerCharacter;
 
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             inventoryUI = FindObjectOfType<InventoryUI>();
             //spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        public override void Select()
+        protected override void Start()
         {
-            base.Select();
-            //EventSystem.current.SetSelectedGameObject(gameObject);
-            //spriteRenderer.color = selectedColor;
+            base.Start();
+            playerCharacter = gameManager.PlayerManager.PlayerCharacter;
         }
 
-        public override void Deselect()
+        public virtual void MouseEnter()
         {
-            base.Deselect();
-            //EventSystem.current.SetSelectedGameObject(null);
             
-            //spriteRenderer.color = normalColor;
         }
 
-        public override void MouseEnter()
+        public virtual void MouseDown()
         {
-            base.MouseEnter();
+
+        }
+
+        public virtual void MouseExit()
+        {
+
         }
     }
 }

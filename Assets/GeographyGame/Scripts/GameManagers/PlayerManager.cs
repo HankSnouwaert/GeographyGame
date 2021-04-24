@@ -9,7 +9,7 @@ namespace WPM
         [SerializeField]
         private GameObject playerPrefab;
 
-        public IPlayerCharacter Player { get; protected set; }
+        public IPlayerCharacter PlayerCharacter { get; protected set; }
         //Local Interface References
         private IGlobeManager globeManager;
         private WorldMapGlobe worldMapGlobe;
@@ -54,21 +54,21 @@ namespace WPM
                 errorHandler.ReportError("Player instantiation failed", ErrorState.restart_scene);
                 return false;
             }
-            Player = playerObject.GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
-            if(Player == null)
+            PlayerCharacter = playerObject.GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
+            if(PlayerCharacter == null)
             {
                 errorHandler.ReportError("Player component missing", ErrorState.close_application);
                 return false;
             }
             try
             {
-                Player.CellLocation = startCell.index;
-                Player.Latlon = startCell.latlon;
+                PlayerCharacter.CellLocation = startCell;
+                PlayerCharacter.Latlon = startCell.latlon;
                 Vector3 startingLocation = startCell.sphereCenter;
-                Player.VectorLocation = startingLocation;
-                float playerSize = Player.GetSize();
+                PlayerCharacter.VectorLocation = startingLocation;
+                float playerSize = PlayerCharacter.GetSize();
                 worldMapGlobe.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
-                startCell.occupants.Add(Player);
+                startCell.occupants.Add(PlayerCharacter);
                 return true;
             }
             catch

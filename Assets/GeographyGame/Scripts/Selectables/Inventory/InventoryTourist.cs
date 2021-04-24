@@ -30,7 +30,6 @@ namespace WPM
         private const int PROVINCE = 0;
         private const int LANDMARK = 1;
         private const int COUNTRY = 2;
-        readonly string savedText = null;
 
 
         private const int PROVINCE_MULTIPLIER = 1;
@@ -38,7 +37,7 @@ namespace WPM
         private const int COUNTRY_MULTIPLIER = 1;
         private const int TOURIST_DROP_OFF_SCORE = 100;
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             /*
@@ -215,27 +214,28 @@ namespace WPM
             //dropOffButton.onClick.RemoveAllListeners();
         }
 
+       
         public override void MouseEnter()
         {
             base.MouseEnter();
             uiManager.InventoryPopUpUI.DisplayPopUp("I want to see " + destinationName + "!", false);
         }
-
-        public override void OnMouseExit()
+        
+        public override void MouseExit()
         {
-            base.OnMouseExit();
+            base.MouseExit();
             uiManager.InventoryPopUpUI.ClearPopUp(false);
         }
-
+        
         public void DropOff()
         {
             //Clear the Event System so that it gets updated with the tourist if the drop off fails
             EventSystem.current.SetSelectedGameObject(null);
-            Cell playerCell = globeManager.WorldMapGlobe.cells[player.CellLocation];
+            Cell playerCell = playerCharacter.CellLocation;
             switch (destinationType)
             {
                 case PROVINCE:
-                    List<int> selectedProvinces = globeParser.ProvinceParser.GetProvicesInCell(player.CellLocation);
+                    List<int> selectedProvinces = globeParser.ProvinceParser.GetProvicesInCell(playerCharacter.CellLocation.index);
                     bool correctProvince = false;
                     foreach (int province in selectedProvinces)
                     {
@@ -243,7 +243,7 @@ namespace WPM
                         {
                             Deselect();
                             //Remove Tourist from Inventory
-                            player.RemoveItem(inventoryLocation);
+                            playerCharacter.RemoveItem(inventoryLocation);
                             scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             uiManager.CursorOverUI = false;
                             correctProvince = true;
@@ -265,7 +265,7 @@ namespace WPM
                     {
                         Deselect();
                         //Remove Tourist from Inventory
-                        player.RemoveItem(inventoryLocation);
+                        playerCharacter.RemoveItem(inventoryLocation);
                         scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                         uiManager.CursorOverUI = false;
                         landmarkReached = true;
@@ -281,7 +281,7 @@ namespace WPM
                             {
                                 Deselect();
                                 //Remove Tourist from Inventory
-                                player.RemoveItem(inventoryLocation);
+                                playerCharacter.RemoveItem(inventoryLocation);
                                 scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                                 uiManager.CursorOverUI = false;
                                 landmarkReached = true;
@@ -299,7 +299,7 @@ namespace WPM
                        
                     break;
                 case COUNTRY:
-                    List<int> selectedCountries = globeParser.CountryParser.GetCountriesInCell(player.CellLocation);
+                    List<int> selectedCountries = globeParser.CountryParser.GetCountriesInCell(playerCharacter.CellLocation.index);
                     bool correctCountry = false;
                     foreach (int countryIndex in selectedCountries)
                     {
@@ -307,7 +307,7 @@ namespace WPM
                         {
                             Deselect();
                             //Remove Tourist from Inventory
-                            player.RemoveItem(inventoryLocation);
+                            playerCharacter.RemoveItem(inventoryLocation);
                             scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             uiManager.CursorOverUI = false;
                             correctCountry = true;
@@ -377,9 +377,9 @@ namespace WPM
         public override void OnCellClick(int index)
         {
             //player.OnCellClick(index);
-            if(index == player.CellLocation)
+            if(index == playerCharacter.CellLocation.index)
             {
-                player.Select();
+                playerCharacter.Select();
             }
         }
 

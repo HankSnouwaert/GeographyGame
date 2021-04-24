@@ -97,7 +97,7 @@ namespace WPM
                 //Check to see if there's a highlighted object
                 if (nearbyObjects != null)
                 {
-                    if (!nearbyObjects.Contains(gameManager.PlayerManager.Player))
+                    if (!nearbyObjects.Contains(gameManager.PlayerManager.PlayerCharacter))
                     {
                         foreach (MappableObject nearbyObject in nearbyObjects)
                         {
