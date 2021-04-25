@@ -21,6 +21,11 @@ namespace WPM
         Cell CellLocation { get; set; }
         
         /// <summary> 
+        /// The indec of the cell of the world map globe that this object is centered on
+        /// </summary>
+        int CellIndex { get; set; }
+
+        /// <summary> 
         /// Vector coordinate of the world map globe that this object is centered on
         /// </summary>
         Vector3 VectorLocation { get; set; }

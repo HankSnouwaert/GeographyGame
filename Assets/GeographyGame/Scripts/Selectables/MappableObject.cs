@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class MappableObject : SelectableObject, IMappableObject
+    abstract public class MappableObject : SelectableObject, IMappableObject
     {
         //Public Variables
         public Cell CellLocation { get; set; }
+        public int CellIndex { get; set; }
         public Vector3 VectorLocation { get; set; }
         public Vector2[] Latlon { get; set; }
         public List<Country> CountriesOccupied { get; set; } = new List<Country>();

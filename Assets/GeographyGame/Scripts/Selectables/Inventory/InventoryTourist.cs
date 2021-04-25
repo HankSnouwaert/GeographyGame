@@ -13,7 +13,6 @@ namespace WPM
         //private GameObject dropOffButtonObject;
         private Text dialog;
         private IDropOffUI dropOffUI;
-        private IUIManager uiManager;
         private ITouristManager touristManager;
         private GlobeManager globeManager;
         private IGlobeParser globeParser;
@@ -196,7 +195,7 @@ namespace WPM
         public override void Select()
         {
             base.Select();
-            int debug = inventoryLocation;
+            int debug = InventoryLocation;
             dropOffUI.ToggleOptionForDropOff(true);
             //dialog.text = "I want to go to " + destinationName;
             dropOffUI.SetDropOffDelegate(DropOff);
@@ -217,13 +216,11 @@ namespace WPM
        
         public override void MouseEnter()
         {
-            base.MouseEnter();
             uiManager.InventoryPopUpUI.DisplayPopUp("I want to see " + destinationName + "!", false);
         }
         
         public override void MouseExit()
         {
-            base.MouseExit();
             uiManager.InventoryPopUpUI.ClearPopUp(false);
         }
         
@@ -243,7 +240,7 @@ namespace WPM
                         {
                             Deselect();
                             //Remove Tourist from Inventory
-                            playerCharacter.RemoveItem(inventoryLocation);
+                            playerCharacter.RemoveItem(InventoryLocation);
                             scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             uiManager.CursorOverUI = false;
                             correctProvince = true;
@@ -261,11 +258,11 @@ namespace WPM
 
                 case LANDMARK:
                     bool landmarkReached = false;
-                    if (playerCell == landmarkDestination.cell)
+                    if (playerCell == landmarkDestination.CellLocation)
                     {
                         Deselect();
                         //Remove Tourist from Inventory
-                        playerCharacter.RemoveItem(inventoryLocation);
+                        playerCharacter.RemoveItem(InventoryLocation);
                         scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                         uiManager.CursorOverUI = false;
                         landmarkReached = true;
@@ -277,11 +274,11 @@ namespace WPM
                         Cell[] selectedCellNeighbours = globeManager.WorldMapGlobe.GetCellNeighbours(playerCell.index);
                         foreach (Cell cell in selectedCellNeighbours)
                         {
-                            if (cell == landmarkDestination.cell)
+                            if (cell == landmarkDestination.CellLocation)
                             {
                                 Deselect();
                                 //Remove Tourist from Inventory
-                                playerCharacter.RemoveItem(inventoryLocation);
+                                playerCharacter.RemoveItem(InventoryLocation);
                                 scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                                 uiManager.CursorOverUI = false;
                                 landmarkReached = true;
@@ -307,7 +304,7 @@ namespace WPM
                         {
                             Deselect();
                             //Remove Tourist from Inventory
-                            playerCharacter.RemoveItem(inventoryLocation);
+                            playerCharacter.RemoveItem(InventoryLocation);
                             scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
                             uiManager.CursorOverUI = false;
                             correctCountry = true;
@@ -391,6 +388,26 @@ namespace WPM
         else
             dropOffFailure.Play();
         */
+        }
+
+        public override void MouseDown()
+        {
+            Select();
+        }
+
+        public override void OnCellEnter(int index)
+        {
+            //Nothing Happens
+        }
+
+        public override void OnSelectableEnter(ISelectableObject selectableObject)
+        {
+            //Nothing Happens
+        }
+
+        public override void OtherObjectSelected(ISelectableObject selectedObject)
+        {
+            //There will need to be check later to account for multiple object selection
         }
     }
 }

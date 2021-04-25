@@ -192,12 +192,12 @@ namespace WPM
                     Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
                     landmarkComponent.mountPoint = mountPoint;
                     landmarkComponent.ObjectName = mountPointName;
-                    landmarkComponent.cellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
-                    landmarkComponent.cell = worldMapGlobe.cells[landmarkComponent.cellIndex];
-                    landmarkComponent.cell.canCross = false;
+                    landmarkComponent.CellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
+                    landmarkComponent.CellLocation = worldMapGlobe.cells[landmarkComponent.CellIndex];
+                    landmarkComponent.CellLocation.canCross = false;
                     worldMapGlobe.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
                     string landmarkID = landmarkComponent.GetInstanceID().ToString();
-                    worldMapGlobe.cells[landmarkComponent.cellIndex].occupants.Add(landmarkComponent);
+                    worldMapGlobe.cells[landmarkComponent.CellIndex].occupants.Add(landmarkComponent);
                     globeInfo.MappedObjects.Add(landmarkID, landmarkComponent);
                     globeInfo.CulturalLandmarks.Add(landmarkID, landmarkComponent);
                     globeInfo.CulturalLandmarksByName.Add(landmarkComponent.ObjectName, landmarkComponent);

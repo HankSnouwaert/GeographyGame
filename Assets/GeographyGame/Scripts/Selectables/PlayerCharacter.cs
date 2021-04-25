@@ -345,7 +345,7 @@ namespace WPM
             //Update inventory item locations
             foreach(InventoryItem inventoryItem in inventory)
             {
-                inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
+                inventoryItem.InventoryLocation = inventory.IndexOf(inventoryItem);
             }
             inventoryUI.UpdateInventory(inventory);
 
@@ -356,13 +356,23 @@ namespace WPM
             inventory.RemoveAt(itemLocation);
             foreach (InventoryItem inventoryItem in inventory)
             {
-                inventoryItem.inventoryLocation = inventory.IndexOf(inventoryItem);
+                inventoryItem.InventoryLocation = inventory.IndexOf(inventoryItem);
             }
             inventoryUI.UpdateInventory(inventory);
             if(inventory.Count == 0)
             {
                 touristManager.GenerateTourist();
             }
+        }
+
+        public override void OnSelectableEnter(ISelectableObject selectableObject)
+        {
+            //Nothing Happens
+        }
+
+        public override void OtherObjectSelected(ISelectableObject selectedObject)
+        {
+            //There will need to be check later to account for multiple object selection
         }
     }
 }

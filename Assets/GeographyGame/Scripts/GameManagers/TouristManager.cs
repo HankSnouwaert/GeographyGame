@@ -100,7 +100,7 @@ namespace WPM
             InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
             tourist.transform.parent = gameObject.transform.Find("Canvas/InventoryPanel");
             //Give tourist its image
-            tourist.inventoryIcon = Resources.Load<Sprite>(touristImageFiles[touristImageIndex]);
+            tourist.InventoryIcon = Resources.Load<Sprite>(touristImageFiles[touristImageIndex]);
             touristImageIndex++;
             if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
                 touristImageIndex = 0;

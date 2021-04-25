@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace WPM
 {
-    public class InventoryUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class InventoryUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IInventoryUI
     {
        //private PlayerCharacter playerCharacter;
         private GameManager gameManager;
@@ -71,14 +71,14 @@ namespace WPM
                     //This spot is the end of the line
                     //Push out the existing item and replace it with the new one
                     displayedItems[location] = item;
-                    displayedItemButtons[numberofItems].GetComponent<Image>().sprite = item.inventoryIcon;
+                    displayedItemButtons[numberofItems].GetComponent<Image>().sprite = item.InventoryIcon;
                 }
             }
             else
             {
                 displayedItems[numberofItems] = item;
                 displayedItemButtons[numberofItems].gameObject.SetActive(true);
-                displayedItemButtons[numberofItems].GetComponent<Image>().sprite = item.inventoryIcon;
+                displayedItemButtons[numberofItems].GetComponent<Image>().sprite = item.InventoryIcon;
                 numberofItems++;
             }
         }
@@ -106,7 +106,7 @@ namespace WPM
                 else
                 {
                     displayedItems[i] = displayedItems[i + 1];
-                    displayedItems[i].inventoryLocation = i;
+                    displayedItems[i].InventoryLocation = i;
                     displayedItemButtons[i].gameObject.SetActive(true);
                     displayedItemButtons[i].GetComponent<Image>().sprite = displayedItemButtons[i + 1].GetComponent<Image>().sprite;
                 }
@@ -140,7 +140,7 @@ namespace WPM
             {
                 displayedItems[i] = item;
                 displayedItemButtons[i].gameObject.SetActive(true);
-                displayedItemButtons[i].GetComponent<Image>().sprite = item.inventoryIcon;
+                displayedItemButtons[i].GetComponent<Image>().sprite = item.InventoryIcon;
                 i++;
             }
             numberofItems = i;

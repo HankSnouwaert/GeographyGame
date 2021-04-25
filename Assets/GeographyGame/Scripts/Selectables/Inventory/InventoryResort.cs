@@ -18,7 +18,6 @@ namespace WPM
         public override void Select()
         {
             base.Select();
-            int debug = inventoryLocation;
             /*
             var croppedTexture = new Texture2D((int)inventoryIcon.rect.width, (int)inventoryIcon.rect.height);
             var pixels = inventoryIcon.texture.GetPixels((int)inventoryIcon.textureRect.x,
@@ -51,13 +50,43 @@ namespace WPM
                 Deselect();
 
                 //Remove Resort from Inventory
-                inventoryUI.RemoveItem(inventoryLocation);
+                inventoryUI.RemoveItem(InventoryLocation);
             }
             else
             {
                 //Cell Occupied
                 Deselect();
             }
+        }
+
+        public override void OnSelectableEnter(ISelectableObject selectableObject)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void OnCellEnter(int index)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void MouseDown()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void MouseEnter()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void MouseExit()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void OtherObjectSelected(ISelectableObject selectedObject)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

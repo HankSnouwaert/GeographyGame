@@ -15,6 +15,10 @@ namespace WPM
         /// </summary>
         bool ClosingUI { get; set; }
         /// <summary>
+        ///  Displays and allows access to the player's inventory
+        /// </summary>
+        IInventoryUI InventoryUI { get; }
+        /// <summary>
         ///  Displays information relating to the player's current location
         /// </summary>
         INavigationUI NavigationUI { get; }

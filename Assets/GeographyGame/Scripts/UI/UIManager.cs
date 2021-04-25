@@ -28,6 +28,7 @@ namespace WPM
         private GameObject inventoryPopUpUIObject;
         //Child Interfaces
         public IMouseOverInfoUI MouseOverInfoUI { get; protected set; }
+        public IInventoryUI InventoryUI { get; protected set; }
         public INavigationUI NavigationUI { get; protected set; }
         public IDropOffUI DropOffUI { get; protected set; }
         public IScoreUI ScoreUI { get; protected set; }
@@ -86,7 +87,7 @@ namespace WPM
                 if (InventoryPopUpUI == null)
                     componentMissing = true;
 
-                //Inventory UI needs to be added here when I refactor it
+                InventoryUI = inventoryUIObject.GetComponent(typeof(IInventoryUI)) as IInventoryUI;
                 if (inventoryUIObject == null)
                     componentMissing = true;
             }

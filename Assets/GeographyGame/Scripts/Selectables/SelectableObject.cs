@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class SelectableObject : MonoBehaviour, ISelectableObject
+    abstract public class SelectableObject : MonoBehaviour, ISelectableObject
     {
         //Public Variables
         public string ObjectName { get; set; }
@@ -54,24 +54,12 @@ namespace WPM
             Selected = false;
         }
 
-        public virtual void OnSelectableEnter(ISelectableObject selectableObject)
-        {
+        abstract public void OnSelectableEnter(ISelectableObject selectableObject);
 
-        }
+        abstract public void OtherObjectSelected(ISelectableObject selectedObject);
 
-        public virtual void OtherObjectSelected(ISelectableObject selectedObject)
-        {
-            
-        }
+        abstract public void OnCellEnter(int index);
 
-        public virtual void OnCellEnter(int index)
-        {
-
-        }
-
-        public virtual void OnCellClick(int index)
-        {
-
-        }
+        abstract public void OnCellClick(int index);
     }
 }
