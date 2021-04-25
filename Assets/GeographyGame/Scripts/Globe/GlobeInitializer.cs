@@ -190,7 +190,7 @@ namespace WPM
                     var model = Resources.Load<GameObject>(landmarkFilePath + tempName);
                     var modelClone = Instantiate(model);
                     Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
-                    landmarkComponent.mountPoint = mountPoint;
+                    landmarkComponent.MountPoint = mountPoint;
                     landmarkComponent.ObjectName = mountPointName;
                     landmarkComponent.CellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
                     landmarkComponent.CellLocation = worldMapGlobe.cells[landmarkComponent.CellIndex];

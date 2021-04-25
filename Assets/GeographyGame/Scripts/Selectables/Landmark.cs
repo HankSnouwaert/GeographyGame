@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class Landmark : MappableObject
+    public class Landmark : MappableObject, ILandmark
     {
-        public MountPoint mountPoint;
-        //public int cellIndex;
-        //public Cell cell;
+        public MountPoint MountPoint { get; set; }
 
         public override void OnCellClick(int index)
         {
