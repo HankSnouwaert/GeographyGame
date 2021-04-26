@@ -25,4 +25,11 @@ namespace WPM
             restart_scene,
             close_application
         }
+
+        public enum DestinationType
+        {
+            province,
+            landmark,
+            country
+        }
 }
