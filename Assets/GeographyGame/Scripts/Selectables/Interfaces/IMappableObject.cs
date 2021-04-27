@@ -5,7 +5,7 @@ namespace WPM
 {
     /// <summary> 
     /// Base interface for any object located on the world map globe
-     /// </summary>
+    /// </summary>
     public interface IMappableObject : ISelectableObject
     {
         /// <summary> 

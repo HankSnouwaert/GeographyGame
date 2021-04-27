@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4838270391256088680}
   - component: {fileID: 5086882277397324005}
+  - component: {fileID: 2791104290254319150}
+  - component: {fileID: 4017174315664737952}
   m_Layer: 0
   m_Name: InventoryTourist
   m_TagString: Untagged
@@ -43,7 +45,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbbf16d3feb715f4a91d757ee7444d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selected: 0
-  inventoryIcon: {fileID: 0}
-  inventorySpace: 1
-  inventoryLocation: 0
+--- !u!114 &2791104290254319150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8054937859913058372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71b8db2dc6f3f7d48a6ee8d5dbaa9837, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4017174315664737952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8054937859913058372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f40845035fb8cb49a207383b8bba2ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
