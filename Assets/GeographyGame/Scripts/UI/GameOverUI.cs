@@ -10,14 +10,14 @@ namespace WPM
         private Text[] textComponents;
         private Text displayText;
         private IScoreManager scoreManager;
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             textComponents = uiObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
         }
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             scoreManager = gameManager.ScoreManager;

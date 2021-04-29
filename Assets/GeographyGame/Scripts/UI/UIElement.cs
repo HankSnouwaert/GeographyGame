@@ -7,24 +7,25 @@ using UnityEngine.UI;
 namespace WPM
 {
 
-    public class UIElement : MonoBehaviour, IUIElement
+    abstract public class UIElement : MonoBehaviour, IUIElement
     {
         protected GameManager gameManager;
         protected GlobeManager globeManager;
+        protected IErrorHandler errorHandler;
         protected IUIManager uiManager;
         protected ICellClicker mouseCellClicker;
         protected GameObject uiObject;
         public bool UIOpen { get; set; }
 
         // Start is called before the first frame update
-        public virtual void Awake()
+        protected virtual void Awake()
         {
             gameManager = FindObjectOfType<GameManager>();
             globeManager = FindObjectOfType<GlobeManager>();
             uiObject = gameObject;
         }
 
-        public virtual void Start()
+        protected virtual void Start()
         {
             mouseCellClicker = globeManager.CellCursorInterface.CellClicker;
             uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
@@ -42,18 +43,5 @@ namespace WPM
             uiManager.ClosingUI = true;
             UIOpen = false;
         }
-        
-        /*
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-        {
-            gameManager.CursorOverUI = true;
-        }
-
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-        {
-            gameManager.CursorOverUI = false;
-
-        }
-        */
     }
 }

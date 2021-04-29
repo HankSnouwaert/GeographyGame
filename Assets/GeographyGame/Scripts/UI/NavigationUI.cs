@@ -16,7 +16,7 @@ namespace WPM
         private IGlobeManager globeManager;
         private WorldMapGlobe worldMapGlobe;
         // Start is called before the first frame update
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             buttonComponents = uiObject.GetComponentsInChildren<Button>();
@@ -27,7 +27,7 @@ namespace WPM
             UIOpen = true;
         }
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;

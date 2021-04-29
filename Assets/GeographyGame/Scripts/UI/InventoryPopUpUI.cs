@@ -13,14 +13,14 @@ namespace WPM
         private bool persistantPopUp;
         public bool TempPopUp { get; set; }
         private string persistantPopUpMessage;
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             textComponents = uiObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
         }
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             CloseUI();

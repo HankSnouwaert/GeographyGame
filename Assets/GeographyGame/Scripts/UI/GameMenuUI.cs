@@ -10,7 +10,7 @@ namespace WPM
         private Text[] textComponents;
         private Text displayText;
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             CloseUI();

@@ -12,7 +12,7 @@ namespace WPM
         private Text displayText;
         private int currentScore;
         private int currentTurnsRamaining;
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             textComponents = uiObject.GetComponentsInChildren<Text>();

@@ -6,63 +6,86 @@ using UnityEngine.UI;
 
 namespace WPM
 {
-    public class InventoryUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IInventoryUI
+    public class InventoryUI : UIElement, IInventoryUI
     {
        //private PlayerCharacter playerCharacter;
-        private GameManager gameManager;
-        public InventoryItem[] displayedItems;
+        public IInventoryItem[] displayedItems;
         public Button[] displayedItemButtons;
         private GameObject selectedObject;
         private int selectedItemIndex = -1;
         private bool inventorySelected = false;
         private int numberofItems = 0;
-        private IUIManager uiManager;
-        // Start is called before the first frame update
+        private bool componentsMissing = false;
 
-        void Awake()
+        protected override void Awake()
         {
-            displayedItemButtons = GetComponentsInChildren<Button>(true);
-            displayedItems = new InventoryItem[displayedItemButtons.Length];
-            gameManager = FindObjectOfType<GameManager>();
+            base.Awake();
+            if (gameObject.activeSelf)
+            {
+                displayedItemButtons = GetComponentsInChildren<Button>(true);
+                if (displayedItemButtons == null)
+                    componentsMissing = true;
+                else
+                {
+                    displayedItems = new IInventoryItem[displayedItemButtons.Length];
+                    if (displayedItems == null)
+                        componentsMissing = true;
+                }
+            }
         }
 
-        void Start()
+        protected override void Start()
         {
-            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
+            if (componentsMissing)
+                errorHandler.ReportError("Inventory UI components missing", ErrorState.restart_scene);
         }
 
         void Update()
         {
-            if(selectedObject != null)
+            try
             {
-                //Check if the inventory has been selected while the GUI still thinks it's selected
-                if (inventorySelected && !displayedItems[selectedItemIndex].Selected)
+                if (selectedObject != null && selectedItemIndex < displayedItems.Length && selectedItemIndex >= 0)
                 {
-                    //Check if the EventSystem still thinks the inventory item is selected
-                    if (EventSystem.current.currentSelectedGameObject == selectedObject)
+                    //Check if the inventory has been selected while the GUI still thinks it's selected
+                    if (inventorySelected && !displayedItems[selectedItemIndex].Selected)
                     {
-                        //The EventSystem still thinks the inventory item is selected and needs to be cleared
-                        EventSystem.current.SetSelectedGameObject(null);
+                        //Check if the EventSystem still thinks the inventory item is selected
+                        if (EventSystem.current.currentSelectedGameObject == selectedObject)
+                        {
+                            //The EventSystem still thinks the inventory item is selected and needs to be cleared
+                            EventSystem.current.SetSelectedGameObject(null);
+                        }
+                        //The inventory should be deselected
+                        inventorySelected = false;
+                        selectedObject = null;
                     }
-                    //The inventory should be deselected
-                    inventorySelected = false;
-                    selectedObject = null;
-                }
-                else
-                {
-                    //The GUI is up to date
-                    //Check if the EventSystem has been cleared when it shouldn't
-                    if (EventSystem.current.currentSelectedGameObject == null)
+                    else
                     {
-                        //The EventSystem was cleared and needs to be updated
-                        EventSystem.current.SetSelectedGameObject(selectedObject);
+                        //The GUI is up to date
+                        //Check if the EventSystem has been cleared when it shouldn't
+                        if (EventSystem.current.currentSelectedGameObject == null)
+                        {
+                            //The EventSystem was cleared and needs to be updated
+                            EventSystem.current.SetSelectedGameObject(selectedObject);
+                        }
                     }
                 }
-
+            }
+            catch (System.Exception ex)
+            {
+                errorHandler.CatchException(ex, ErrorState.restart_scene);
             }
         }
+
+        //THIS METHOD IS NEVER USED
         public void AddItem(InventoryItem item, int location)
         {
+            if(location >= displayedItems.Length || location < 0)
+            {
+                errorHandler.ReportError("Attempted to add item to invalid inventory location", ErrorState.close_window);
+                return;
+            }
+
             if(displayedItems[location] != null)
             {
                 //There's someone in my spot
@@ -83,6 +106,7 @@ namespace WPM
             }
         }
 
+        //THIS METHOD IS NEVER USED
         public void RemoveItem(int location)
         {
             //Check if you are removing the currently selected object
@@ -117,43 +141,41 @@ namespace WPM
 
         public void UpdateInventory(List<InventoryItem> inventory)
         {
-            int i = 0;
-            //Clear the inventory
-            foreach (InventoryItem item in displayedItems)
+            try
             {
-                if (i == selectedItemIndex && inventorySelected)
+                int i = 0;
+                //Clear the inventory
+                foreach (InventoryItem item in displayedItems)
                 {
-                    item.Deselect();
-                    EventSystem.current.SetSelectedGameObject(null);
-                    inventorySelected = false;
-                    selectedObject = null;
+                    if (i == selectedItemIndex && inventorySelected)
+                    {
+                        item.Deselect();
+                        EventSystem.current.SetSelectedGameObject(null);
+                        inventorySelected = false;
+                        selectedObject = null;
+                    }
+                    displayedItems[i] = null;
+                    displayedItemButtons[i].gameObject.SetActive(false);
+                    displayedItemButtons[i].GetComponent<Image>().sprite = null;
+                    i++;
                 }
-                displayedItems[i] = null;
-                displayedItemButtons[i].gameObject.SetActive(false);
-                displayedItemButtons[i].GetComponent<Image>().sprite = null;
-                i++;
-            }
 
-            i = 0;
-            //Update the inventory
-            foreach (InventoryItem item in inventory)
+                i = 0;
+                //Update the inventory
+                foreach (InventoryItem item in inventory)
+                {
+                    displayedItems[i] = item;
+                    displayedItemButtons[i].gameObject.SetActive(true);
+                    displayedItemButtons[i].GetComponent<Image>().sprite = item.InventoryIcon;
+                    i++;
+                }
+                numberofItems = i;
+            }
+            catch(System.Exception ex)
             {
-                displayedItems[i] = item;
-                displayedItemButtons[i].gameObject.SetActive(true);
-                displayedItemButtons[i].GetComponent<Image>().sprite = item.InventoryIcon;
-                i++;
+                errorHandler.CatchException(ex, ErrorState.restart_scene);
             }
-            numberofItems = i;
-        }
-
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
-        {
-            uiManager.CursorOverUI = true;
-        }
-
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
-        {
-            uiManager.CursorOverUI = false;
+            
         }
 
         /// <summary>
@@ -162,10 +184,14 @@ namespace WPM
         /// <param name="inventoryNumber">What position in the inventory the item is in.</param>
         public void ItemSelected(int inventoryNumber)
         {
-            //The inventory position needs to be offset so it starts at 0 instead of 1
-            //inventoryNumber--;
             if (inventoryNumber <= numberofItems && inventoryNumber >= 0)
             {
+                if(displayedItems[inventoryNumber] == null)
+                {
+                    errorHandler.ReportError("Invalid item selection", ErrorState.close_window);
+                    return;
+                }
+
                 if (displayedItems[inventoryNumber].Selected)
                 {
                     displayedItems[inventoryNumber].Deselect();  
@@ -188,11 +214,17 @@ namespace WPM
         {
             if (inventoryNumber <= numberofItems && inventoryNumber >= 0)
             {
+                if (displayedItems[inventoryNumber] == null)
+                {
+                    errorHandler.ReportError("Invalid item selection", ErrorState.close_window);
+                    return;
+                }
+
                 displayedItems[inventoryNumber].MouseEnter();
             }
         }
         
-        public void ItemMouseExit()
+        public void ItemMouseExit(int inventoryNumber)
         {
             //gameManager.ClosePopUp();
         }

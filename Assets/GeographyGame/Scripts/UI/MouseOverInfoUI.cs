@@ -11,14 +11,14 @@ namespace WPM
         private Component[] mouseOverInfoComponents;
         private Text mouseOverInfoText;
 
-        public override void Awake()
+        protected override void Awake()
         {
             base.Awake();
             mouseOverInfoComponents = uiObject.GetComponentsInChildren<Text>();
             mouseOverInfoText = mouseOverInfoComponents[0] as Text;
         }
 
-        public override void Start()
+        protected override void Start()
         {
             base.Start();
             CloseUI();
