@@ -6,24 +6,45 @@ namespace WPM
 {
     public class TurnsManager : MonoBehaviour, ITurnsManager
     {
+        //Public Variables
         public int TurnsRemaining { get; protected set; } = 250;
         public List<ITurnBasedObject> TurnBasedObjects { get; set; } = new List<ITurnBasedObject>();
+        //Internal Interface References
         private IGameManager gameManager;
         private IUIManager uiManager;
+        private ITurnsUI turnsUI;
+        //Private Variables
         private int globalTurnCounter = 0;
-        
-        void Start()
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
+
+        private void Awake()
         {
-            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if(interfaceFactory == null)
+                gameObject.SetActive(false);
+        }
+
+        private void Start()
+        {
             gameManager = interfaceFactory.GameManager;
             uiManager = interfaceFactory.UIManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            if (gameManager == null || uiManager == null || errorHandler == null)
+                gameObject.SetActive(false);
+            else
+            {
+                turnsUI = uiManager.TurnsUI;
+                if (turnsUI == null)
+                    errorHandler.ReportError("Turns UI Missing", ErrorState.restart_scene);
+            }
         }
 
         /// <summary>
         /// Called whenever a new turn happens in game. Multiple turns can pass at once.
-        /// Inputs:
-        ///     turns: How many turns are passing
         /// </summary>
+        /// <param name="turns"> How many turns are passing </param>
         public void NextTurn(int turns)
         {
             globalTurnCounter = globalTurnCounter + turns;
@@ -48,7 +69,7 @@ namespace WPM
                 TurnsRemaining = 0;
                 gameManager.GameOver();
             }
-            uiManager.TurnsUI.UpdateDisplayedRemainingTurns(TurnsRemaining);
+            turnsUI.UpdateDisplayedRemainingTurns(TurnsRemaining);
         }
     }
 
