@@ -5,30 +5,52 @@ using UnityEngine;
 namespace WPM
 {
     /// <summary>
-    /// Used to handle instances of the mouse clicking a cell of the world gloobe map
+    /// Used to handle instances of the mouse clicking a cell of the world globe map
     /// </summary>
     public class MouseCellClicker : MonoBehaviour, ICellClicker
     {
-        private GameManager gameManager;
+        //Internal Interface References
+        private IGameManager gameManager;
         private IGlobeManager globeManager;
         private IUIManager uiManager;
-        private IErrorHandler errorHandler;
-        public ICellEnterer cellEnterer;
+        private ICellEnterer cellEnterer;
+        //Public Variables
         public bool NewObjectSelected { get; set; } = false;
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
+        private bool componentMissing = false;
 
         void Awake()
         {
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
+
             cellEnterer = GetComponent(typeof(ICellEnterer)) as ICellEnterer;
+            if (cellEnterer == null)
+                componentMissing = true;
         }
 
         void Start()
         {
-            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
-            gameManager = FindObjectOfType<GameManager>();
+            gameManager = interfaceFactory.GameManager;
             globeManager = interfaceFactory.GlobeManager;
             uiManager = interfaceFactory.UIManager;
             errorHandler = interfaceFactory.ErrorHandler;
-            globeManager.WorldMapGlobe.OnCellClick += HandleOnCellClick;
+            if (gameManager == null || globeManager == null || uiManager == null || errorHandler == null)
+                gameObject.SetActive(false);
+            else
+            {
+                try
+                {
+                    globeManager.WorldMapGlobe.OnCellClick += HandleOnCellClick;
+                }
+                catch(System.Exception ex)
+                {
+                    errorHandler.CatchException(ex, ErrorState.restart_scene);
+                }
+            }
         }
 
         /// <summary>
@@ -44,18 +66,8 @@ namespace WPM
                 if (NewObjectSelected)
                     NewObjectSelected = false;
                 else
-                    try
-                    {
-                        //Error Test
-                        //errorHandler.reportError("Error: Erin is too cute", ErrorState.close_window);
-                        gameManager.SelectedObject.OnCellClick(cellIndex);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        errorHandler.CatchException(ex);
-                    }
+                    gameManager.SelectedObject.OnCellClick(cellIndex);
             }
-
         }    
     }
 }
