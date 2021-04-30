@@ -19,10 +19,10 @@ namespace WPM
         protected override void Awake()
         {
             base.Awake();
-            buttonComponents = uiObject.GetComponentsInChildren<Button>();
+            buttonComponents = UIObject.GetComponentsInChildren<Button>();
             dropOffButton = buttonComponents[0];
             dropOffButtonObject = dropOffButton.gameObject;
-            textComponents = uiObject.GetComponentsInChildren<Text>();
+            textComponents = UIObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
             UIOpen = true;
         }

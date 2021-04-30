@@ -15,7 +15,7 @@ namespace WPM
         bool moving = false;
         public List<int> pathIndices = null;
         private readonly float size = 0.0003f;
-        public List<InventoryItem> inventory = new List<InventoryItem>();
+        public List<IInventoryItem> inventory = new List<IInventoryItem>();
         private readonly int inventorySize = 7;
         public bool stop = false;
         GeoPosAnimator anim;
@@ -323,7 +323,7 @@ namespace WPM
             }
         }
 
-        public bool AddItem(InventoryItem item, int location)
+        public bool AddItem(IInventoryItem item, int location)
         {
             inventory.Insert(location, item);
         

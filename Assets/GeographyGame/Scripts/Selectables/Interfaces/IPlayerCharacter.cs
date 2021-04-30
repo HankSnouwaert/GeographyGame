@@ -2,7 +2,7 @@
 {
     public interface IPlayerCharacter : IMappableObject
     {
-        bool AddItem(InventoryItem item, int location);
+        bool AddItem(IInventoryItem item, int location);
         void ClearCellCosts();
         void EndOfTurn(int turns);
         void FinishedPathFinding();

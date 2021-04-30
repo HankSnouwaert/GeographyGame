@@ -16,7 +16,7 @@ namespace WPM
         protected override void Awake()
         {
             base.Awake();
-            textComponents = uiObject.GetComponentsInChildren<Text>();
+            textComponents = UIObject.GetComponentsInChildren<Text>();
             displayText = textComponents[0];
         }
 

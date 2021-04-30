@@ -14,7 +14,7 @@ namespace WPM
         protected override void Awake()
         {
             base.Awake();
-            mouseOverInfoComponents = uiObject.GetComponentsInChildren<Text>();
+            mouseOverInfoComponents = UIObject.GetComponentsInChildren<Text>();
             mouseOverInfoText = mouseOverInfoComponents[0] as Text;
         }
 
@@ -28,7 +28,7 @@ namespace WPM
         {
             if (!uiManager.CursorOverUI && !gameManager.GamePaused && globeManager.WorldMapGlobe.countryHighlighted != null && globeManager.WorldMapGlobe.lastHighlightedCellIndex >= 0 )
             {
-                uiObject.SetActive(true);
+                UIObject.SetActive(true);
                 Province province = globeManager.WorldMapGlobe.provinceHighlighted;
                 Country country = globeManager.WorldMapGlobe.countryHighlighted;
                 MappableObject highlightedObject = null;
@@ -46,13 +46,13 @@ namespace WPM
             }
             else
             {
-                uiObject.SetActive(false);
+                UIObject.SetActive(false);
             }
         }
 
         public void SetMouseOverInfoMessage(string textToSet)//THIS MAKES NO SENSE
         {
-            uiObject.SetActive(true);
+            UIObject.SetActive(true);
             mouseOverInfoText.text = MouseOverInfoString;
         }
 

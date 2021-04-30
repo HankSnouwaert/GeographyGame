@@ -78,7 +78,7 @@ namespace WPM
         }
 
         //THIS METHOD IS NEVER USED
-        public void AddItem(InventoryItem item, int location)
+        public void AddItem(IInventoryItem item, int location)
         {
             if(location >= displayedItems.Length || location < 0)
             {
@@ -139,13 +139,13 @@ namespace WPM
            
         }
 
-        public void UpdateInventory(List<InventoryItem> inventory)
+        public void UpdateInventory(List<IInventoryItem> inventory)
         {
             try
             {
                 int i = 0;
                 //Clear the inventory
-                foreach (InventoryItem item in displayedItems)
+                foreach (IInventoryItem item in displayedItems)
                 {
                     if (i == selectedItemIndex && inventorySelected)
                     {

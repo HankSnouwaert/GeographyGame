@@ -14,7 +14,7 @@ namespace WPM
         protected IErrorHandler errorHandler;
         protected IUIManager uiManager;
         protected ICellClicker mouseCellClicker;
-        protected GameObject uiObject;
+        public GameObject UIObject { get; protected set; }
         public bool UIOpen { get; set; }
 
         // Start is called before the first frame update
@@ -22,7 +22,7 @@ namespace WPM
         {
             gameManager = FindObjectOfType<GameManager>();
             globeManager = FindObjectOfType<GlobeManager>();
-            uiObject = gameObject;
+            UIObject = gameObject;
         }
 
         protected virtual void Start()
@@ -33,13 +33,13 @@ namespace WPM
 
         public virtual void OpenUI()
         {
-            uiObject.SetActive(true);
+            UIObject.SetActive(true);
             UIOpen = true;
         }
 
         public virtual void CloseUI()
         {
-            uiObject.SetActive(false);
+            UIObject.SetActive(false);
             uiManager.ClosingUI = true;
             UIOpen = false;
         }

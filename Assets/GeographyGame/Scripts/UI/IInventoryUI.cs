@@ -5,14 +5,14 @@ namespace WPM
     /// <summary> 
     /// UI responsible for displaying the player's inventory
     /// </summary>
-    public interface IInventoryUI
+    public interface IInventoryUI : IUIElement
     {
         /// <summary> 
         /// Add an item to the player's inventory UI
         /// </summary>
         /// <param name="item"> The item to be added to the inventory</param>
         /// <param name="location"> The location in the inventory where the item should be added</param>
-        void AddItem(InventoryItem item, int location);
+        void AddItem(IInventoryItem item, int location);
 
         /// <summary> 
         /// Remove an item to the player's inventory UI
@@ -42,6 +42,6 @@ namespace WPM
         /// Updates the inventory UI to match a given list of inventory items
         /// </summary>
         /// <param name="inventory"> The list of inventory items being used to update the inventory UI </param>
-        void UpdateInventory(List<InventoryItem> inventory);
+        void UpdateInventory(List<IInventoryItem> inventory);
     }
 }

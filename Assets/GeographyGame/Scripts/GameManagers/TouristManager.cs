@@ -7,7 +7,7 @@ namespace WPM
     public class TouristManager : MonoBehaviour, ITouristManager, ITurnBasedObject
     {
         [SerializeField]
-        private InventoryTourist touristPrefab;
+        private GameObject touristPrefab;
 
         //Protected Public Variables
         public TouristRegion CurrentRegion { get; protected set; }
@@ -22,8 +22,10 @@ namespace WPM
 
         //Local Interface References
         private IGameManager gameManager;
+        private IPlayerManager playerManager;
         private ITurnsManager turnsManager;
         private IUIManager uiManager;
+        private IInventoryUI inventoryUI;
         //Internal Variables
         private List<TouristRegion> touristRegions = new List<TouristRegion>(); 
         private int touristCounter = 0;
@@ -49,8 +51,6 @@ namespace WPM
             if (touristPrefab == null)
                 componentMissing = true;
 
-            gameManager = FindObjectOfType<GameManager>();
-            //touristPrefab = Resources.Load<InventoryTourist>("Prefabs/Inventory/InventoryTourist");
             InitTouristRegions();
             InitTouristImages();
         }
@@ -59,12 +59,19 @@ namespace WPM
         {
             gameManager = interfaceFactory.GameManager;
             errorHandler = interfaceFactory.ErrorHandler;
-            if(gameManager == null || errorHandler == null)
+            uiManager = interfaceFactory.UIManager;
+            if(gameManager == null || errorHandler == null || uiManager == null)
             {
                 gameObject.SetActive(false);
             }
             else
             {
+                if(componentMissing)
+                    errorHandler.ReportError("Tourist Manager component missing", ErrorState.restart_scene);
+
+                inventoryUI = uiManager.InventoryUI;
+                if(inventoryUI == null)
+                    errorHandler.ReportError("Inventory UI missing", ErrorState.restart_scene);
                 turnsManager = gameManager.TurnsManager;
                 if (turnsManager == null)
                     errorHandler.ReportError("Turns Manager missing", ErrorState.restart_scene);
@@ -75,6 +82,10 @@ namespace WPM
                     else
                         turnsManager.TurnBasedObjects.Add(this);
                 }
+
+                playerManager = gameManager.PlayerManager;
+                if(playerManager == null)
+                    errorHandler.ReportError("Player Manager missing", ErrorState.restart_scene);
             }
         }
 
@@ -96,25 +107,46 @@ namespace WPM
         /// </summary>
         public void GenerateTourist()
         {
+            //Get Player Character 
+            IPlayerCharacter playerCharacter = playerManager.PlayerCharacter;
+            if(playerCharacter == null)
+            {
+                errorHandler.ReportError("Player character missing", ErrorState.restart_scene);
+                return;
+            }
             //Intantiate tourist
-            InventoryTourist tourist = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-            tourist.transform.parent = gameObject.transform.Find("Canvas/InventoryPanel");
+            GameObject touristObject = Instantiate(touristPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+            touristObject.transform.parent = inventoryUI.UIObject.transform;
+            IInventoryTourist tourist = touristObject.GetComponent(typeof(IInventoryTourist)) as IInventoryTourist;
+            if(tourist == null)
+            {
+                errorHandler.ReportError("Tourist component of tourist prefab missing", ErrorState.restart_scene);
+                return;
+            }
             //Give tourist its image
             tourist.InventoryIcon = Resources.Load<Sprite>(touristImageFiles[touristImageIndex]);
             touristImageIndex++;
             if (touristImageIndex >= NUMBER_OF_TOURIST_IMAGES)
                 touristImageIndex = 0;
             //Add tourist to player's inventory
-            gameManager.PlayerManager.PlayerCharacter.AddItem(tourist, 0);
+            playerCharacter.AddItem(tourist, 0);
             //Check if a region switch is needed
             touristsInCurrentRegion++;
             int rand = Random.Range(MIN_TIME_IN_REGION, MAX_TIME_IN_REGION);
             if (touristsInCurrentRegion >= rand)
             {
                 //Switch regions
-                int newRegionNeighbourIndex = Random.Range(0, CurrentRegion.neighbouringRegions.Count - 1);
-                CurrentRegion = CurrentRegion.neighbouringRegions[newRegionNeighbourIndex];
-                touristsInCurrentRegion = 0;
+                try
+                {
+                    int newRegionNeighbourIndex = Random.Range(0, CurrentRegion.neighbouringRegions.Count - 1);
+                    CurrentRegion = CurrentRegion.neighbouringRegions[newRegionNeighbourIndex];
+                    touristsInCurrentRegion = 0;
+                }
+                catch(System.Exception ex)
+                {
+                    errorHandler.CatchException(ex, ErrorState.restart_scene);
+                }
+                
             }
         }
 
@@ -202,7 +234,7 @@ namespace WPM
             northAmericaUSSouthEast.provinces.Add(3889); //Oklahoma
                                                          //Landmarks
             northAmericaUSSouthEast.landmarks.Add("Washington Monument");
-            northAmericaUSMidWestMidAtlantic.landmarks.Add("Lincoln Memorial");
+            northAmericaUSSouthEast.landmarks.Add("Lincoln Memorial");
             #endregion
 
             #region Create US South West
