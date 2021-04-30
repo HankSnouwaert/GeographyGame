@@ -9,17 +9,22 @@ namespace WPM
     /// </summary>
     public class MouseCellExiter : MonoBehaviour, ICellExiter
     {
-        private GameManager gameManager;
-        private IUIManager uiManager;
-        private IGlobeManager globeManager;
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
 
-        void Start()
+        private void Awake()
         {
-            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
-            gameManager = FindObjectOfType<GameManager>();
-            globeManager = interfaceFactory.GlobeManager;
-            globeManager.WorldMapGlobe.OnCellExit += HandleOnCellExit;
-            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
+        }
+
+        private void Start()
+        {
+            errorHandler = interfaceFactory.ErrorHandler;
+            if (errorHandler == null)
+                gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -29,14 +34,7 @@ namespace WPM
         /// <returns></returns> 
         public void HandleOnCellExit(int cellIndex)
         {
-            /*
-            if (!uiManager.CursorOverUI && !gameManager.GamePaused)
-            {
-                Province province = gameManager.worldGlobeMap.provinceHighlighted;
-                if (province == null || uiManager.CursorOverUI)
-                    uiManager.mouseOverInfoUIObject.SetActive(false);
-            }
-            */
+            //Currently, there's nothing here that needs to be done
         }
     }
 }
