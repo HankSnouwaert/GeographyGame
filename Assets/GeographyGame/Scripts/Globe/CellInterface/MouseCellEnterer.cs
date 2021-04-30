@@ -9,22 +9,60 @@ namespace WPM
     /// </summary>
     public class MouseCellEnterer : MonoBehaviour, ICellEnterer
     {
-        private GameManager gameManager;
+        //Internal Interface References
+        private IGameManager gameManager;
         private IUIManager uiManager;
         private IGlobeManager globeManager;
         private ICellCursorInterface cellCursorInterface;
+        private WorldMapGlobe worldMapGlobe;
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
+        private bool componentMissing = false;
+
         void Awake()
         {
-            cellCursorInterface = GetComponent(typeof(ICellCursorInterface)) as ICellCursorInterface;
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
+
+            try
+            {
+                cellCursorInterface = GetComponent(typeof(ICellCursorInterface)) as ICellCursorInterface;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
+            if (cellCursorInterface == null)
+                componentMissing = true;
         }
 
         void Start()
         {
-            InterfaceFactory interfaceFactory = FindObjectOfType<InterfaceFactory>();
-            gameManager = FindObjectOfType<GameManager>();
+            gameManager = interfaceFactory.GameManager;
             globeManager = interfaceFactory.GlobeManager;
             uiManager = interfaceFactory.UIManager;
-            globeManager.WorldMapGlobe.OnCellEnter += HandleOnCellEnter;
+            if (gameManager == null || globeManager == null || uiManager == null)
+                gameObject.SetActive(false);
+            else
+            {
+                if (componentMissing)
+                    errorHandler.ReportError("Mouse Cell Enterer missing component", ErrorState.restart_scene);
+
+                worldMapGlobe = globeManager.WorldMapGlobe;
+                if (worldMapGlobe == null)
+                    errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
+
+                try
+                {
+                    globeManager.WorldMapGlobe.OnCellEnter += HandleOnCellEnter;
+                }
+                catch (System.Exception ex) 
+                {
+                    errorHandler.CatchException(ex, ErrorState.restart_scene);
+                }
+            }
         }
 
         /// <summary>
@@ -39,10 +77,16 @@ namespace WPM
             {
                 if (gameManager.HighlightedObject != null)
                     gameManager.SelectedObject.OnSelectableEnter(gameManager.HighlightedObject);
-
-                gameManager.SelectedObject.OnCellEnter(cellIndex);
-                cellCursorInterface.highlightedCellIndex = cellIndex;
-                cellCursorInterface.highlightedCell = globeManager.WorldMapGlobe.cells[cellIndex];
+                try
+                {
+                    gameManager.SelectedObject.OnCellEnter(cellIndex);
+                    cellCursorInterface.highlightedCellIndex = cellIndex;
+                    cellCursorInterface.highlightedCell = worldMapGlobe.cells[cellIndex];
+                }
+                catch
+                {
+                    errorHandler.ReportError("Invalid cell index for cell cell enterer", ErrorState.close_window);
+                }
             }
         }
     }
