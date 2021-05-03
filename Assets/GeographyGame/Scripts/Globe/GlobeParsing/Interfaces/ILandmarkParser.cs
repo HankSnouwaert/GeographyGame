@@ -4,7 +4,7 @@ namespace WPM
 {
     public interface ILandmarkParser
     {
-        List<Landmark> GetLandmarksInCell(int cellIndex);
-        List<Landmark>[] GetLandmarksInRange(int startCell, List<int>[] cellRange);
+        List<Landmark> GetLandmarksInCell(Cell cell);
+        List<Landmark>[] GetLandmarksInRange(Cell startCell, List<Cell>[] cellRange);
     }
 }

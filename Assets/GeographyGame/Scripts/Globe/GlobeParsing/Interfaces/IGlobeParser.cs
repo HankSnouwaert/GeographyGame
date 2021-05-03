@@ -4,9 +4,9 @@ namespace WPM
 {
     public interface IGlobeParser
     {
-        IProvinceParser ProvinceParser { get; set; }
-        ICountryParser CountryParser { get; set; }
-        ILandmarkParser LandmarkParser { get; set; }
-        List<int>[] GetCellsInRange(int startCell, int range = 0);
+        IProvinceParser ProvinceParser { get; }
+        ICountryParser CountryParser { get; }
+        ILandmarkParser LandmarkParser { get; }
+        List<Cell>[] GetCellsInRange(Cell startCell, int range = 0);
     }
 }

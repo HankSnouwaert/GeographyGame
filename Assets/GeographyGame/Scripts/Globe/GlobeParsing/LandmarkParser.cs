@@ -26,10 +26,10 @@ namespace WPM
         /// Outputs:
         ///     landmarks: The landmarks in the cell in question
         /// </summary>
-        public List<Landmark> GetLandmarksInCell(int cellIndex)
+        public List<Landmark> GetLandmarksInCell(Cell cell)
         {
             List<Landmark> landmarks = new List<Landmark>();
-            foreach (MappableObject mappableObject in worldMapGlobe.cells[cellIndex].occupants)
+            foreach (MappableObject mappableObject in cell.occupants)
             {
                 if (mappableObject is Landmark)
                 {
@@ -49,11 +49,11 @@ namespace WPM
         ///     landmarks:  An array of lists, with ListX containing the landmarks within
         ///                 X number of cells from the target cell
         /// </summary>
-        public List<Landmark>[] GetLandmarksInRange(int startCell, List<int>[] cellRange)
+        public List<Landmark>[] GetLandmarksInRange(Cell startCell, List<Cell>[] cellRange)
         {
             int range = cellRange.Length;
 
-            if (range < 0 || startCell < 0 || worldMapGlobe.cells.Count() < startCell)
+            if (range < 0)   //|| startCell < 0 || worldMapGlobe.cells.Count() < startCell)
             {
                 //This will need to be replaced with an error message
                 Debug.LogWarning("Invalid input for GetCellsInRange");
@@ -67,7 +67,7 @@ namespace WPM
             landmarks[0] = new List<Landmark>();                          //the landmarks that can be reached at that distance.  
 
             bool startHex = true;
-            foreach (List<int> hexRing in cellRange)
+            foreach (List<Cell> hexRing in cellRange)
             {
                 if (startHex)
                 {
@@ -80,9 +80,9 @@ namespace WPM
                 {
                     distance++;
                     landmarks[distance] = new List<Landmark>();
-                    foreach (int cellIndex in hexRing)
+                    foreach (Cell cell in hexRing)
                     {
-                        landmarksInCell = GetLandmarksInCell(cellIndex);
+                        landmarksInCell = GetLandmarksInCell(cell);
                         foreach (Landmark landmark in landmarksInCell)
                         {
                             if (!landmarksFound.Contains(landmark))

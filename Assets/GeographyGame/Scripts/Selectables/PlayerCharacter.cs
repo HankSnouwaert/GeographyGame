@@ -22,7 +22,7 @@ namespace WPM
         Vehicle vehicle = new Vehicle();
         GameObject InventoryPanel;
         InventoryUI inventoryUI;
-        List<int>[] cellsInRange;
+        List<Cell>[] cellsInRange;
         Dictionary<string, int> climateCosts = new Dictionary<string, int>();
         readonly Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
         public const int IMPASSABLE = 0;
@@ -54,7 +54,7 @@ namespace WPM
             inventoryUI = InventoryPanel.GetComponent(typeof(InventoryUI)) as InventoryUI;
             vehicle.InitVehicles();
             climateCosts = vehicle.GetClimateVehicle("Mild");
-            cellsInRange = globeParser.GetCellsInRange(CellLocation.index, travelRange+1);
+            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange+1);
             cameraManager.OrientOnLocation(VectorLocation);
             touristManager = gameManager.TouristManager;
 
@@ -216,13 +216,14 @@ namespace WPM
         /// <param name="newCellIndex"></param>
         public override void UpdateLocation(int newCellIndex)
         {
+            Cell newCell = worldMapGlobe.cells[newCellIndex];
             //Update distance travelled
             int neighborIndex = worldMapGlobe.GetCellNeighbourIndex(CellLocation.index, newCellIndex);
 
             base.UpdateLocation(newCellIndex);
 
-            List<int>[] cellNeighbors = globeParser.GetCellsInRange(newCellIndex, 1);
-            List<Landmark>[] landmarksInRangeTemp = globeParser.LandmarkParser.GetLandmarksInRange(newCellIndex, cellNeighbors);
+            List<Cell>[] cellNeighbors = globeParser.GetCellsInRange(newCell, 1);
+            List<Landmark>[] landmarksInRangeTemp = globeParser.LandmarkParser.GetLandmarksInRange(newCell, cellNeighbors);
             landmarksInRange.Clear();
             foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
             {
@@ -256,7 +257,7 @@ namespace WPM
 
             ClearCellCosts();
             Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = globeParser.GetCellsInRange(CellLocation.index, travelRange + 1);
+            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange + 1);
             SetCellCosts();
 
             moving = false;
@@ -268,10 +269,10 @@ namespace WPM
         /// </summary>
         public void SetCellCosts()
         {
-            foreach (int cell in cellsInRange[0])
+            foreach (Cell cell in cellsInRange[0])
             {
                 //Get Cell Attributes from Province
-                int provinceIndex = worldMapGlobe.GetProvinceNearPoint(worldMapGlobe.cells[cell].sphereCenter);
+                int provinceIndex = worldMapGlobe.GetProvinceNearPoint(cell.sphereCenter);
                 Province province = worldMapGlobe.provinces[provinceIndex];
 
                 //Loop Through Each Neighbor and Set the Cost from the Neighbor to the Cell
@@ -281,11 +282,11 @@ namespace WPM
                     bool cellOccupied = false;
                     //Check if cell is occupied
                     //if (map.cells[cell].tag != null)
-                    if(worldMapGlobe.cells[cell].occupants.Any() || worldMapGlobe.cells[cell].occupants == null)
+                    if(cell.occupants.Any() || cell.occupants == null)
                     {
                        //Check if cell is occupied by something other than the player
                        //if(map.cells[cell].tag != GetInstanceID().ToString())
-                       if(!worldMapGlobe.cells[cell].occupants.Contains(this))
+                       if(!cell.occupants.Contains(this))
                        {
                             cellOccupied = true;
                        }
@@ -293,14 +294,14 @@ namespace WPM
                     int cost = climateCosts[climateAttribute];
                     if (cost == IMPASSABLE || cellOccupied)  
                     {
-                        worldMapGlobe.SetCellCanCross(cell, false);
+                        worldMapGlobe.SetCellCanCross(cell.index, false);
                     }
                     else
                     {
-                        worldMapGlobe.SetCellCanCross(cell, true);
-                        foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell))
+                        worldMapGlobe.SetCellCanCross(cell.index, true);
+                        foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell.index))
                         {
-                            worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell, cost, false);
+                            worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell.index, cost, false);
                         }
                         
                     }
@@ -313,12 +314,12 @@ namespace WPM
         /// </summary>
         public void ClearCellCosts()
         {
-            foreach (int cell in cellsInRange[0])
+            foreach (Cell cell in cellsInRange[0])
             {
-                worldMapGlobe.SetCellCanCross(cell, true);
-                foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell))
+                worldMapGlobe.SetCellCanCross(cell.index, true);
+                foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell.index))
                 {
-                    worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell, 0, false);
+                    worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell.index, 0, false);
                 }
             }
         }

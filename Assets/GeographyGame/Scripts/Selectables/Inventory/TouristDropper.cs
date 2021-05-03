@@ -105,18 +105,18 @@ namespace WPM
                 return false;
             }
 
-            List<int> selectedProvinces = provinceParser.GetProvicesInCell(dropOffCell.index);
+            List<Province> selectedProvinces = provinceParser.GetProvicesInCell(dropOffCell);
             if (selectedProvinces == null)
             {
                 errorHandler.ReportError("Drop Off Failed: No provinces in cell", ErrorState.close_window);
                 return false;
             }
 
-            foreach (int provinceIndex in selectedProvinces)
+            foreach (Province province in selectedProvinces)
             {
                 try
                 {
-                    if (worldMapGlobe.provinces[provinceIndex] == provinceDestination)
+                    if (province == provinceDestination)
                     {
                         dropOffSuccess = true;
                         break;
@@ -188,18 +188,18 @@ namespace WPM
                 return false;
             }
 
-            List<int> selectedCountries = countryParser.GetCountriesInCell(dropOffCell.index);
+            List<Country> selectedCountries = countryParser.GetCountriesInCell(dropOffCell);
             if (selectedCountries == null)
             {
                 errorHandler.ReportError("Drop Off Failed: No countries in cell", ErrorState.close_window);
                 return false;
             }
 
-            foreach (int countryIndex in selectedCountries)
+            foreach (Country country in selectedCountries)
             {
                 try
                 {
-                    if (worldMapGlobe.countries[countryIndex] == countryDestination)
+                    if (country == countryDestination)
                     {
                         dropOffSuccess = true;
                     }

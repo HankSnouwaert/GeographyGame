@@ -112,10 +112,10 @@ namespace WPM
             if(CellLocation != null)
             {
                 CountriesOccupied.Clear();
-                List<int> countryIndexes = countryParser.GetCountriesInCell(CellLocation.index);
-                foreach (int countryIndex in countryIndexes)
+                List<Country> countries = countryParser.GetCountriesInCell(CellLocation);
+                foreach (Country country in countries)
                 {
-                    CountriesOccupied.Add(globeManager.WorldMapGlobe.countries[countryIndex]);
+                    CountriesOccupied.Add(country);
                 }
             }
         }
@@ -125,10 +125,10 @@ namespace WPM
             if (CellLocation != null)
             {
                 ProvincesOccupied.Clear();
-                List<int> provinceIndexes = provinceParser.GetProvicesInCell(CellLocation.index);
-                foreach (int provinceIndex in provinceIndexes)
+                List<Province> provinces = provinceParser.GetProvicesInCell(CellLocation);
+                foreach (Province province in provinces)
                 {
-                    ProvincesOccupied.Add(globeManager.WorldMapGlobe.provinces[provinceIndex]);
+                    ProvincesOccupied.Add(province);
                 }
             }
         }

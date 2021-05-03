@@ -4,8 +4,8 @@ namespace WPM
 {
     public interface ICountryParser
     {
-        List<int> GetCountriesFromProvinces(List<int> provinceIndexes);
-        List<int> GetCountriesInCell(int cellIndex);
-        List<int>[] GetCountriesInRange(int startCell, List<int>[] cellRange);
+        List<Country> GetCountriesFromProvinces(List<Province> provinces);
+        List<Country> GetCountriesInCell(Cell cell);
+        List<Country>[] GetCountriesInRange(Cell startCell, List<Cell>[] cellRange);
     }
 }
