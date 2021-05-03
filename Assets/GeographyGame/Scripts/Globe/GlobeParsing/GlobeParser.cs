@@ -57,24 +57,14 @@ namespace WPM
             }
             
         }
-
-        /// <summary> 
-        /// Get all cells within a certain range (measured in cells) of a target cell
-        /// Inputs:
-        ///     startCell:  Target cell the range is being measured from
-        ///     range:      The range (in cells) out from startCell that the method increments through
-        /// Outputs:
-        ///     cells:  An array of lists, with List0 containing all cells within range
-        ///             and ListX containing the cells X number of cells away from the target cell
-        /// </summary>
+ 
         public List<Cell>[] GetCellsInRange(Cell startCell, int range = 0)
         {
             int startCellIndex = startCell.index;
 
             if (range < 0 || startCellIndex < 0 || worldMapGlobe.cells.Count() < startCellIndex)
             {
-                //This will need to be replaced with an error message
-                Debug.LogWarning("Invalid input for GetCellsInRange");
+                errorHandler.ReportError("Invalid Globe Parser input", ErrorState.close_window);
                 return null;
             }
 
@@ -93,7 +83,7 @@ namespace WPM
                 //And add them to List0
                 distance++;
                 cells[distance] = new List<Cell>();
-                foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(startCell.index))
+                foreach (Cell neighbour in startCell.neighbours)
                 {
                     cells[0].Add(neighbour);
                     cells[distance].Add(neighbour);
@@ -109,7 +99,7 @@ namespace WPM
                 cells[distance] = new List<Cell>();
                 foreach (Cell cell in cells[distance - 1])
                 {
-                    foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell.index))
+                    foreach (Cell neighbour in cell.neighbours)
                     {
                         if (!neighbour.flag)
                         {

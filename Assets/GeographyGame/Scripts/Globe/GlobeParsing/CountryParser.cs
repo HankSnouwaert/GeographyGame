@@ -7,18 +7,44 @@ namespace WPM
 {
     public class CountryParser : MonoBehaviour, ICountryParser
     {
-        private GlobeManager globeManager;
+        private IGlobeManager globeManager;
         private WorldMapGlobe worldMapGlobe;
+        private IGlobeParser globeParser;
         private IProvinceParser provinceParser;
+        //Error Checking
+        private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
+
         private void Awake()
         {
-            globeManager = FindObjectOfType<GlobeManager>();
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
         }
         private void Start()
         {
-            provinceParser = globeManager.GlobeParser.ProvinceParser;
-            worldMapGlobe = globeManager.WorldMapGlobe;
+            globeManager = interfaceFactory.GlobeManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            if (globeManager == null || errorHandler == null)
+                gameObject.SetActive(false);
+            else
+            {
+                worldMapGlobe = globeManager.WorldMapGlobe;
+                if (worldMapGlobe == null)
+                    errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
+                globeParser = globeManager.GlobeParser;
+                if (globeParser == null)
+                    errorHandler.ReportError("Globe Parser missing", ErrorState.restart_scene);
+                else
+                {
+                    provinceParser = globeParser.ProvinceParser;
+                    if(provinceParser == null)
+                        errorHandler.ReportError("Province Parser missing", ErrorState.restart_scene);
+                }
+            }
+            
         }
+        
         /// <summary> 
         /// Get all countries within a certain range (measured in cells) of a target cell
         /// Inputs:
