@@ -45,23 +45,11 @@ namespace WPM
             
         }
         
-        /// <summary> 
-        /// Get all countries within a certain range (measured in cells) of a target cell
-        /// Inputs:
-        ///     startCell:  Target cell the range is being measured from
-        ///     range:      The range (in cells) out from startCell that the method increments through
-        /// Outputs:
-        ///     countryIndexes:  An array of lists, with ListX containing the countries reachable within
-        ///                 X number of cells away from the target cell
-        /// </summary>
-        public List<Country>[] GetCountriesInRange(Cell startCell, List<Cell>[] cellRange)
+        public List<Country>[] GetCountriesInRange(Cell startCell, int range)
         {
-            int range = cellRange.Length;
-
-            if (range < 0)// || startCell < 0 || worldMapGlobe.cells.Count() < startCell)
+            if (range < 0 || startCell.index < 0 || worldMapGlobe.cells.Count() < startCell.index)
             {
-                //This will need to be replaced with an error message
-                Debug.LogWarning("Invalid input for GetProvincesInRange");
+                errorHandler.ReportError("Invalid input for GetCountriesInRange", ErrorState.close_window);
                 return null;
             }
 
@@ -69,23 +57,34 @@ namespace WPM
             List<Country> foundCountries= new List<Country>();            //the provinces that can be reached at that distance. 
 
             List<Province>[] provinces = provinceParser.GetProvincesInRange(startCell, range);
-
-            //Create lists of the countries within range based off of the provinces in range
-            int i = 0;
-            //Province province;
-            foreach (List<Country> countryList in countries)
+            if(provinces == null)
             {
-                foreach (Province province in provinces[i])
+                errorHandler.ReportError("Failed to parse provinces", ErrorState.close_window);
+                return null;
+            }
+
+            try
+            {
+                //Create lists of the countries within range based off of the provinces in range
+                int i = 0;
+                //Province province;
+                foreach (List<Country> countryList in countries)
                 {
-                    //province = worldMapGlobe.provinces[provinceIndex];
-                    Country country = worldMapGlobe.countries[province.countryIndex];
-                    if (!foundCountries.Contains(country))
+                    foreach (Province province in provinces[i])
                     {
-                        foundCountries.Add(country);
-                        countries[i].Add(country);
+                        Country country = worldMapGlobe.countries[province.countryIndex];
+                        if (!foundCountries.Contains(country))
+                        {
+                            foundCountries.Add(country);
+                            countries[i].Add(country);
+                        }
                     }
+                    i++;
                 }
-                i++;
+            }
+            catch (System.Exception ex)
+            {
+                errorHandler.CatchException(ex, ErrorState.close_window);
             }
 
             return countries;
@@ -101,6 +100,11 @@ namespace WPM
         public List<Country> GetCountriesInCell(Cell cell)
         {
             List<Province> provinces = provinceParser.GetProvicesInCell(cell);
+            if (provinces == null)
+            {
+                errorHandler.ReportError("Failed to parse provinces", ErrorState.close_window);
+                return null;
+            }
             List<Country> countries = GetCountriesFromProvinces(provinces);
 
             return countries;
@@ -115,15 +119,20 @@ namespace WPM
         {
             List<Country> countries = new List<Country>();
             Country country;
-            //Province province;
-            foreach (Province province in provinces)
+            try
             {
-                //province = worldMapGlobe.provinces[provinceIndex];
-                country = worldMapGlobe.countries[province.countryIndex];
-                if (!countries.Contains(country))
+                foreach (Province province in provinces)
                 {
-                    countries.Add(country);
+                    country = worldMapGlobe.countries[province.countryIndex];
+                    if (!countries.Contains(country))
+                    {
+                        countries.Add(country);
+                    }
                 }
+            }
+            catch(System.Exception ex)
+            {
+                errorHandler.CatchException(ex, ErrorState.close_window);
             }
             return countries;
         }

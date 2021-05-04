@@ -10,7 +10,7 @@ namespace WPM
         /// <summary> 
         /// Gets all the provinces with territory in a given cell
         /// </summary>
-        /// <param name="cell"> The cell being parsed fro provinces </param>
+        /// <param name="cell"> The cell being parsed for provinces </param>
         /// <returns> A list of provinces with territory that overlaps with the given cell</returns>
         List<Province> GetProvicesInCell(Cell cell);
 
