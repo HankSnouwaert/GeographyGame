@@ -222,8 +222,8 @@ namespace WPM
 
             base.UpdateLocation(newCellIndex);
 
-            List<Cell>[] cellNeighbors = globeParser.GetCellsInRange(newCell, 1);
-            List<Landmark>[] landmarksInRangeTemp = globeParser.LandmarkParser.GetLandmarksInRange(newCell, cellNeighbors);
+            //List<Cell>[] cellNeighbors = globeParser.GetCellsInRange(newCell, 1);
+            List<Landmark>[] landmarksInRangeTemp = globeParser.LandmarkParser.GetLandmarksInRange(newCell, 1);
             landmarksInRange.Clear();
             foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
             {

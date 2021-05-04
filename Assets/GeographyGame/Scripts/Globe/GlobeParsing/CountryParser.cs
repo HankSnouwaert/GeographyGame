@@ -7,6 +7,7 @@ namespace WPM
 {
     public class CountryParser : MonoBehaviour, ICountryParser
     {
+        //Internal Reference Interfaces
         private IGlobeManager globeManager;
         private WorldMapGlobe worldMapGlobe;
         private IGlobeParser globeParser;
