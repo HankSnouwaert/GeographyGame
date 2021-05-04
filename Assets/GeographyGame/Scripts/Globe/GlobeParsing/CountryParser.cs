@@ -68,7 +68,7 @@ namespace WPM
             List<Country>[] countries= new List<Country>[range + 1];      //provinces is an array of lists with each list containing 
             List<Country> foundCountries= new List<Country>();            //the provinces that can be reached at that distance. 
 
-            List<Province>[] provinces = provinceParser.GetProvincesInRange(startCell, cellRange);
+            List<Province>[] provinces = provinceParser.GetProvincesInRange(startCell, range);
 
             //Create lists of the countries within range based off of the provinces in range
             int i = 0;
