@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace WPM
 {
+    /// <summary> 
+    /// Represents a region of the world globe map and contains all the possible tourist destinations from that region
+    /// </summary>
     public class TouristRegion : MonoBehaviour
     {
         public string regionName;
@@ -11,17 +14,5 @@ namespace WPM
         public List<string> landmarks = new List<string>();
         public List<int> countries = new List<int>();
         public List<TouristRegion> neighbouringRegions = new List<TouristRegion>();
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
     }
 }
