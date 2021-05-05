@@ -12,14 +12,17 @@ namespace WPM
         [SerializeField]
         private GameObject cellCursorInterfaceObject;
         [SerializeField]
-        private GameObject globeInitializerObject;
+        private GameObject globeEditorObject;
         [SerializeField]
         private GameObject globeInfoObject;
+        [SerializeField]
+        private GameObject mappablesManagerObject;
         //Child Interfaces
         public IGlobeParser GlobeParser { get; protected set; }
         public ICellCursorInterface CellCursorInterface { get; protected set; }
-        public IGlobeInitializer GlobeInitializer { get; protected set; }
+        public IGlobeEditor GlobeEditor { get; protected set; }
         public IGlobeInfo GlobeInfo { get; protected set; }
+        public IMappablesManager MappablesManager { get; protected set; }
         //World Globe Map doesn't use an interface
         public WorldMapGlobe WorldMapGlobe { get; protected set; }
         //Local Interface References
@@ -49,12 +52,16 @@ namespace WPM
                 if (CellCursorInterface == null)
                     componentMissing = true;
 
-                GlobeInitializer = globeInitializerObject.GetComponent(typeof(IGlobeInitializer)) as IGlobeInitializer;
-                if (GlobeInitializer == null)
+                GlobeEditor = globeEditorObject.GetComponent(typeof(IGlobeEditor)) as IGlobeEditor;
+                if (GlobeEditor == null)
                     componentMissing = true;
 
                 GlobeInfo = globeInfoObject.GetComponent(typeof(IGlobeInfo)) as IGlobeInfo;
                 if (GlobeInfo == null)
+                    componentMissing = true;
+
+                MappablesManager = mappablesManagerObject.GetComponent(typeof(IMappablesManager)) as IMappablesManager;
+                if (MappablesManager == null)
                     componentMissing = true;
             }
             catch
@@ -76,7 +83,19 @@ namespace WPM
                 if (componentMissing)
                     errorHandler.ReportError("Component Missing", ErrorState.restart_scene);
 
-                GlobeInitializer.ApplyGlobeSettings();
+                ApplyGlobeSettings();
+            }
+        }
+
+        private void ApplyGlobeSettings()
+        {
+            foreach (Country country in WorldMapGlobe.countries)
+            {
+                if (country.continent == "North America")
+                {
+                    GlobeEditor.MergeProvincesInCountry(country, GlobeEditor.ProvinceSettings);
+                    MappablesManager.IntantiateMappables(country);
+                }
             }
         }
     }

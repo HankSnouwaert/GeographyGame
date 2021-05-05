@@ -16,7 +16,7 @@
         /// <summary> 
         /// Used to initialize the globe when the scen starts
         /// </summary>
-        IGlobeInitializer GlobeInitializer { get; }
+        IGlobeEditor GlobeEditor { get; }
         /// <summary> 
         /// Contains information about the globe and its contents
         /// </summary>
