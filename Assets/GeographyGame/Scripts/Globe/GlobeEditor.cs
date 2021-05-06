@@ -16,17 +16,12 @@ namespace WPM
         private IPlayerManager playerManager;
         //Public Variables
         public bool[] ProvinceSettings { get; protected set; }  = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
-        
         //MACROS
         //Province Attributes
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
         public const int POLITICAL_PROVINCE = 0;
         public const int TERRAIN = 1;
         public const int CLIMATE = 2;
-        //Mount Points
-        public const int START_POINT = 0;
-        public const int NATURAL_POINT = 1;
-        public const int CULTURAL_POINT = 2;
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
@@ -76,38 +71,37 @@ namespace WPM
             ProvinceSettings[POLITICAL_PROVINCE] = true;
             ProvinceSettings[TERRAIN] = false;
             ProvinceSettings[CLIMATE] = false;
-
+            worldMapGlobe.drawAllProvinces = false;
             //}
         }
-
-       
 
         public void MergeProvincesInCountry(Country country, bool[] provinceSettings)
         {
             int countryIndex = worldMapGlobe.GetCountryIndex(country.name);
-            if (countryIndex >= 0)
+            Province[] countryProvinces = worldMapGlobe.countries[countryIndex].provinces;
+            if (countryIndex < 0 || countryProvinces == null)
             {
-                //Get all provinces for country and loop through them
-                Province[] countryProvinces = worldMapGlobe.countries[countryIndex].provinces;
-                List<Province> countryProvinceList = countryProvinces.ToList();
-
-                Province province;
-                List<Province> removedProvinces = new List<Province>();
-                for(int i = 0; i < countryProvinceList.Count; i++)
+                errorHandler.ReportError("Attempted to merge invalid provinces in invalid country", ErrorState.close_window);
+                return;
+            }
+            
+            //Get all provinces for country and loop through them
+            List<Province> countryProvinceList = countryProvinces.ToList();
+            List<Province> removedProvinces = new List<Province>();
+            Province province;
+            for(int i = 0; i < countryProvinceList.Count; i++)
+            {
+                //Get province attributes
+                province = countryProvinceList[i];
+                removedProvinces = MergeProvinceWithNeighbors(province, provinceSettings, false);
+                if (removedProvinces.Count > 0)
                 {
-                    //Get province attributes
-                    province = countryProvinceList[i];
-                    removedProvinces = MergeProvinceWithNeighbors(province, provinceSettings, false);
-                    if(removedProvinces.Count > 0)
+                    foreach (Province removedProvince in removedProvinces)
                     {
-                        foreach(Province removedProvince in removedProvinces)
-                        {
-                            countryProvinceList.Remove(removedProvince);
-                        }
+                        countryProvinceList.Remove(removedProvince);
                     }
                 }
-            }
-            worldMapGlobe.drawAllProvinces = false;
+            }  
         }
 
         public List<Province> MergeProvinceWithNeighbors(Province province, bool[] provinceSettings, bool mergeAcrossCountries)
@@ -143,10 +137,23 @@ namespace WPM
             return removedProvinces;
         }
 
+        /// <summary> 
+        /// Given two provinces and a set of province settings, return a flag indicating if those provinces should be merged
+        /// </summary>
+        /// <param name="province1"> The first province for comparision </param>
+        /// <param name="province2"> The second province for comparision </param>
+        /// <param name="provinceSettings"> A list of flags indicating which attributes should be used for comparison</param>
+        /// <returns> A flag indicating if the provinces should be merged </returns>
         private bool CheckIfProvincesShouldBeMerged(Province province1, Province province2, bool[] provinceSettings)
         {
             string[] province1Attributes = GetProvinceAttributes(province1);
             string[] province2Attributes = GetProvinceAttributes(province2);
+
+            if(province1Attributes.Length != NUMBER_OF_PROVINCE_ATTRIBUTES || province1Attributes.Length != NUMBER_OF_PROVINCE_ATTRIBUTES)
+            {
+                errorHandler.ReportError("Province has invalid number of provinces", ErrorState.close_window);
+                return false;
+            }
 
             //Default to assuming the neighbor will be merged
             bool mergeNeighbor = true;
@@ -165,24 +172,34 @@ namespace WPM
                 }
                 i++;
             }
-
             return mergeNeighbor;
         }
 
+        /// <summary> 
+        /// Merge a neighboring province into a given province
+        /// </summary>
+        /// <param name="mainProvince"> The province absorbing its neighbor </param>
+        /// <param name="neighbor"> The province being absorbed </param>
         private void MergeProvinces(Province mainProvince, Province neighbor)
         {
-            int provinceIndex = worldMapGlobe.GetProvinceIndex(mainProvince.countryIndex, mainProvince.name);
+            try
+            {
+                int provinceIndex = worldMapGlobe.GetProvinceIndex(mainProvince.countryIndex, mainProvince.name);
 
-            //Merge provinces
-            worldMapGlobe.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
-
-            //Clear unused attributes
-            //if (!loadedMapSettings.provinces)
-            //    neighbor.attrib["PoliticalProvince"] = "";
-            //if (!loadedMapSettings.terrain)
-            neighbor.attrib["Terrain"] = "";
-            //if (!loadedMapSettings.climate)
-            neighbor.attrib["Climate"] = "";
+                //Merge provinces
+                worldMapGlobe.ProvinceTransferProvinceRegion(provinceIndex, neighbor.mainRegion, true);
+                //Clear unused attributes
+                //if (!loadedMapSettings.provinces)
+                //    neighbor.attrib["PoliticalProvince"] = "";
+                //if (!loadedMapSettings.terrain)
+                neighbor.attrib["Terrain"] = "";
+                //if (!loadedMapSettings.climate)
+                neighbor.attrib["Climate"] = "";
+            }
+            catch(System.Exception ex)
+            {
+                errorHandler.CatchException(ex, ErrorState.close_window);
+            }
         }
 
         public string[] GetProvinceAttributes(Province province)
