@@ -13,6 +13,11 @@ namespace WPM
         private IGlobeManager globeManager;
         private IGlobeInfo globeInfo;
         private IPlayerManager playerManager;
+        //Public Interface References
+        public ILandmarkManager LandmarkManager { get; protected set; }
+        //Private Variables
+        private bool started = false;
+        private bool componentMissing = false;
         //Mount Points
         public const int START_POINT = 0;
         public const int NATURAL_POINT = 1;
@@ -26,12 +31,21 @@ namespace WPM
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
 
-
         private void Awake()
         {
             interfaceFactory = FindObjectOfType<InterfaceFactory>();
             if (interfaceFactory == null)
                 gameObject.SetActive(false);
+            try
+            {
+                LandmarkManager = GetComponent(typeof(ILandmarkManager)) as ILandmarkManager;
+                if (LandmarkManager == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
         }
 
         private void Start()
@@ -43,6 +57,9 @@ namespace WPM
                 gameObject.SetActive(false);
             else
             {
+                if (componentMissing == true)
+                    errorHandler.ReportError("Mapplable Manager component missing", ErrorState.restart_scene);
+
                 globeInfo = globeManager.GlobeInfo;
                 if (globeInfo == null)
                     errorHandler.ReportError("Globe Info missing", ErrorState.restart_scene);
@@ -54,57 +71,47 @@ namespace WPM
                 worldMapGlobe = globeManager.WorldMapGlobe;
                 if (worldMapGlobe == null)
                     errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
+
+                started = true;
             }
         }
 
         public void IntantiateMappables(Country country)
         {
-            int countryNameIndex = worldMapGlobe.GetCountryIndex(country.name);
-            //worldGlobeMap.ReloadMountPointsData();
+            if (!started)
+                Start();
+
             List<MountPoint> countryMountPoints = new List<MountPoint>();
-            int mountPointCount = worldMapGlobe.GetMountPoints(countryNameIndex, countryMountPoints);
+            try
+            {
+                int countryIndex = worldMapGlobe.GetCountryIndex(country.name);
+                int mountPointCount = worldMapGlobe.GetMountPoints(countryIndex, countryMountPoints);
+            }
+            catch
+            {
+                errorHandler.ReportError("Failed to load country's mount points", ErrorState.restart_scene);
+                return;
+            }
 
             foreach (MountPoint mountPoint in countryMountPoints)
             {
                 if (mountPoint.type == START_POINT && mountPoint.provinceIndex == worldMapGlobe.GetProvinceIndex(startingCountry, startingProvince))
                 {
                     int startingCellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
-                    Cell startingCell = worldMapGlobe.cells[startingCellIndex];
-                    bool playerInstantiated = playerManager.IntantiatePlayer(startingCell);
-                    /*
-                    GameObject playerObject = Instantiate(playerPrefab);
-                    gameManager.Player = playerObject.GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
-                    int startingCellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
-                    gameManager.Player.CellLocation = startingCellIndex;
-                    gameManager.Player.Latlon = worldMapGlobe.cells[startingCellIndex].latlon;
-                    Vector3 startingLocation = worldMapGlobe.cells[startingCellIndex].sphereCenter;
-                    gameManager.Player.VectorLocation = startingLocation;
-                    float playerSize = gameManager.Player.GetSize();
-                    worldMapGlobe.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
-                    //string playerID = gameManager.Player.GetInstanceID().ToString();
-                    worldMapGlobe.cells[startingCellIndex].occupants.Add(gameManager.Player);
-                    //globeInfo.MappedObjects.Add(playerID, gameManager.Player);
-                    */
+                    if(startingCellIndex < 0 || startingCellIndex > worldMapGlobe.cells.Length)
+                    {
+                        errorHandler.ReportError("Invalid starting mount point", ErrorState.restart_scene);
+                    }
+                    else
+                    {
+                        Cell startingCell = worldMapGlobe.cells[startingCellIndex];
+                        bool playerInstantiated = playerManager.IntantiatePlayer(startingCell);
+                    }
                 }
                 if (mountPoint.type == CULTURAL_POINT) //&& loadedMapSettings.culturalLandmarks)
                 {
-                    string mountPointName = mountPoint.name;
-                    string tempName = mountPointName.Replace("The", "");
-                    tempName = tempName.Replace(" ", "");
-                    var model = Resources.Load<GameObject>(landmarkFilePath + tempName);
-                    var modelClone = Instantiate(model);
-                    Landmark landmarkComponent = modelClone.GetComponent(typeof(Landmark)) as Landmark;
-                    landmarkComponent.MountPoint = mountPoint;
-                    landmarkComponent.ObjectName = mountPointName;
-                    landmarkComponent.CellIndex = worldMapGlobe.GetCellIndex(mountPoint.localPosition);
-                    landmarkComponent.CellLocation = worldMapGlobe.cells[landmarkComponent.CellIndex];
-                    landmarkComponent.CellLocation.canCross = false;
-                    worldMapGlobe.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
-                    string landmarkID = landmarkComponent.GetInstanceID().ToString();
-                    worldMapGlobe.cells[landmarkComponent.CellIndex].occupants.Add(landmarkComponent);
-                    globeInfo.MappedObjects.Add(landmarkID, landmarkComponent);
-                    globeInfo.CulturalLandmarks.Add(landmarkID, landmarkComponent);
-                    globeInfo.CulturalLandmarksByName.Add(landmarkComponent.ObjectName, landmarkComponent);
+                    LandmarkManager.InstantiateCulturalLandmark(mountPoint);
+                   
                 }
             }
         }

@@ -16,6 +16,8 @@ namespace WPM
         private IPlayerManager playerManager;
         //Public Variables
         public bool[] ProvinceSettings { get; protected set; }  = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
+        //Private Variables
+        private bool started = false;
         //MACROS
         //Province Attributes
         public const int NUMBER_OF_PROVINCE_ATTRIBUTES = 3;
@@ -31,8 +33,6 @@ namespace WPM
             interfaceFactory = FindObjectOfType<InterfaceFactory>();
             if (interfaceFactory == null)
                 gameObject.SetActive(false);
-            else
-                SetGlobeSettings();
         }
         private void Start()
         {
@@ -52,6 +52,9 @@ namespace WPM
                 playerManager = gameManager.PlayerManager;
                 if (playerManager == null)
                     errorHandler.ReportError("Player Manager missing", ErrorState.restart_scene);
+
+                SetGlobeSettings();
+                started = true;
             }
         }
 
@@ -77,6 +80,9 @@ namespace WPM
 
         public void MergeProvincesInCountry(Country country, bool[] provinceSettings)
         {
+            if (!started)
+                Start();
+
             int countryIndex = worldMapGlobe.GetCountryIndex(country.name);
             Province[] countryProvinces = worldMapGlobe.countries[countryIndex].provinces;
             if (countryIndex < 0 || countryProvinces == null)
@@ -106,6 +112,9 @@ namespace WPM
 
         public List<Province> MergeProvinceWithNeighbors(Province province, bool[] provinceSettings, bool mergeAcrossCountries)
         {
+            if (!started)
+                Start();
+
             int countryIndex = province.countryIndex;
            
             //Get all neighbors for province and loop through them
