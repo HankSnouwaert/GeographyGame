@@ -9,20 +9,35 @@ namespace WPM
         //Internal Interface References
         private WorldMapGlobe worldMapGlobe;
         private IGlobeManager globeManager;
-        private IGlobeInfo globeInfo;
+        private IMappablesManager mappablesManager;
         //Private Variables
         private bool started = false;
+        //Public Variables
+        public Dictionary<string, Landmark> CulturalLandmarks { get; set; } = new Dictionary<string, Landmark>();
+        public Dictionary<string, Landmark> CulturalLandmarksByName { get; set; } = new Dictionary<string, Landmark>();
         //Path of Landmark Assets
         private string landmarkFilePath = "Prefabs/Landmarks/";
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
+        private bool componentMissing = false;
 
         private void Awake()
         {
             interfaceFactory = FindObjectOfType<InterfaceFactory>();
             if (interfaceFactory == null)
                 gameObject.SetActive(false);
+
+            try
+            {
+                mappablesManager = GetComponent(typeof(IMappablesManager)) as IMappablesManager;
+                if (mappablesManager == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
         }
 
         private void Start()
@@ -33,9 +48,8 @@ namespace WPM
                 gameObject.SetActive(false);
             else
             {
-                globeInfo = globeManager.GlobeInfo;
-                if (globeInfo == null)
-                    errorHandler.ReportError("Globe Info missing", ErrorState.restart_scene);
+                if (componentMissing == true)
+                    errorHandler.ReportError("Landmark Manager missing component", ErrorState.restart_scene);
 
                 worldMapGlobe = globeManager.WorldMapGlobe;
                 if (worldMapGlobe == null)
@@ -93,9 +107,9 @@ namespace WPM
             worldMapGlobe.AddMarker(modelClone, mountPoint.localPosition, 0.001f, false, -5.0f, true, true);
             landmarkComponent.CellLocation.occupants.Add(landmarkComponent);
             string landmarkID = landmarkComponent.GetInstanceID().ToString();
-            globeInfo.MappedObjects.Add(landmarkID, landmarkComponent);
-            globeInfo.CulturalLandmarks.Add(landmarkID, landmarkComponent);
-            globeInfo.CulturalLandmarksByName.Add(landmarkComponent.ObjectName, landmarkComponent);
+            mappablesManager.MappedObjects.Add(landmarkID, landmarkComponent);
+            CulturalLandmarks.Add(landmarkID, landmarkComponent);
+            CulturalLandmarksByName.Add(landmarkComponent.ObjectName, landmarkComponent);
 
             return true;
         }

@@ -11,10 +11,11 @@ namespace WPM
         private IGameManager gameManager;
         private WorldMapGlobe worldMapGlobe;
         private IGlobeManager globeManager;
-        private IGlobeInfo globeInfo;
         private IPlayerManager playerManager;
         //Public Interface References
         public ILandmarkManager LandmarkManager { get; protected set; }
+        //Public Variables
+        public Dictionary<string, MappableObject> MappedObjects { get; set; } = new Dictionary<string, MappableObject>();
         //Private Variables
         private bool started = false;
         private bool componentMissing = false;
@@ -59,10 +60,6 @@ namespace WPM
             {
                 if (componentMissing == true)
                     errorHandler.ReportError("Mapplable Manager component missing", ErrorState.restart_scene);
-
-                globeInfo = globeManager.GlobeInfo;
-                if (globeInfo == null)
-                    errorHandler.ReportError("Globe Info missing", ErrorState.restart_scene);
 
                 playerManager = gameManager.PlayerManager;
                 if(playerManager == null)

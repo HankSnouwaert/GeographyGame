@@ -14,14 +14,11 @@ namespace WPM
         [SerializeField]
         private GameObject globeEditorObject;
         [SerializeField]
-        private GameObject globeInfoObject;
-        [SerializeField]
         private GameObject mappablesManagerObject;
         //Child Interfaces
         public IGlobeParser GlobeParser { get; protected set; }
         public ICellCursorInterface CellCursorInterface { get; protected set; }
         public IGlobeEditor GlobeEditor { get; protected set; }
-        public IGlobeInfo GlobeInfo { get; protected set; }
         public IMappablesManager MappablesManager { get; protected set; }
         //World Globe Map doesn't use an interface
         public WorldMapGlobe WorldMapGlobe { get; protected set; }
@@ -54,10 +51,6 @@ namespace WPM
 
                 GlobeEditor = globeEditorObject.GetComponent(typeof(IGlobeEditor)) as IGlobeEditor;
                 if (GlobeEditor == null)
-                    componentMissing = true;
-
-                GlobeInfo = globeInfoObject.GetComponent(typeof(IGlobeInfo)) as IGlobeInfo;
-                if (GlobeInfo == null)
                     componentMissing = true;
 
                 MappablesManager = mappablesManagerObject.GetComponent(typeof(IMappablesManager)) as IMappablesManager;

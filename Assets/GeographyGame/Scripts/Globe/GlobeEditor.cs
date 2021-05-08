@@ -12,7 +12,6 @@ namespace WPM
         private IGameManager gameManager;
         private WorldMapGlobe worldMapGlobe;
         private IGlobeManager globeManager;
-        private IGlobeInfo globeInfo;
         private IPlayerManager playerManager;
         //Public Variables
         public bool[] ProvinceSettings { get; protected set; }  = new bool[NUMBER_OF_PROVINCE_ATTRIBUTES];
@@ -46,9 +45,6 @@ namespace WPM
                 worldMapGlobe = globeManager.WorldMapGlobe;
                 if (worldMapGlobe == null)
                     errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
-                globeInfo = globeManager.GlobeInfo;
-                if (globeInfo == null)
-                    errorHandler.ReportError("Globe Info missing", ErrorState.restart_scene);
                 playerManager = gameManager.PlayerManager;
                 if (playerManager == null)
                     errorHandler.ReportError("Player Manager missing", ErrorState.restart_scene);

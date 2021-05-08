@@ -18,12 +18,13 @@
         /// </summary>
         IGlobeEditor GlobeEditor { get; }
         /// <summary> 
-        /// Contains information about the globe and its contents
-        /// </summary>
-        IGlobeInfo GlobeInfo { get; }
-        /// <summary> 
         /// Used to retreive specific information from specific locations on the globe
         /// </summary>
         IGlobeParser GlobeParser { get; }
+
+        /// <summary> 
+        /// Used to store information and functionality related to objects on the globe
+        /// </summary>
+        IMappablesManager MappablesManager { get; }
     }
 }

@@ -8,10 +8,11 @@ namespace WPM
     {
         //Interal Interface References
         private IGlobeManager globeManager;
-        private IGlobeInfo globeInfo;
         private WorldMapGlobe worldMapGlobe;
         private IGameManager gameManager;
         private ITouristManager touristManager;
+        private IMappablesManager mappablesManager;
+        private ILandmarkManager landmarkManager;
         //Local Variables
         private int destinationIndex;
         private bool started = false;
@@ -50,9 +51,15 @@ namespace WPM
                 if (worldMapGlobe == null)
                     errorHandler.ReportError("World Map Globe missing", ErrorState.close_window);
 
-                globeInfo = globeManager.GlobeInfo;
-                if (globeInfo == null)
-                    errorHandler.ReportError("Globe Info missing", ErrorState.close_window);
+                mappablesManager = globeManager.MappablesManager;
+                if (mappablesManager == null)
+                    errorHandler.ReportError("Mappables Manager missing", ErrorState.close_window);
+                else
+                {
+                    landmarkManager = mappablesManager.LandmarkManager;
+                    if (landmarkManager == null)
+                        errorHandler.ReportError("Landmark Manager missing", ErrorState.close_window);
+                }
 
                 started = true;
             }
@@ -264,7 +271,7 @@ namespace WPM
             tourist.DestinationType = DestinationType.landmark;
             try
             {
-                tourist.LandmarkDestination = globeInfo.CulturalLandmarksByName[landmark];
+                tourist.LandmarkDestination = landmarkManager.CulturalLandmarksByName[landmark];
             }
             catch
             {
