@@ -17,7 +17,7 @@ namespace WPM
         private readonly float size = 0.0003f;
         public List<IInventoryItem> inventory = new List<IInventoryItem>();
         private readonly int inventorySize = 7;
-        public bool stop = false;
+        public bool Stop { get; set; } = false;
         GeoPosAnimator anim;
         Vehicle vehicle = new Vehicle();
         GameObject InventoryPanel;
@@ -79,7 +79,7 @@ namespace WPM
             }
             if (Input.GetKeyDown(KeyCode.Backspace))
             {
-                stop = true;
+                Stop = true;
             }
         }
 
@@ -133,7 +133,7 @@ namespace WPM
             if (index == CellLocation.index)
             {
                 if (moving)
-                    stop = true;
+                    Stop = true;
             }
             //Attempt to move to new location
             else 
@@ -261,7 +261,7 @@ namespace WPM
             SetCellCosts();
 
             moving = false;
-            stop = false;
+            Stop = false;
         }
 
         /// <summary>
