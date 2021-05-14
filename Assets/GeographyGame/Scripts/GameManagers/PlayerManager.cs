@@ -66,7 +66,7 @@ namespace WPM
                 PlayerCharacter.Latlon = startCell.latlon;
                 Vector3 startingLocation = startCell.sphereCenter;
                 PlayerCharacter.VectorLocation = startingLocation;
-                float playerSize = PlayerCharacter.GetSize();
+                float playerSize = PlayerCharacter.Size;
                 worldMapGlobe.AddMarker(playerObject, startingLocation, playerSize, false, 0.0f, true, true);
                 startCell.occupants.Add(PlayerCharacter);
                 return true;

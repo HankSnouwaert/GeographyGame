@@ -8,17 +8,20 @@ namespace WPM
     public class GeoPosAnimator : MonoBehaviour, IGeoPosAnimator
     {
 
-        public bool auto;
+        public bool Auto { get; set; }
 
         // Public array field with latitude/longitude positions
         public List<Vector2> LatLon;
+        public IMappableObject AnimatedObject { get; set; }
+        public bool Stop { get; set; } = false; 
+        public bool Moving { get; set; } = false; 
         //Internal Reference Interfaces
+        private IPathfinder pathfinder;
         private IGlobeManager globeManager;
         private WorldMapGlobe worldMapGlobe;
         private IPlayerManager playerManager;
-        private IPlayerCharacter playerCharacter;
+        //private IPlayerCharacter playerCharacter;
         private IGameManager gameManager;
-        private IErrorHandler errorHandler;
         //Private Variables
         private float[] stepLengths;
         private int latlonIndex;
@@ -28,6 +31,7 @@ namespace WPM
         private const float MOVE_SPEED = 0.01f;  //For Development
         //Error Checking
         private InterfaceFactory interfaceFactory;
+        private IErrorHandler errorHandler;
         private bool componentMissing = false;
 
         private void Awake()
@@ -35,6 +39,19 @@ namespace WPM
             interfaceFactory = FindObjectOfType<InterfaceFactory>();
             if (interfaceFactory == null)
                 gameObject.SetActive(false);
+            try
+            {
+                AnimatedObject = GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
+                if (AnimatedObject == null)
+                    componentMissing = true;
+                pathfinder = GetComponent(typeof(IPathfinder)) as IPathfinder;
+                if (pathfinder == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
         }
 
         private void Start()
@@ -49,6 +66,7 @@ namespace WPM
                 worldMapGlobe = globeManager.WorldMapGlobe;
                 if (worldMapGlobe == null)
                     errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
+                /*
                 playerManager = gameManager.PlayerManager;
                 if (playerManager == null)
                     errorHandler.ReportError("Player Manager missing", ErrorState.restart_scene);
@@ -58,6 +76,7 @@ namespace WPM
                     if (playerCharacter == null)
                         errorHandler.ReportError("Player Character missing", ErrorState.restart_scene);
                 }
+                */
             }
         }
 
@@ -102,7 +121,7 @@ namespace WPM
                 Vector3 pos1 = Conversion.GetSpherePointFromLatLon(LatLon[latlonIndex + 1]);
                 Vector3 pos = Vector3.Lerp(pos0, pos1, progress);
                 pos = pos.normalized * 0.5f;
-                float playerSize = playerCharacter.GetSize();
+                float playerSize = AnimatedObject.Size;
                 worldMapGlobe.AddMarker(gameObject, pos, playerSize, false);
 
                 // Make it look towards destination
@@ -134,7 +153,7 @@ namespace WPM
 
         public void Update()
         {
-            if (auto)
+            if (Auto)
             {
                 MoveTo(currentProgress);
                 currentProgress += MOVE_SPEED;
@@ -147,14 +166,14 @@ namespace WPM
                         return;
                     }
                     int newCell = worldMapGlobe.GetCellIndex(LatLon[latlonIndex]);
-                    playerCharacter.UpdateLocation(newCell);
+                    AnimatedObject.UpdateLocation(newCell);
                     currentProgress = 0;
-                    if(latlonIndex >= LatLon.Count - 1  || playerCharacter.Stop)
+                    if(latlonIndex >= LatLon.Count - 1  || Stop)
                     {
                         latlonIndex = 0;
                         LatLon.Clear();
-                        auto = false;
-                        playerCharacter.FinishedPathFinding();
+                        Auto = false;
+                        pathfinder.FinishedPathFinding();
                     }
                     
                 }

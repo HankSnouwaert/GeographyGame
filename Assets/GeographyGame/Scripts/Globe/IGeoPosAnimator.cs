@@ -4,11 +4,17 @@ namespace WPM
 {
     /// <summary> 
     /// Interface attached to objects that can move around the world map globe
+    /// It is not responsible for pathfinding
     /// </summary>
     public interface IGeoPosAnimator
     {
+        bool Auto { get; set; }
+
+        bool Stop { get; set; } 
+        bool Moving { get; set; } 
+
         /// <summary> 
-        /// Determines the path the object will take while moving
+        /// Determines the path the object will take while moving, given the existing Latlan list
         /// </summary>
         void ComputePath();
         

@@ -161,7 +161,7 @@ namespace WPM
         {
             Deselect();
             //Remove Tourist from Inventory
-            playerCharacter.RemoveItem(InventoryLocation);
+            playerCharacter.Inventory.RemoveItem(InventoryLocation);
             scoreManager.UpdateScore(TOURIST_DROP_OFF_SCORE);
             uiManager.CursorOverUI = false;
             inventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);

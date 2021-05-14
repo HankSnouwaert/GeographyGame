@@ -15,6 +15,7 @@ namespace WPM
         public List<Province> ProvincesOccupied { get; set; } = new List<Province>();
         public List<string> PoliticalProvincesOccupied { get; set; } = new List<string>();
         public List<string> ClimatesOccupied { get; set; } = new List<string>();
+        public float Size { get; protected set; }
         //Internal Interface References
         protected WorldMapGlobe worldMapGlobe;
         protected IGlobeManager globeManager;

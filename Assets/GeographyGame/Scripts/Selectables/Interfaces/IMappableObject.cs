@@ -9,6 +9,11 @@ namespace WPM
     public interface IMappableObject : ISelectableObject
     {
         /// <summary> 
+        /// The map size of the object
+        /// </summary>
+        float Size { get; }
+
+        /// <summary> 
         /// Update the objects map location given a new cell
         /// </summary>
         /// <param name="newCellIndex"> The index of the cell where 

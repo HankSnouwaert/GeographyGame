@@ -9,66 +9,97 @@ namespace WPM
 {
     public class PlayerCharacter : MappableObject, ITurnBasedObject, IPlayerCharacter
     {
-        readonly int travelRange = 30;
-        //int distanceTraveled = 0;
-        public int destination = 0;
-        bool moving = false;
-        public List<int> pathIndices = null;
-        private readonly float size = 0.0003f;
-        public List<IInventoryItem> inventory = new List<IInventoryItem>();
-        private readonly int inventorySize = 7;
-        public bool Stop { get; set; } = false;
-        GeoPosAnimator anim;
-        Vehicle vehicle = new Vehicle();
-        GameObject InventoryPanel;
-        InventoryUI inventoryUI;
-        List<Cell>[] cellsInRange;
-        Dictionary<string, int> climateCosts = new Dictionary<string, int>();
-        readonly Dictionary<string, int> terrainCosts = new Dictionary<string, int>();
-        public const int IMPASSABLE = 0;
+        //Public Variables
+        public Dictionary<string, int> ClimateCosts { get; protected set; } = new Dictionary<string, int>();
+        public Dictionary<string, int> TerrainCosts { get; protected set; }  = new Dictionary<string, int>();
+        //Constants
         private const int STARTING_NUMBER_OF_TOURISTS = 2;
+        //Public Interface References
+        public IPathfinder Pathfinder { get; protected set; }
+        public IInventory Inventory { get; protected set; }
+        //Internal Interface References
+        public Vehicle Vehicle { get; set; } = new Vehicle();
+        IGeoPosAnimator geoPosAnimator;
+        //GameObject InventoryPanel;
         private INavigationUI navigationUI;
         private ITouristManager touristManager;
         private ICameraManager cameraManager;
         private ITurnsManager turnsManager;
-        private List<Landmark> landmarksInRange = new List<Landmark>();
-
+        private ILandmarkParser landmarkParser;
+        private List<ILandmark> landmarksInRange = new List<ILandmark>();
+        //Error Checking
+        private bool componentMissing = false;
 
         protected override void Awake()
         {
             base.Awake();
-        }
+            try
+            { 
+                Pathfinder = GetComponent(typeof(IPathfinder)) as IPathfinder;
+                if (Pathfinder == null)
+                    componentMissing = true;
 
+                Inventory = GetComponent(typeof(IInventory)) as IInventory;
+                if (Inventory == null)
+                    componentMissing = true;
+
+                geoPosAnimator = GetComponent(typeof(IGeoPosAnimator)) as IGeoPosAnimator;
+                if (geoPosAnimator == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
+            Size = 0.0003f;
+            ObjectName = "player";
+        }
+        
         protected override void Start()
         {
             base.Start();
-            navigationUI = uiManager.NavigationUI;
-            cameraManager = gameManager.CameraManager;
-            turnsManager = gameManager.TurnsManager;
-            turnsManager.TurnBasedObjects.Add(this);
-            ObjectName = "player";
-            //gameManager = GameManager.instance;
-            worldMapGlobe = WorldMapGlobe.instance;
-            anim = gameObject.GetComponent(typeof(GeoPosAnimator)) as GeoPosAnimator;
-            InventoryPanel = GameObject.Find("Canvas/InventoryPanel");
-            inventoryUI = InventoryPanel.GetComponent(typeof(InventoryUI)) as InventoryUI;
-            vehicle.InitVehicles();
-            climateCosts = vehicle.GetClimateVehicle("Mild");
-            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange+1);
-            cameraManager.OrientOnLocation(VectorLocation);
-            touristManager = gameManager.TouristManager;
-
-            //Generate Initial Tourists
-            for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
+            if (gameObject.activeSelf)
             {
-                touristManager.GenerateTourist();
-            }
-            UpdateLocation(CellLocation.index);
-        }
+                if (componentMissing == true)
+                    errorHandler.ReportError("Player Character missing component", ErrorState.restart_scene);
+                else
+                {
+                    landmarkParser = globeParser.LandmarkParser;
+                    if (landmarkParser == null)
+                        errorHandler.ReportError("Landmark parser missing", ErrorState.restart_scene);
 
-        public float GetSize()
-        {
-            return size;
+                    navigationUI = uiManager.NavigationUI;
+                    if (navigationUI == null)
+                        errorHandler.ReportError("Navigation UI missing", ErrorState.restart_scene);
+
+                    touristManager = gameManager.TouristManager;
+                    if (touristManager == null)
+                        errorHandler.ReportError("Tourist Manager missing", ErrorState.restart_scene);
+                    else
+                    {
+                        for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
+                        {
+                            touristManager.GenerateTourist();
+                        }
+                    }
+
+                    cameraManager = gameManager.CameraManager;
+                    if (cameraManager == null)
+                        errorHandler.ReportError("Camera Manager missing", ErrorState.restart_scene);
+                    else
+                        cameraManager.OrientOnLocation(VectorLocation);
+
+                    turnsManager = gameManager.TurnsManager;
+                    if (turnsManager == null)
+                        errorHandler.ReportError("Turns Manager missing", ErrorState.restart_scene);
+                    else
+                        turnsManager.TurnBasedObjects.Add(this);
+
+                    Vehicle.InitVehicles();
+                    ClimateCosts = Vehicle.GetClimateVehicle("Mild");
+                    UpdateLocation(CellLocation.index);
+                }
+            }
         }
 
         private void Update()
@@ -79,50 +110,40 @@ namespace WPM
             }
             if (Input.GetKeyDown(KeyCode.Backspace))
             {
-                Stop = true;
+                geoPosAnimator.Stop = true;
             }
-        }
-
-        protected override void OnMouseDown()
-        {
-            base.OnMouseDown();
         }
 
         public override void Select()
         {
+            if(CellLocation == null)
+            {
+                errorHandler.ReportError("Invalid cell location", ErrorState.close_window);
+                return;
+            }
             base.Select();
             worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
-            SetCellCosts();
+            Pathfinder.SetCellCosts();
         }
 
         public override void Deselect()
         {
             base.Deselect();
-            ClearCellCosts();
+            Pathfinder.ClearCellCosts();
             worldMapGlobe.ClearCells(true, false, false);
             Selected = false;
         }
 
         public override void OnCellEnter(int index)
         {
-            if (!anim.auto)
+            if (!geoPosAnimator.Auto)
             {
                 //Attempt to display path to new location
                 worldMapGlobe.ClearCells(true, false, false);
-                //map.SetCellColor(cellLocation, Color.green, true);
-                try
+                Pathfinder.PathIndices = Pathfinder.FindPath(CellLocation.index, index);
+                if (Pathfinder.PathIndices != null)
                 {
-                    pathIndices = DrawPath(CellLocation.index, index);
-                }
-                catch (Exception ex)
-                {
-                    errorHandler.CatchException(ex);
-                }
-
-
-                if (pathIndices != null)
-                {
-                    pathIndices.Insert(0, CellLocation.index);
+                    Pathfinder.PathIndices.Insert(0, CellLocation.index);
                 }
                 worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
             }
@@ -132,98 +153,43 @@ namespace WPM
         {
             if (index == CellLocation.index)
             {
-                if (moving)
-                    Stop = true;
+                if (geoPosAnimator.Moving)
+                    geoPosAnimator.Stop = true;
             }
             //Attempt to move to new location
-            else 
-            if (pathIndices != null && moving == false)
+            else
             {
-                destination = index;
-                //Add latlon of each hex in path to animator's path
-                anim.GenerateLatLon(pathIndices);
-                // Compute path length
-                anim.ComputePath();
-                anim.auto = true;
-                moving = true;
-            }
+                if (Pathfinder.PathIndices != null && geoPosAnimator.Moving == false)
+                {
+                    //Add latlon of each hex in path to animator's path
+                    geoPosAnimator.GenerateLatLon(Pathfinder.PathIndices);
+                    // Compute path length
+                    geoPosAnimator.ComputePath();
+                    geoPosAnimator.Auto = true;
+                    geoPosAnimator.Moving = true;
+                }
+            } 
         }
 
         public void EndOfTurn(int turns)
         {
-            /*
-            // distanceTraveled = 0;
-            //if (selected) 
-            ClearCellCosts();
-            Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = gameManager.GetCellsInRange(cellLocation, travelRange+1);
-            //if (selected) 
-            SetCellCosts();
-            */
+
         }
 
-        /// <summary>
-        /// Draws a path between startCellIndex and endCellIndex
-        /// </summary>
-        /// <returns><c>true</c>, if path was found and drawn, <c>false</c> otherwise.</returns>
-        /// <param name="startCellIndex">Start cell index.</param>
-        /// <param name="endCellIndex">End cell index.</param>
-        List<int> DrawPath(int startCellIndex, int endCellIndex)
-        {
-            List<int> cellIndices;
-            cellIndices = worldMapGlobe.FindPath(startCellIndex, endCellIndex);
-            worldMapGlobe.ClearCells(true, false, false);
-
-            if (cellIndices == null)
-                return null;   // no path found
-
-            //Check that there is enough remaining movement to travel path
-            //Start by getting the cost between the starting cell and the first cell in the path
-            int neighborIndex = worldMapGlobe.GetCellNeighbourIndex(startCellIndex, cellIndices[0]);
-            int pathCost = worldMapGlobe.GetCellNeighbourCost(startCellIndex, neighborIndex);
-            int i = 0;
-            //Get the cumlative cost for the rest of the path
-            foreach(int cellIndex in cellIndices)
-            {
-                if (i < (cellIndices.Count - 1))
-                {
-                    neighborIndex = worldMapGlobe.GetCellNeighbourIndex(cellIndices[i], cellIndices[i + 1]);
-                    pathCost = pathCost + worldMapGlobe.GetCellNeighbourCost(cellIndices[i], neighborIndex);
-                    i++;
-                }
-            }
-
-            if (pathCost > travelRange)
-                return null;   //Path costs more movement than is available
-
-            //Path Successful
-            // Color starting cell, end cell and path
-            if (pathCost == travelRange)
-                worldMapGlobe.SetCellColor(cellIndices, Color.red, true);
-            else
-                worldMapGlobe.SetCellColor(cellIndices, Color.grey, true);
-            worldMapGlobe.SetCellColor(startCellIndex, Color.green, true);
-            
-          //map.SetCellColor(endCellIndex, Color.red, true);
-
-            return cellIndices;
-        }
-
-        /// <summary>
-        /// Update new cell location for player character, update the cell tags to reflect change in occupancy,
-        /// and update the distance the player character has travelled
-        /// </summary>
-        /// <param name="newCellIndex"></param>
         public override void UpdateLocation(int newCellIndex)
         {
+            if(newCellIndex < 0 || newCellIndex >= worldMapGlobe.cells.Length)
+            {
+                errorHandler.ReportError("Invalid cell index", ErrorState.close_window);
+                return;
+            }
             Cell newCell = worldMapGlobe.cells[newCellIndex];
-            //Update distance travelled
-            int neighborIndex = worldMapGlobe.GetCellNeighbourIndex(CellLocation.index, newCellIndex);
 
+            int neighborIndex = worldMapGlobe.GetCellNeighbourIndex(CellLocation.index, newCellIndex);
+            
             base.UpdateLocation(newCellIndex);
 
-            //List<Cell>[] cellNeighbors = globeParser.GetCellsInRange(newCell, 1);
-            List<Landmark>[] landmarksInRangeTemp = globeParser.LandmarkParser.GetLandmarksInRange(newCell, 1);
+            List<Landmark>[] landmarksInRangeTemp = landmarkParser.GetLandmarksInRange(newCell, 1);
             landmarksInRange.Clear();
             foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
             {
@@ -232,145 +198,22 @@ namespace WPM
             }
 
             List<IMappableObject> mappableLandmarks = landmarksInRange.Cast<IMappableObject>().ToList();
-
             navigationUI.UpdateNavigationDisplay(ProvincesOccupied, CountriesOccupied, mappableLandmarks);
-            //Update Turns
-            int turns = worldMapGlobe.GetCellNeighbourCost(CellLocation.index, neighborIndex);
-            turnsManager.NextTurn(turns);
-        }
 
-        /// <summary>
-        /// Clean up done at the end of player movement
-        /// </summary>
-        public void FinishedPathFinding()
-        {
-            pathIndices.Clear();
-            worldMapGlobe.ClearCells(true, false, false);
-            if (Selected)
+            //If your previous location was a neighbor, use the cell crossing cost to update the game's turns
+            if (neighborIndex >= 0)
             {
-                worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
-                if (!uiManager.CursorOverUI && globeManager.WorldMapGlobe.lastHighlightedCellIndex >= 0)
-                {
-                    OnCellEnter(globeManager.WorldMapGlobe.lastHighlightedCellIndex);
-                }
+                int turns = worldMapGlobe.GetCellNeighbourCost(CellLocation.index, neighborIndex);
+                turnsManager.NextTurn(turns);
             }
-
-            ClearCellCosts();
-            Array.Clear(cellsInRange, 0, travelRange);
-            cellsInRange = globeParser.GetCellsInRange(CellLocation, travelRange + 1);
-            SetCellCosts();
-
-            moving = false;
-            Stop = false;
-        }
-
-        /// <summary>
-        /// Set the terrain costs of all the cells that are reachable by the player
-        /// </summary>
-        public void SetCellCosts()
-        {
-            foreach (Cell cell in cellsInRange[0])
-            {
-                //Get Cell Attributes from Province
-                int provinceIndex = worldMapGlobe.GetProvinceNearPoint(cell.sphereCenter);
-                Province province = worldMapGlobe.provinces[provinceIndex];
-
-                //Loop Through Each Neighbor and Set the Cost from the Neighbor to the Cell
-                string climateAttribute = province.attrib["ClimateGroup"];
-                if (climateAttribute != "")
-                {
-                    bool cellOccupied = false;
-                    //Check if cell is occupied
-                    //if (map.cells[cell].tag != null)
-                    if(cell.occupants.Any() || cell.occupants == null)
-                    {
-                       //Check if cell is occupied by something other than the player
-                       //if(map.cells[cell].tag != GetInstanceID().ToString())
-                       if(!cell.occupants.Contains(this))
-                       {
-                            cellOccupied = true;
-                       }
-                    }             
-                    int cost = climateCosts[climateAttribute];
-                    if (cost == IMPASSABLE || cellOccupied)  
-                    {
-                        worldMapGlobe.SetCellCanCross(cell.index, false);
-                    }
-                    else
-                    {
-                        worldMapGlobe.SetCellCanCross(cell.index, true);
-                        foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell.index))
-                        {
-                            worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell.index, cost, false);
-                        }
-                        
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Clear all the terrain costs that were set by the player
-        /// </summary>
-        public void ClearCellCosts()
-        {
-            foreach (Cell cell in cellsInRange[0])
-            {
-                worldMapGlobe.SetCellCanCross(cell.index, true);
-                foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell.index))
-                {
-                    worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell.index, 0, false);
-                }
-            }
-        }
-
-        public bool AddItem(IInventoryItem item, int location)
-        {
-            inventory.Insert(location, item);
-        
-            if (inventory.Count > inventorySize)
-                RemoveItem(inventorySize);
-            /*
-            if (inventory.Count < inventorySize)
-            {
-                item.inventoryLocation = 0; //inventory.Count;
-                inventory.Add(item);
-                inventoryGUI.AddItem(item, 0);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            */
-            //Update inventory item locations
-            foreach(InventoryItem inventoryItem in inventory)
-            {
-                inventoryItem.InventoryLocation = inventory.IndexOf(inventoryItem);
-            }
-            inventoryUI.UpdateInventory(inventory);
-
-            return true;
-        }
-        public void RemoveItem(int itemLocation)
-        {
-            inventory.RemoveAt(itemLocation);
-            foreach (InventoryItem inventoryItem in inventory)
-            {
-                inventoryItem.InventoryLocation = inventory.IndexOf(inventoryItem);
-            }
-            inventoryUI.UpdateInventory(inventory);
-            if(inventory.Count == 0)
-            {
-                touristManager.GenerateTourist();
-            }
+            
         }
 
         public override void OnSelectableEnter(ISelectableObject selectableObject)
         {
             //Nothing Happens
         }
-
+        
         public override void OtherObjectSelected(ISelectableObject selectedObject)
         {
             //There will need to be check later to account for multiple object selection
