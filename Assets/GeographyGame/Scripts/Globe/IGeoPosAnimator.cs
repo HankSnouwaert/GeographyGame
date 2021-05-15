@@ -8,13 +8,24 @@ namespace WPM
     /// </summary>
     public interface IGeoPosAnimator
     {
+        /// <summary> 
+        /// Used by the animator to determine if the object should continue making movement
+        /// progress towards its destination
+        /// </summary>
         bool Auto { get; set; }
 
-        bool Stop { get; set; } 
+        /// <summary> 
+        /// Flag indicating that the object should stop moving
+        /// </summary>
+        bool Stop { get; set; }
+
+        /// <summary> 
+        /// Flag indicating whether the object is moving
+        /// </summary>
         bool Moving { get; set; } 
 
         /// <summary> 
-        /// Determines the path the object will take while moving, given the existing Latlan list
+        /// Determines the path the object will take while moving, given the existing latlan list
         /// </summary>
         void ComputePath();
         
