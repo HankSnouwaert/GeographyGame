@@ -9,26 +9,48 @@ namespace WPM
 
     abstract public class UIElement : MonoBehaviour, IUIElement
     {
-        protected GameManager gameManager;
-        protected GlobeManager globeManager;
-        protected IErrorHandler errorHandler;
-        protected IUIManager uiManager;
-        protected ICellClicker mouseCellClicker;
+        //Public Variables
         public GameObject UIObject { get; protected set; }
         public bool UIOpen { get; set; }
+        //Private Interface References
+        protected IGameManager gameManager;
+        protected IGlobeManager globeManager;
+        protected IUIManager uiManager;
+        protected ICellClicker mouseCellClicker;
+        protected ICellCursorInterface cellCursorInterface;
+        //Error Checking
+        protected InterfaceFactory interfaceFactory;
+        protected IErrorHandler errorHandler;
 
-        // Start is called before the first frame update
         protected virtual void Awake()
         {
-            gameManager = FindObjectOfType<GameManager>();
-            globeManager = FindObjectOfType<GlobeManager>();
-            UIObject = gameObject;
+            interfaceFactory = FindObjectOfType<InterfaceFactory>();
+            if (interfaceFactory == null)
+                gameObject.SetActive(false);
+            else
+                UIObject = gameObject;
         }
 
         protected virtual void Start()
         {
-            mouseCellClicker = globeManager.CellCursorInterface.CellClicker;
-            uiManager = FindObjectOfType<InterfaceFactory>().UIManager;
+            gameManager = interfaceFactory.GameManager;
+            globeManager = interfaceFactory.GlobeManager;
+            errorHandler = interfaceFactory.ErrorHandler;
+            uiManager = interfaceFactory.UIManager;
+            if (gameManager == null || globeManager == null || errorHandler == null || uiManager == null)
+                gameObject.SetActive(false);
+            else
+            {
+                cellCursorInterface = globeManager.CellCursorInterface;
+                if(cellCursorInterface == null)
+                    errorHandler.ReportError("Cell Cursor Interface Missing", ErrorState.restart_scene);
+                else
+                {
+                    mouseCellClicker = cellCursorInterface.CellClicker;
+                    if (mouseCellClicker == null)
+                        errorHandler.ReportError("Mouse Cell Clicker Missing", ErrorState.restart_scene);
+                }
+            } 
         }
 
         public virtual void OpenUI()
