@@ -6,18 +6,19 @@ namespace WPM
 {
     public class Inventory : MonoBehaviour, IInventory
     {
+        //Public Variables
         public List<IInventoryItem> InventoryList { get; protected set; } = new List<IInventoryItem>();
+        //Private Variables
+        private bool started = false;
         private readonly int inventorySize = 7;
-        GameObject InventoryPanel;
-        IInventoryUI inventoryUI;
-        bool started = false;
+        //Private Interface References
+        private IInventoryUI inventoryUI;
         private IGameManager gameManager;
         private IUIManager uiManager;
         private ITouristManager touristManager;
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
-        private bool componentMissing = false;
 
         private void Awake()
         {
@@ -47,30 +48,22 @@ namespace WPM
             }
         }
 
-
-        //INVENTORY SPECIFIC
         public bool AddItem(IInventoryItem item, int location)
         {
             if (!started)
                 Start();
 
+            if(item == null || location < 0 || location > inventorySize)
+            {
+                errorHandler.ReportError("Invalid input to AddItem", ErrorState.close_window);
+                return false;
+            }
+
             InventoryList.Insert(location, item);
 
             if (InventoryList.Count > inventorySize)
                 RemoveItem(inventorySize);
-            /*
-            if (inventory.Count < inventorySize)
-            {
-                item.inventoryLocation = 0; //inventory.Count;
-                inventory.Add(item);
-                inventoryGUI.AddItem(item, 0);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            */
+           
             //Update inventory item locations
             foreach (InventoryItem inventoryItem in InventoryList)
             {
@@ -81,9 +74,14 @@ namespace WPM
             return true;
         }
 
-        //INVENTORY SPECIFIC
         public void RemoveItem(int itemLocation)
         {
+            if(itemLocation < 0 || itemLocation >= InventoryList.Count)
+            {
+                errorHandler.ReportError("Attempting to remove inventory item from invalid location", ErrorState.close_window);
+                return;
+            }
+
             InventoryList.RemoveAt(itemLocation);
             foreach (InventoryItem inventoryItem in InventoryList)
             {
