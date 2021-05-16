@@ -39,7 +39,6 @@ namespace WPM
         //Flags
         public bool GamePaused { get; set; } = false;
         //In-Game Objects
-        //public IPlayerCharacter Player { get; set; }
         private ISelectableObject selectedObject;
         public ISelectableObject SelectedObject
         {

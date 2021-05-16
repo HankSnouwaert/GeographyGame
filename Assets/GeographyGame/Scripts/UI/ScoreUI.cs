@@ -8,18 +8,28 @@ namespace WPM
 
     public class ScoreUI : UIElement, IScoreUI, ITurnsUI
     {
+        //Private Variables
         private Text[] textComponents;
         private Text displayText;
         private int currentScore;
         private int currentTurnsRamaining;
+        private bool componentMissing = false;
+
         protected override void Awake()
         {
             base.Awake();
             textComponents = UIObject.GetComponentsInChildren<Text>();
-            displayText = textComponents[0];
-            UIOpen = true;
+            if(textComponents == null || textComponents.Length > 1)
+            {
+                componentMissing = true;
+            }
+            else
+            {
+                displayText = textComponents[0];
+                UIOpen = true;
+            } 
         }
-            
+
         public void UpdateDisplayedScore(int newScore)
         {
             currentScore = newScore;

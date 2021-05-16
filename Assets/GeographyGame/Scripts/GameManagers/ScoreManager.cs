@@ -35,6 +35,8 @@ namespace WPM
                 scoreUI = uiManager.ScoreUI;
                 if (scoreUI == null)
                     errorHandler.ReportError("Score UI Missing", ErrorState.close_window);
+                else
+                    scoreUI.UpdateDisplayedScore(Score);
             }
         }
 

@@ -38,6 +38,8 @@ namespace WPM
                 turnsUI = uiManager.TurnsUI;
                 if (turnsUI == null)
                     errorHandler.ReportError("Turns UI Missing", ErrorState.restart_scene);
+                else
+                    turnsUI.UpdateDisplayedRemainingTurns(TurnsRemaining);
             }
         }
 
