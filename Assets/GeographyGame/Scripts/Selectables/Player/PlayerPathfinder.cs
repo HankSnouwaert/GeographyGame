@@ -10,9 +10,7 @@ namespace WPM
     {
         //Public Variables
         public int TravelRange { get; protected set; } = 30;
-        public IPlayerCharacter PlayerCharacter { get; protected set; }
         public List<int> PathIndices { get; set; } = null;
-       
         //Private Variables
         public List<Cell>[] CellsInRange { get; set; }
         //Constants
@@ -25,7 +23,7 @@ namespace WPM
         private IGlobeParser globeParser;
         private WorldMapGlobe worldMapGlobe;
         private IPlayerManager playerManager;
-        //private IPlayerCharacter playerCharacter;
+        private IPlayerCharacter playerCharacter;
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
@@ -38,8 +36,8 @@ namespace WPM
                 gameObject.SetActive(false);
             try
             {
-                PlayerCharacter = GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
-                if (PlayerCharacter == null)
+                playerCharacter = GetComponent(typeof(IPlayerCharacter)) as IPlayerCharacter;
+                if (playerCharacter == null)
                     componentMissing = true;
 
                 geoPosAnimator = GetComponent(typeof(IGeoPosAnimator)) as IGeoPosAnimator;
@@ -74,16 +72,14 @@ namespace WPM
                 if (playerManager == null)
                     errorHandler.ReportError("Player Manager missing", ErrorState.restart_scene);
 
-                
-                CellsInRange = globeParser.GetCellsInRange(PlayerCharacter.CellLocation, TravelRange + 1);
+                CellsInRange = globeParser.GetCellsInRange(playerCharacter.CellLocation, TravelRange + 1);
             }
         }
 
         public List<int> FindPath(int startCellIndex, int endCellIndex)
         {
-            List<int> cellIndices;
-            cellIndices = worldMapGlobe.FindPath(startCellIndex, endCellIndex);
             worldMapGlobe.ClearCells(true, false, false);
+            List<int> cellIndices = worldMapGlobe.FindPath(startCellIndex, endCellIndex);
 
             if (cellIndices == null)
                 return null;   // no path found
@@ -107,14 +103,13 @@ namespace WPM
             if (pathCost > TravelRange)
                 return null;   //Path costs more movement than is available
 
-            //map.SetCellColor(endCellIndex, Color.red, true);
-
             //Path Successful
             // Color starting cell, end cell and path
             if (pathCost == TravelRange)
                 worldMapGlobe.SetCellColor(cellIndices, Color.red, true);
             else
                 worldMapGlobe.SetCellColor(cellIndices, Color.grey, true);
+
             worldMapGlobe.SetCellColor(startCellIndex, Color.green, true);
 
             return cellIndices;
@@ -125,42 +120,47 @@ namespace WPM
         /// </summary>
         public void SetCellCosts()
         {
+            if(CellsInRange == null)
+            {
+                errorHandler.ReportError("Cells in range empty", ErrorState.restart_scene);
+                return;
+            }
             foreach (Cell cell in CellsInRange[0]) 
             {
-                //Get Cell Attributes from Province
-                int provinceIndex = worldMapGlobe.GetProvinceNearPoint(cell.sphereCenter);
-                Province province = worldMapGlobe.provinces[provinceIndex];
-
-                //Loop Through Each Neighbor and Set the Cost from the Neighbor to the Cell
-                string climateAttribute = province.attrib["ClimateGroup"];
-                if (climateAttribute != "")
+                try
                 {
-                    bool cellOccupied = false;
-                    //Check if cell is occupied
-                    //if (map.cells[cell].tag != null)
-                    if (cell.occupants.Any() || cell.occupants == null)
+                    //Get Climate From Cell
+                    int provinceIndex = worldMapGlobe.GetProvinceNearPoint(cell.sphereCenter);
+                    Province province = worldMapGlobe.provinces[provinceIndex];
+                    string climateAttribute = province.attrib["ClimateGroup"];
+
+                    //Loop Through Each Neighbor and Set the Cost from the Neighbor to the Cell
+                    if (climateAttribute != "")
                     {
+                        bool cellOccupied = false;
                         //Check if cell is occupied by something other than the player
-                        //if(map.cells[cell].tag != GetInstanceID().ToString())
-                        if (!cell.occupants.Contains(PlayerCharacter))
+                        if (cell.occupants.Any() && !cell.occupants.Contains(playerCharacter))
                         {
                             cellOccupied = true;
                         }
-                    }
-                    int cost = PlayerCharacter.ClimateCosts[climateAttribute];
-                    if (cost == IMPASSABLE || cellOccupied)
-                    {
-                        worldMapGlobe.SetCellCanCross(cell.index, false);
-                    }
-                    else
-                    {
-                        worldMapGlobe.SetCellCanCross(cell.index, true);
-                        foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell.index))
+                        int cost = playerCharacter.ClimateCosts[climateAttribute];
+                        if (cost == IMPASSABLE || cellOccupied)
                         {
-                            worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell.index, cost, false);
+                            worldMapGlobe.SetCellCanCross(cell.index, false);
                         }
-
+                        else
+                        {
+                            worldMapGlobe.SetCellCanCross(cell.index, true);
+                            foreach (Cell neighbour in worldMapGlobe.GetCellNeighbours(cell.index))
+                            {
+                                worldMapGlobe.SetCellNeighbourCost(neighbour.index, cell.index, cost, false);
+                            }
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    errorHandler.CatchException(ex, ErrorState.close_window);
                 }
             }
         }
@@ -170,6 +170,11 @@ namespace WPM
         /// </summary>
         public void ClearCellCosts()
         {
+            if (CellsInRange == null)
+            {
+                errorHandler.ReportError("Cells in range empty", ErrorState.restart_scene);
+                return;
+            }
             foreach (Cell cell in CellsInRange[0])
             {
                 worldMapGlobe.SetCellCanCross(cell.index, true);
@@ -184,24 +189,28 @@ namespace WPM
         {
             PathIndices.Clear();
             worldMapGlobe.ClearCells(true, false, false);
-            if (PlayerCharacter.Selected)
+            if (playerCharacter.Selected)
             {
-                worldMapGlobe.SetCellColor(PlayerCharacter.CellLocation.index, Color.green, true);
-                if (!uiManager.CursorOverUI && globeManager.WorldMapGlobe.lastHighlightedCellIndex >= 0)
+                if(playerCharacter.CellLocation == null)
                 {
-                    PlayerCharacter.OnCellEnter(globeManager.WorldMapGlobe.lastHighlightedCellIndex);
+                    errorHandler.ReportError("Player finished pathfinding in invalid location", ErrorState.restart_scene);
+                    return;
+                }
+                worldMapGlobe.SetCellColor(playerCharacter.CellLocation.index, Color.green, true);
+                if (!uiManager.CursorOverUI && worldMapGlobe.lastHighlightedCellIndex >= 0)
+                {
+                    playerCharacter.OnCellEnter(worldMapGlobe.lastHighlightedCellIndex);
                 }
             }
 
             ClearCellCosts();
-            Array.Clear(CellsInRange, 0, TravelRange);
-            CellsInRange = globeParser.GetCellsInRange(PlayerCharacter.CellLocation, TravelRange + 1);
+            Array.Clear(CellsInRange, 0, CellsInRange.Length);
+            CellsInRange = globeParser.GetCellsInRange(playerCharacter.CellLocation, TravelRange + 1);
             SetCellCosts();
 
             geoPosAnimator.Moving = false;
             geoPosAnimator.Stop = false;
         }
-
     }
 
 }
