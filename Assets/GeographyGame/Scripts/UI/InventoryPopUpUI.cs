@@ -7,27 +7,49 @@ namespace WPM
 {
     public class InventoryPopUpUI : UIElement, IInventoryPopUpUI
     {
+        //Public Variables
+        public bool TempPopUp { get; set; }
+
+        //Private Variables
+        private bool started;
         private Text[] textComponents;
         private Text displayText;
-        //public bool PersistantPopUp { get; set; }
         private bool persistantPopUp;
-        public bool TempPopUp { get; set; }
         private string persistantPopUpMessage;
+        //Error Handling
+        bool componentMissing = false;
+
         protected override void Awake()
         {
             base.Awake();
             textComponents = UIObject.GetComponentsInChildren<Text>();
-            displayText = textComponents[0];
+            if (textComponents == null || textComponents.Length > 1)
+            {
+                componentMissing = true;
+            }
+            else
+            {
+                displayText = textComponents[0];
+            }
         }
 
         protected override void Start()
         {
             base.Start();
+            if (gameObject.activeSelf)
+            {
+                if (componentMissing)
+                    errorHandler.ReportError("Error getting Inventory Pop Up UI Elements", ErrorState.close_window);
+            }
+            started = true;
             CloseUI();
         }
 
         public void DisplayPopUp(string displayString, bool persistant)
         {
+            if (!started)
+                Start();
+
             OpenUI();
             displayText.text = displayString;
             if (persistant)
