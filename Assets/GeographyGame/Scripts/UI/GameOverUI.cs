@@ -18,7 +18,7 @@ namespace WPM
         {
             base.Awake();
             textComponents = UIObject.GetComponentsInChildren<Text>();
-            if (textComponents == null || textComponents.Length > 1)
+            if (textComponents == null)
             {
                 componentMissing = true;
             }

@@ -7,14 +7,12 @@ namespace WPM
 {
     public class GameMenuUI : UIElement, IGameMenuUI
     {
-        private Text[] textComponents;
-        private Text displayText;
-
         protected override void Start()
         {
             base.Start();
             CloseUI();
         }
+
         public void ReturnToGameSelected()
         {
             CloseUI();
@@ -26,7 +24,6 @@ namespace WPM
             gameManager.GameReset();
         }
 
-        // Update is called once per frame
         public void ExitGameSelected()
         {
             gameManager.ExitGame();
