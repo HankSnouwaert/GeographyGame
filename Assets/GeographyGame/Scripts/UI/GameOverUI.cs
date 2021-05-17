@@ -7,20 +7,39 @@ namespace WPM
 {
     public class GameOverUI : UIElement, IGameOverUI
     {
+        //Private Variables
         private Text[] textComponents;
         private Text displayText;
         private IScoreManager scoreManager;
+        //Error Checking
+        private bool componentMissing = false;
+
         protected override void Awake()
         {
             base.Awake();
             textComponents = UIObject.GetComponentsInChildren<Text>();
-            displayText = textComponents[0];
+            if (textComponents == null || textComponents.Length > 1)
+            {
+                componentMissing = true;
+            }
+            else
+            {
+                displayText = textComponents[0];
+            }
         }
 
         protected override void Start()
         {
             base.Start();
-            scoreManager = gameManager.ScoreManager;
+            if (gameObject.activeSelf)
+            {
+                if (componentMissing)
+                    errorHandler.ReportError("Error getting Inventory Game Over UI Elements", ErrorState.close_window);
+
+                scoreManager = gameManager.ScoreManager;
+                if (scoreManager == null)
+                    errorHandler.ReportError("Score Manager missing", ErrorState.restart_scene);
+            }
             CloseUI();
         }
 
