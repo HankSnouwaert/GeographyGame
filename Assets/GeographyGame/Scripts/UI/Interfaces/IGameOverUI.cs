@@ -9,8 +9,8 @@
         /// Executed if the player chooses to exit the game
         /// </summary>
         void ExitGameSelected();
+
         /// <summary> 
-        /// 
         /// Executed if the player chooses to restart the game
         /// </summary>
         void ResetGameSelected();
