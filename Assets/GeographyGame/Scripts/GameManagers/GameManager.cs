@@ -124,7 +124,7 @@ namespace WPM
             if (Input.GetKeyDown("escape"))
             {
                 if (gameMenuUI.UIOpen)
-                    gameMenuUI.CloseUI();
+                    gameMenuUI.ReturnToGameSelected();
                 else
                 {
                     if (selectedObject != null)
