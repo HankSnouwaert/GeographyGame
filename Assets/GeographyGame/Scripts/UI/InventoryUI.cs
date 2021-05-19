@@ -226,7 +226,16 @@ namespace WPM
         
         public void ItemMouseExit(int inventoryNumber)
         {
-            //gameManager.ClosePopUp();
+            if (inventoryNumber <= numberofItems && inventoryNumber >= 0)
+            {
+                if (displayedItems[inventoryNumber] == null)
+                {
+                    errorHandler.ReportError("Invalid item selection", ErrorState.close_window);
+                    return;
+                }
+
+                displayedItems[inventoryNumber].MouseExit();
+            }
         }
     }
 }
