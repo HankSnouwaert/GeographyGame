@@ -97,6 +97,11 @@ namespace WPM
 
         public void SetDropOffDelegate(DropOffDelegate dropOffDelegate)
         {
+            if(dropOffDelegate == null)
+            {
+                errorHandler.ReportError("Drop Off Delegate Null", ErrorState.close_window);
+                return;
+            }
             dropOffButton.onClick.AddListener(delegate { dropOffDelegate(); });
         }
 
