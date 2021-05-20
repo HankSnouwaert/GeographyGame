@@ -5,17 +5,21 @@ using UnityEngine.UI;
 
 namespace WPM
 {
-    public class InventoryPopUpUI : UIElement, IInventoryPopUpUI
+    public class InventoryPopUpUI : UIElement, IInventoryPopUpUI, IDropOffUI
     {
         //Public Variables
         public bool TempPopUp { get; set; }
 
         //Private Variables
         private bool started;
-        private Text[] textComponents;
-        private Text displayText;
         private bool persistantPopUp;
         private string persistantPopUpMessage;
+        //UI Components
+        private Button dropOffButton;
+        private GameObject dropOffButtonObject;
+        private Button[] buttonComponents;
+        private Text[] textComponents;
+        private Text displayText;
         //Error Handling
         bool componentMissing = false;
 
@@ -23,13 +27,18 @@ namespace WPM
         {
             base.Awake();
             textComponents = UIObject.GetComponentsInChildren<Text>();
-            if (textComponents == null || textComponents.Length > 1)
-            {
+            if (textComponents == null)
                 componentMissing = true;
-            }
+            else
+                displayText = textComponents[0];
+
+            buttonComponents = UIObject.GetComponentsInChildren<Button>();
+            if (buttonComponents == null || buttonComponents.Length > 1)
+                componentMissing = true;
             else
             {
-                displayText = textComponents[0];
+                dropOffButton = buttonComponents[0];
+                dropOffButtonObject = dropOffButton.gameObject;
             }
         }
 
@@ -85,5 +94,21 @@ namespace WPM
         {
             DisplayPopUp(persistantPopUpMessage, true);
         }
+
+        public void SetDropOffDelegate(DropOffDelegate dropOffDelegate)
+        {
+            dropOffButton.onClick.AddListener(delegate { dropOffDelegate(); });
+        }
+
+        public void ClearDropOffDelegate()
+        {
+            dropOffButton.onClick.RemoveAllListeners();
+        }
+
+        public void ToggleOptionForDropOff(bool active)
+        {
+            dropOffButtonObject.SetActive(active);
+        }
+
     }
 }

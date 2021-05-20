@@ -5,33 +5,50 @@ using UnityEngine.UI;
 
 namespace WPM
 {
-    public class NavigationUI : UIElement, INavigationUI, IDropOffUI
+    public class NavigationUI : UIElement, INavigationUI
     {
+        //Public Variables
         public string NavigationText { get; set; }
-        private Button dropOffButton;
-        private GameObject dropOffButtonObject;
-        private Button[] buttonComponents;
+        //Internal Reference Interfaces
+        IPlayerManager playerManager;
+        private WorldMapGlobe worldMapGlobe;
+        //UI Elements
         private Text[] textComponents;
         private Text displayText;
-        private IGlobeManager globeManager;
-        private WorldMapGlobe worldMapGlobe;
-        // Start is called before the first frame update
+        //Error Checking
+        private bool componentMissing = false;
+        
         protected override void Awake()
         {
             base.Awake();
-            buttonComponents = UIObject.GetComponentsInChildren<Button>();
-            dropOffButton = buttonComponents[0];
-            dropOffButtonObject = dropOffButton.gameObject;
             textComponents = UIObject.GetComponentsInChildren<Text>();
-            displayText = textComponents[0];
+            if (textComponents == null || textComponents.Length > 1)
+            {
+                componentMissing = true;
+            }
+            else
+            {
+                displayText = textComponents[0];
+            }
             UIOpen = true;
         }
 
         protected override void Start()
         {
             base.Start();
-            globeManager = FindObjectOfType<InterfaceFactory>().GlobeManager;
-            worldMapGlobe = globeManager.WorldMapGlobe;
+            if (gameObject.activeSelf)
+            {
+                if (componentMissing)
+                    errorHandler.ReportError("Error getting Navigation UI Elements", ErrorState.close_window);
+
+                worldMapGlobe = globeManager.WorldMapGlobe;
+                if (worldMapGlobe == null)
+                    errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
+
+                playerManager = gameManager.PlayerManager;
+                if (playerManager == null)
+                    errorHandler.ReportError("Player Manager missing", ErrorState.restart_scene);
+            }
         }
 
         public void UpdateNavigationDisplay(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects)
@@ -40,79 +57,13 @@ namespace WPM
             SetDisplayText(NavigationText);
         }
 
-        public string CreateNavigationInfoString(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects)
+        private string CreateNavigationInfoString(List<Province> provinces, List<Country> countries, List<IMappableObject> nearbyObjects)
         {
             string createdString = "";
-            if (countries != null)
-            {
-                if(countries.Count > 0)
-                {
-                    if (countries.Count == 1)
-                    {
-                        createdString += "Country: ";
-                        createdString += countries[0].name + System.Environment.NewLine;
-                    }
-                    else
-                    {
-                        createdString += "Countries: ";
-                        foreach (Country country in countries)
-                        {
-                            createdString += country.name + System.Environment.NewLine + ",";
-                        }
-                    }
-                }
-            }
-            if (provinces != null)
-            {
-                if(provinces.Count > 0)
-                {
-                    string nameType;
-                    if(provinces.Count == 1)
-                    {
-                        string politicalProvince = provinces[0].attrib["PoliticalProvince"];
-                        string climate = provinces[0].attrib["ClimateGroup"];
-                        if (worldMapGlobe.countries[provinces[0].countryIndex].name == "United States of America")
-                            nameType = "State: ";
-                        else
-                            nameType = "Province: ";
-                        createdString += nameType + provinces[0].name + System.Environment.NewLine + "PoliticalProvince: " + politicalProvince +
-                            System.Environment.NewLine + "Climate: " + climate;
-                    }
-                    else
-                    {
-                        foreach(Province province in provinces)
-                        {
-                            string politicalProvince = province.attrib["PoliticalProvince"];
-                            string climate = province.attrib["ClimateGroup"];
-                            if (worldMapGlobe.countries[province.countryIndex].name == "United States of America")
-                                nameType = "State: ";
-                            else
-                                nameType = "Province: ";
-                            createdString += nameType + province.name + System.Environment.NewLine + "PoliticalProvince: " + politicalProvince +
-                            System.Environment.NewLine + "Climate: " + climate + System.Environment.NewLine;
-                        }
-                    }   
-                }
-                
-                //Check to see if there's a highlighted object
-                if (nearbyObjects != null)
-                {
-                    if (!nearbyObjects.Contains(gameManager.PlayerManager.PlayerCharacter))
-                    {
-                        foreach (MappableObject nearbyObject in nearbyObjects)
-                        {
-                            //Add the landmark to the string
-                            createdString = createdString + System.Environment.NewLine + "Landmarks: " + nearbyObject.ObjectName;
-                        }
-                    }
-                }
-                //Display the string
-                return createdString;
-            }
-            else
-            {
-                return null;
-            }
+            createdString = AddCountriesToDisplayString(createdString, countries);
+            createdString = AddProvincesToDisplayString(createdString, provinces);
+            createdString = AddLandmarksToDisplayString(createdString, nearbyObjects);
+            return createdString;
         }
 
         public void SetDisplayText(string displayString)
@@ -120,19 +71,95 @@ namespace WPM
             displayText.text = displayString;
         }
 
-        public void SetDropOffDelegate(DropOffDelegate dropOffDelegate)
+        private string AddCountriesToDisplayString(string displayString, List<Country> countries)
         {
-            dropOffButton.onClick.AddListener(delegate { dropOffDelegate(); });
+            if (countries != null)
+            {
+                if (countries.Count > 0)
+                {
+                    if (countries.Count == 1)
+                        displayString += "Country: ";
+                    else
+                        displayString += "Countries: ";
+                    foreach (Country country in countries)
+                    {
+                        displayString += country.name + System.Environment.NewLine + ",";
+                    }
+                    displayString = displayString.TrimEnd(',');
+                }
+            }
+            return displayString;
         }
 
-        public void ClearDropOffDelegate()
+        private string AddProvincesToDisplayString(string displayString, List<Province> provinces)
         {
-            dropOffButton.onClick.RemoveAllListeners();
+            if (provinces != null)
+            {
+                if (provinces.Count > 0)
+                {
+                    string nameType;
+                    string politicalProvince;
+                    string climate;
+                    Country country;
+                    if (provinces.Count == 1)
+                    {
+                        try
+                        {
+                            politicalProvince = provinces[0].attrib["PoliticalProvince"];
+                            climate = provinces[0].attrib["ClimateGroup"];
+                            country = worldMapGlobe.countries[provinces[0].countryIndex];
+                        }
+                        catch
+                        {
+                            errorHandler.ReportError("Failed to retrieve province property", ErrorState.close_application);
+                            return displayString;
+                        }
+                        if (country.name == "United States of America")
+                            nameType = "State: ";
+                        else
+                            nameType = "Province: ";
+                        displayString += nameType + provinces[0].name + System.Environment.NewLine + "PoliticalProvince: " + politicalProvince +
+                            System.Environment.NewLine + "Climate: " + climate;
+                    }
+                    else
+                    {
+                        foreach (Province province in provinces)
+                        {
+                            try
+                            {
+                                politicalProvince = provinces[0].attrib["PoliticalProvince"];
+                                climate = provinces[0].attrib["ClimateGroup"];
+                                country = worldMapGlobe.countries[provinces[0].countryIndex];
+                            }
+                            catch
+                            {
+                                errorHandler.ReportError("Failed to retrieve province attributes", ErrorState.close_application);
+                                return displayString;
+                            }
+                            if (country.name == "United States of America")
+                                nameType = "State: ";
+                            else
+                                nameType = "Province: ";
+                            displayString += nameType + province.name + System.Environment.NewLine + "PoliticalProvince: " + politicalProvince +
+                            System.Environment.NewLine + "Climate: " + climate + System.Environment.NewLine;
+                        }
+                    }
+                }
+            }
+            return displayString;
         }
 
-        public void ToggleOptionForDropOff(bool active)
+        private string AddLandmarksToDisplayString(string displayString, List<IMappableObject> mappableObjects)
         {
-            dropOffButtonObject.SetActive(active);
+            if (mappableObjects != null)
+            {
+                foreach (IMappableObject mappableObject in mappableObjects)
+                {
+                    if(mappableObject != playerManager.PlayerCharacter)
+                        displayString = displayString + System.Environment.NewLine + "Landmarks: " + mappableObject.ObjectName;
+                }
+            }
+            return displayString;
         }
     }
 }
