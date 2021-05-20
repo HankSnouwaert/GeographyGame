@@ -100,7 +100,8 @@ namespace WPM
 
         public override void MouseEnter()
         {
-            inventoryPopUpUI.DisplayPopUp("I want to see " + DestinationName + "!", false);
+            if(!Selected)
+                inventoryPopUpUI.DisplayPopUp("I want to see " + DestinationName + "!", false);
         }
         
         public override void MouseExit()

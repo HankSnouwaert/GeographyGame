@@ -9,8 +9,8 @@ namespace WPM
     {
         //Public Variables
         public bool TempPopUp { get; set; }
-
         //Private Variables
+        private bool dropOffEnabled = false;
         private bool started;
         private bool persistantPopUp;
         private string persistantPopUpMessage;
@@ -69,6 +69,7 @@ namespace WPM
             else
             {
                 TempPopUp = true;
+                ToggleOptionForDropOff(false);
             }
         }
 
@@ -93,6 +94,7 @@ namespace WPM
         public void ResetPersistantMessage()
         {
             DisplayPopUp(persistantPopUpMessage, true);
+            ToggleOptionForDropOff(true);
         }
 
         public void SetDropOffDelegate(DropOffDelegate dropOffDelegate)
