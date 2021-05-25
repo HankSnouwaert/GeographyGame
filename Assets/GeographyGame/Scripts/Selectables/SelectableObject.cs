@@ -39,12 +39,6 @@ namespace WPM
 
         public virtual void Select()
         {
-            /*
-            if (gameManager.SelectedObject != null)
-                if (gameManager.SelectedObject != (ISelectableObject)this)
-                    gameManager.SelectedObject.Deselect();
-            gameManager.SelectedObject = this;
-            */
             gameManager.ObjectSelected(this);
             Selected = true;
         }

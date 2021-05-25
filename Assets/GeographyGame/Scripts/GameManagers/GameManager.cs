@@ -116,10 +116,38 @@ namespace WPM
                     gameMenuUI.ReturnToGameSelected();
                 else
                 {
-                    gameMenuUI.OpenUI();
-                    GamePaused = true;
+                    if(SelectedObjects.Count > 0)
+                    {
+                        DeselectAllObjects();
+                    }
+                    else
+                    {
+                        gameMenuUI.OpenUI();
+                        GamePaused = true;
+                    }
                 }
             }
+        }
+
+        private void DeselectAllObjects()
+        {
+            int loops = SelectedObjects.Count;
+            bool deselectionFailed = false;
+            try
+            {
+                for (int i = 0; i < loops; i++)
+                {
+                    SelectedObjects[0].Deselect();
+                }
+                if (SelectedObjects.Count > 0)
+                    deselectionFailed = true;
+            }
+            catch
+            {
+                deselectionFailed = true;
+            }
+            if (deselectionFailed)
+                errorHandler.ReportError("Deselection of game objects failed", ErrorState.restart_scene);
         }
 
         public void ObjectSelected(ISelectableObject newlySelectedObject)
