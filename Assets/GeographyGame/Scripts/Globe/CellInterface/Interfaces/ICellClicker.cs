@@ -7,9 +7,9 @@
     {
         /// <summary>
         /// A flag used to determine if the current click should be ignored
-        /// because a new object was just selected
+        /// because an object was just clicked
         /// </summary>
-        bool NewObjectSelected { get; set; }
+        bool ObjectClicked { get; set; }
 
         /// <summary>
         /// Called when a cell on the globe is selected

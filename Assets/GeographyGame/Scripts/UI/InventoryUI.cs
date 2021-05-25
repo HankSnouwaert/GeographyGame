@@ -36,6 +36,7 @@ namespace WPM
 
         protected override void Start()
         {
+            base.Start();
             if (componentsMissing)
                 errorHandler.ReportError("Inventory UI components missing", ErrorState.restart_scene);
         }
@@ -147,13 +148,6 @@ namespace WPM
                 //Clear the inventory
                 foreach (IInventoryItem item in displayedItems)
                 {
-                    if (i == selectedItemIndex && inventorySelected)
-                    {
-                        item.Deselect();
-                        EventSystem.current.SetSelectedGameObject(null);
-                        inventorySelected = false;
-                        selectedObject = null;
-                    }
                     displayedItems[i] = null;
                     displayedItemButtons[i].gameObject.SetActive(false);
                     displayedItemButtons[i].GetComponent<Image>().sprite = null;
@@ -162,20 +156,27 @@ namespace WPM
 
                 i = 0;
                 //Update the inventory
-                foreach (InventoryItem item in inventory)
+                foreach (IInventoryItem item in inventory)
                 {
                     displayedItems[i] = item;
                     displayedItemButtons[i].gameObject.SetActive(true);
                     displayedItemButtons[i].GetComponent<Image>().sprite = item.InventoryIcon;
+
+                    if (displayedItems[i].Selected)
+                    {
+                        EventSystem.current.SetSelectedGameObject(displayedItemButtons[i].gameObject);
+                        inventorySelected = true;
+                        selectedItemIndex = i;
+                        selectedObject = EventSystem.current.currentSelectedGameObject;
+                    }
                     i++;
                 }
-                numberofItems = i;
+                numberofItems = inventory.Count;
             }
             catch(System.Exception ex)
             {
                 errorHandler.CatchException(ex, ErrorState.restart_scene);
             }
-            
         }
 
         /// <summary>

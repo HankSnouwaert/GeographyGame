@@ -39,17 +39,7 @@ namespace WPM
         //Flags
         public bool GamePaused { get; set; } = false;
         //In-Game Objects
-        private ISelectableObject selectedObject;
-        public ISelectableObject SelectedObject
-        {
-            get { return selectedObject; }
-            set
-            {
-                selectedObject = value;
-                if (selectedObject != null)
-                    cellClicker.NewObjectSelected = true;
-            }
-        } 
+        public List<ISelectableObject> SelectedObjects { get; protected set; } = new List<ISelectableObject>();
         public ISelectableObject HighlightedObject { get; set; } = null;
         //Error Checking
         private InterfaceFactory interfaceFactory;
@@ -85,7 +75,6 @@ namespace WPM
             {
                 componentMissing = true;
             }
-            SelectedObject = null;
         }
 
         void Start()
@@ -127,15 +116,24 @@ namespace WPM
                     gameMenuUI.ReturnToGameSelected();
                 else
                 {
-                    if (selectedObject != null)
-                        selectedObject.Deselect();
-                    else
-                    {
-                        gameMenuUI.OpenUI();
-                        GamePaused = true;
-                    }
+                    gameMenuUI.OpenUI();
+                    GamePaused = true;
                 }
             }
+        }
+
+        public void ObjectSelected(ISelectableObject newlySelectedObject)
+        {
+            for(int i = 0; i < SelectedObjects.Count; i++)
+            {
+                SelectedObjects[i].OtherObjectSelected(newlySelectedObject);
+            }
+            SelectedObjects.Add(newlySelectedObject);
+        }
+
+        public void ObjectDeselected(ISelectableObject deselectedObject)
+        {
+            SelectedObjects.Remove(deselectedObject);
         }
 
         /// <summary> 

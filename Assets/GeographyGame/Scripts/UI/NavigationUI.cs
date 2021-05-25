@@ -118,11 +118,17 @@ namespace WPM
                             nameType = "State: ";
                         else
                             nameType = "Province: ";
-                        displayString += nameType + provinces[0].name + System.Environment.NewLine + "PoliticalProvince: " + politicalProvince +
-                            System.Environment.NewLine + "Climate: " + climate;
+                        displayString += nameType + provinces[0].name + System.Environment.NewLine;// + "PoliticalProvince: " + politicalProvince +
+                            //System.Environment.NewLine + "Climate: " + climate;
                     }
                     else
                     {
+                        country = worldMapGlobe.countries[provinces[0].countryIndex];
+                        if (country.name == "United States of America")
+                            nameType = "States: ";
+                        else
+                            nameType = "Provinces: ";
+                        displayString += nameType;
                         foreach (Province province in provinces)
                         {
                             try
@@ -140,8 +146,8 @@ namespace WPM
                                 nameType = "State: ";
                             else
                                 nameType = "Province: ";
-                            displayString += nameType + province.name + System.Environment.NewLine + "PoliticalProvince: " + politicalProvince +
-                            System.Environment.NewLine + "Climate: " + climate + System.Environment.NewLine;
+                            displayString += province.name + System.Environment.NewLine;// + "PoliticalProvince: " + politicalProvince +
+                            //System.Environment.NewLine + "Climate: " + climate + System.Environment.NewLine;
                         }
                     }
                 }
@@ -156,7 +162,7 @@ namespace WPM
                 foreach (IMappableObject mappableObject in mappableObjects)
                 {
                     if(mappableObject != playerManager.PlayerCharacter)
-                        displayString = displayString + System.Environment.NewLine + "Landmarks: " + mappableObject.ObjectName;
+                        displayString = displayString + "Landmarks: " + mappableObject.ObjectName + System.Environment.NewLine;
                 }
             }
             return displayString;

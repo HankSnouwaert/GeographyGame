@@ -131,7 +131,6 @@ namespace WPM
             base.Deselect();
             Pathfinder.ClearCellCosts();
             worldMapGlobe.ClearCells(true, false, false);
-            Selected = false;
         }
 
         public override void OnCellEnter(int index)

@@ -71,13 +71,15 @@ namespace WPM
 
                 //Set Tourist Destination
                 destinationSet = destinationSetter.SetDestination(this, touristManager.CurrentRegion);
+                /*
                 if (destinationSet)
                 {
                     inventoryPopUpUI.DisplayPopUp("Hey there!  I want to see " + DestinationName + "!", false);
                     dropOffUI.ToggleOptionForDropOff(false);
                 }
                 else
-                    errorHandler.ReportError("Tourist destination not set", ErrorState.close_window);      
+                    errorHandler.ReportError("Tourist destination not set", ErrorState.close_window);  
+                */
             }
         }
 
@@ -116,10 +118,7 @@ namespace WPM
 
         public override void OnCellClick(int index)
         {
-            if(index == playerCharacter.CellLocation.index)
-            {
-                playerCharacter.Select();
-            }
+
         }
 
         public override void MouseDown()
@@ -139,7 +138,8 @@ namespace WPM
 
         public override void OtherObjectSelected(ISelectableObject selectedObject)
         {
-            //There will need to be check later to account for multiple object selection
+            if (selectedObject is IInventoryTourist)
+                Deselect();
         }
 
         public void AttemptDropOff()

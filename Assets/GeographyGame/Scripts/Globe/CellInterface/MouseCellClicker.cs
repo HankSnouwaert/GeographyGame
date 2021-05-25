@@ -15,7 +15,7 @@ namespace WPM
         private IUIManager uiManager;
         private ICellEnterer cellEnterer;
         //Public Variables
-        public bool NewObjectSelected { get; set; } = false;
+        public bool ObjectClicked { get; set; } = false;
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
@@ -60,13 +60,16 @@ namespace WPM
         public void HandleOnCellClick(int cellIndex)
         {
             //Check that a hex is being clicked while an object is selected
-            if (!uiManager.CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObject != null)
+            if (!uiManager.CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObjects.Count > 0)
             {
-                //Make sure your not clicking on a new object
-                if (NewObjectSelected)
-                    NewObjectSelected = false;
+                //Make sure your not clicking on an object
+                if (ObjectClicked)
+                    ObjectClicked = false;
                 else
-                    gameManager.SelectedObject.OnCellClick(cellIndex);
+                    for (int i = 0; i < gameManager.SelectedObjects.Count; i++)
+                    {
+                        gameManager.SelectedObjects[i].OnCellClick(cellIndex);
+                    }
             }
         }    
     }

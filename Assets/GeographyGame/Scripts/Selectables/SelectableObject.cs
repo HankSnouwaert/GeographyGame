@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 
 namespace WPM
 {
@@ -39,18 +39,19 @@ namespace WPM
 
         public virtual void Select()
         {
+            /*
             if (gameManager.SelectedObject != null)
                 if (gameManager.SelectedObject != (ISelectableObject)this)
                     gameManager.SelectedObject.Deselect();
-
             gameManager.SelectedObject = this;
+            */
+            gameManager.ObjectSelected(this);
             Selected = true;
         }
 
         public virtual void Deselect()
         {
-            if (gameManager.SelectedObject == (ISelectableObject)this)
-                gameManager.SelectedObject = null;
+            gameManager.ObjectDeselected(this);
             Selected = false;
         }
 

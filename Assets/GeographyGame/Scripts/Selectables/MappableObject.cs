@@ -19,6 +19,8 @@ namespace WPM
         //Internal Interface References
         protected WorldMapGlobe worldMapGlobe;
         protected IGlobeManager globeManager;
+        protected ICellCursorInterface cellCursorInterface;
+        protected ICellClicker cellClicker;
         protected IUIManager uiManager;
         protected IGlobeParser globeParser;
         protected ICountryParser countryParser;
@@ -51,6 +53,16 @@ namespace WPM
                         if(provinceParser == null)
                             errorHandler.ReportError("Province Parser missing", ErrorState.restart_scene);
                     }
+
+                    cellCursorInterface = globeManager.CellCursorInterface;
+                    if (cellCursorInterface == null)
+                        errorHandler.ReportError("Cell Cursor Interface missing", ErrorState.restart_scene);
+                    else
+                    {
+                        cellClicker = cellCursorInterface.CellClicker;
+                        if(cellClicker == null)
+                            errorHandler.ReportError("Cell Clicker missing", ErrorState.restart_scene);
+                    }
                 }
             }   
         }
@@ -59,15 +71,12 @@ namespace WPM
         {
             if (selectionEnabled && !uiManager.CursorOverUI)
             {
-                if (gameManager.SelectedObject == null)
+                cellClicker.ObjectClicked = true;
+
+                if (Selected)
+                    Deselect();
+                else  
                     Select();
-                else
-                {
-                    if (gameManager.SelectedObject == (ISelectableObject)this)
-                        Deselect();
-                    else
-                        gameManager.SelectedObject.OtherObjectSelected(this);
-                }
             }
         }
 

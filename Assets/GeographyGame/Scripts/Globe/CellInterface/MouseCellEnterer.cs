@@ -73,13 +73,21 @@ namespace WPM
         public void HandleOnCellEnter(int cellIndex)
         {
             //Run any on cell enter method for the selected object
-            if (!uiManager.CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObject != null)
+            if (!uiManager.CursorOverUI && !gameManager.GamePaused && gameManager.SelectedObjects.Count > 0)
             {
                 if (gameManager.HighlightedObject != null)
-                    gameManager.SelectedObject.OnSelectableEnter(gameManager.HighlightedObject);
+                    for (int i = 0; i < gameManager.SelectedObjects.Count; i++)
+                    {
+                        gameManager.SelectedObjects[i].OnSelectableEnter(gameManager.HighlightedObject);
+                    }
+                //gameManager.SelectedObject.OnSelectableEnter(gameManager.HighlightedObject);
                 try
                 {
-                    gameManager.SelectedObject.OnCellEnter(cellIndex);
+                    for (int i = 0; i < gameManager.SelectedObjects.Count; i++)
+                    {
+                        gameManager.SelectedObjects[i].OnCellEnter(cellIndex);
+                    }
+                    //gameManager.SelectedObject.OnCellEnter(cellIndex);
                     cellCursorInterface.highlightedCellIndex = cellIndex;
                     cellCursorInterface.highlightedCell = worldMapGlobe.cells[cellIndex];
                 }
