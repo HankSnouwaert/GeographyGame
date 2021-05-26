@@ -9,6 +9,13 @@ namespace WPM
 {
     public class InventoryTourist : InventoryItem, IInventoryTourist
     {
+        [SerializeField]
+        private AudioSource initializationAudio;
+        [SerializeField]
+        private AudioSource dropOffSuccessAudio;
+        [SerializeField]
+        private AudioSource dropOffFailureAudio;
+
         //Local Reference Interfaces
         private IDropOffUI dropOffUI;
         private ITouristManager touristManager;
@@ -71,15 +78,8 @@ namespace WPM
 
                 //Set Tourist Destination
                 destinationSet = destinationSetter.SetDestination(this, touristManager.CurrentRegion);
-                /*
-                if (destinationSet)
-                {
-                    inventoryPopUpUI.DisplayPopUp("Hey there!  I want to see " + DestinationName + "!", false);
-                    dropOffUI.ToggleOptionForDropOff(false);
-                }
-                else
-                    errorHandler.ReportError("Tourist destination not set", ErrorState.close_window);  
-                */
+                if (!destinationSet)
+                    errorHandler.ReportError("Tourist destination not set", ErrorState.close_window);
             }
         }
 
@@ -160,6 +160,7 @@ namespace WPM
         /// </summary>
         private void DropOffSuccess()
         {
+            dropOffSuccessAudio.Play();
             Deselect();
             //Remove Tourist from Inventory
             playerCharacter.Inventory.RemoveItem(InventoryLocation);
@@ -167,12 +168,7 @@ namespace WPM
             uiManager.CursorOverUI = false;
             inventoryPopUpUI.DisplayPopUp("Exactly where I wanted to go!", false);
 
-            /*  This will be for drop off sound effects
-            if (success)
-                dropOffSuccess.Play();
-            else
-                dropOffFailure.Play();
-           */
+
         }
 
         /// <summary> 
@@ -180,6 +176,7 @@ namespace WPM
         /// </summary>
         private void DropOffFailure()
         {
+            dropOffFailureAudio.Play();
             inventoryPopUpUI.DisplayPopUp("Well this doesn't look right. . . .", false);
             return;
         }
