@@ -22,7 +22,13 @@ namespace WPM
         /// <summary> 
         /// Flag indicating whether the object is moving
         /// </summary>
-        bool Moving { get; set; } 
+        bool Moving { get; set; }
+
+        /// <summary> 
+        /// Begins movement along a given set of path indices
+        /// </summary>
+        /// <param name="pathIndices"> The path the movement will follow </param>
+        void InitiateMovement(List<int> pathIndices);
 
         /// <summary> 
         /// Determines the path the object will take while moving, given the existing latlan list

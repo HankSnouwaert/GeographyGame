@@ -25,6 +25,8 @@ namespace WPM
         private GameObject turnsManagerObject;
         [SerializeField]
         private GameObject scoreManagerObject;
+        [SerializeField]
+        private AudioSource gameAmbience;
         //Child Interfaces
         public IPlayerManager PlayerManager { get; protected set; }
         public ITouristManager TouristManager { get; protected set; }
@@ -104,6 +106,8 @@ namespace WPM
                 gameMenuUI = uiManager.GameMenuUI;
                 if (gameMenuUI == null)
                     errorHandler.ReportError("Game Menu UI Missing", ErrorState.restart_scene);
+
+                gameAmbience.Play();
             }
         }
 
@@ -123,6 +127,7 @@ namespace WPM
                     else
                     {
                         gameMenuUI.OpenUI();
+                        gameAmbience.Pause();
                         GamePaused = true;
                     }
                 }
@@ -194,6 +199,7 @@ namespace WPM
         /// </summary>
         public void ResumeGame()
         {
+            gameAmbience.Play();
             GamePaused = false;
         }
     }

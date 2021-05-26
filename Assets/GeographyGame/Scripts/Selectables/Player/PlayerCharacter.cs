@@ -160,12 +160,7 @@ namespace WPM
             {
                 if (Pathfinder.PathIndices != null && geoPosAnimator.Moving == false)
                 {
-                    //Add latlon of each hex in path to animator's path
-                    geoPosAnimator.GenerateLatLon(Pathfinder.PathIndices);
-                    // Compute path length
-                    geoPosAnimator.ComputePath();
-                    geoPosAnimator.Auto = true;
-                    geoPosAnimator.Moving = true;
+                    geoPosAnimator.InitiateMovement(Pathfinder.PathIndices);
                 }
             } 
         }

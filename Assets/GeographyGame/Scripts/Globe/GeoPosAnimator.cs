@@ -7,6 +7,10 @@ namespace WPM
 {
     public class GeoPosAnimator : MonoBehaviour, IGeoPosAnimator
     {
+
+        [SerializeField]
+        private AudioSource movementAudio;
+
         //Public Variables
         public bool Auto { get; set; }
         public IMappableObject AnimatedObject { get; set; }
@@ -84,14 +88,29 @@ namespace WPM
                     AnimatedObject.UpdateLocation(newCell);
                     currentProgress = 0;
                     if (latlonIndex >= latLon.Count - 1 || Stop)
-                    {
-                        latlonIndex = 0;
-                        latLon.Clear();
-                        Auto = false;
-                        pathfinder.FinishedPathFinding();
-                    }
+                        StopMovement();
                 }
             }
+        }
+
+        private void StopMovement()
+        {
+            latlonIndex = 0;
+            latLon.Clear();
+            Auto = false;
+            movementAudio.Pause();
+            pathfinder.FinishedPathFinding();
+        }
+
+        public void InitiateMovement(List<int> pathIndices)
+        {
+            //Add latlon of each hex in path to animator's path
+            GenerateLatLon(pathIndices);
+            // Compute path length
+            ComputePath();
+            Auto = true;
+            Moving = true;
+            movementAudio.Play();
         }
 
         public void ComputePath()
