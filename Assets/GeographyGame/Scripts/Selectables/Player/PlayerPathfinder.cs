@@ -9,7 +9,7 @@ namespace WPM
     public class PlayerPathfinder : MonoBehaviour, IPathfinder
     {
         //Public Variables
-        public int TravelRange { get; protected set; } = 30;
+        public int TravelRange { get; protected set; } = 10;
         public List<int> PathIndices { get; set; } = null;
         //Private Variables
         public List<Cell>[] CellsInRange { get; set; }
@@ -105,14 +105,26 @@ namespace WPM
 
             //Path Successful
             // Color starting cell, end cell and path
+            ColorPath(cellIndices, startCellIndex);
+            /*
             if (pathCost == TravelRange)
                 worldMapGlobe.SetCellColor(cellIndices, Color.red, true);
             else
                 worldMapGlobe.SetCellColor(cellIndices, Color.grey, true);
 
             worldMapGlobe.SetCellColor(startCellIndex, Color.green, true);
-
+            */
             return cellIndices;
+        }
+
+        public void ColorPath(List<int> cellIndices, int startCellIndex)
+        {
+            //if (pathCost >= TravelRange)
+            //    worldMapGlobe.SetCellColor(cellIndices, Color.red, true);
+           // else
+            worldMapGlobe.SetCellColor(cellIndices, Color.grey, true);
+
+            worldMapGlobe.SetCellColor(startCellIndex, Color.green, true);
         }
 
         /// <summary>

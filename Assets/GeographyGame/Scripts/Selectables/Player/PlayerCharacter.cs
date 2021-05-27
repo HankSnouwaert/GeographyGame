@@ -139,12 +139,19 @@ namespace WPM
             {
                 //Attempt to display path to new location
                 worldMapGlobe.ClearCells(true, false, false);
-                Pathfinder.PathIndices = Pathfinder.FindPath(CellLocation.index, index);
-                if (Pathfinder.PathIndices != null)
+                List<int> newPath = Pathfinder.FindPath(CellLocation.index, index);
+                if(newPath != null)
                 {
+                    Pathfinder.PathIndices = newPath;
                     Pathfinder.PathIndices.Insert(0, CellLocation.index);
                 }
-                worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
+                //Pathfinder.PathIndices = Pathfinder.FindPath(CellLocation.index, index);
+                //if (Pathfinder.PathIndices != null)
+                //{
+                //    Pathfinder.PathIndices.Insert(0, CellLocation.index);
+                //}
+                Pathfinder.ColorPath(Pathfinder.PathIndices, CellLocation.index);
+                //worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
             }
         }
 

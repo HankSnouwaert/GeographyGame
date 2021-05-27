@@ -8,6 +8,11 @@ namespace WPM
     {
         public MountPoint MountPoint { get; set; }
 
+        protected override void OnMouseDown()
+        {
+            cellClicker.HandleOnCellClick(CellIndex);
+        }
+
         public override void OnCellClick(int index)
         {
             
