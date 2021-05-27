@@ -12,6 +12,8 @@ namespace WPM
         //Public Variables
         public Dictionary<string, int> ClimateCosts { get; protected set; } = new Dictionary<string, int>();
         public Dictionary<string, int> TerrainCosts { get; protected set; }  = new Dictionary<string, int>();
+
+        private List<ILandmark> landmarksInRange = new List<ILandmark>();  //MAKE THIS PUBLIC
         //Constants
         private const int STARTING_NUMBER_OF_TOURISTS = 2;
         //Public Interface References
@@ -26,7 +28,7 @@ namespace WPM
         private ICameraManager cameraManager;
         private ITurnsManager turnsManager;
         private ILandmarkParser landmarkParser;
-        private List<ILandmark> landmarksInRange = new List<ILandmark>();
+        
         //Error Checking
         private bool componentMissing = false;
 
@@ -184,16 +186,24 @@ namespace WPM
             int neighborIndex = worldMapGlobe.GetCellNeighbourIndex(CellLocation.index, newCellIndex);
             
             base.UpdateLocation(newCellIndex);
-
+            UpdateLandmarksInRange(newCell);
+            /*
             List<Landmark>[] landmarksInRangeTemp = landmarkParser.GetLandmarksInRange(newCell, 1);
-            landmarksInRange.Clear();
+            //landmarksInRange.Clear();
+            ClearLandmarksInRange();
             foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
             {
                 if(landmarkList != null)
                     landmarksInRange.AddRange(landmarkList);
             }
-
+            foreach(Landmark landmark in landmarksInRange)
+            {
+                if (landmark.Outline != null)
+                    landmark.Outline.enabled = true;
+            }
+            */
             List<IMappableObject> mappableLandmarks = landmarksInRange.Cast<IMappableObject>().ToList();
+
             navigationUI.UpdateNavigationDisplay(ProvincesOccupied, CountriesOccupied, mappableLandmarks);
 
             //If your previous location was a neighbor, use the cell crossing cost to update the game's turns
@@ -213,6 +223,35 @@ namespace WPM
         public override void OtherObjectSelected(ISelectableObject selectedObject)
         {
             //There will need to be check later to account for multiple object selection
+        }
+
+        private void ClearLandmarksInRange()
+        {
+            foreach(Landmark landmark in landmarksInRange)
+            {
+                if(landmark.Outline != null)
+                {
+                    landmark.Outline.enabled = false;
+                }
+            }
+            landmarksInRange.Clear();
+        }
+
+        private void UpdateLandmarksInRange(Cell newCellLocation)
+        {
+            List<Landmark>[] landmarksInRangeTemp = landmarkParser.GetLandmarksInRange(newCellLocation, 1);
+            //landmarksInRange.Clear();
+            ClearLandmarksInRange();
+            foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
+            {
+                if (landmarkList != null)
+                    landmarksInRange.AddRange(landmarkList);
+            }
+            foreach (Landmark landmark in landmarksInRange)
+            {
+                if (landmark.Outline != null)
+                    landmark.Outline.enabled = true;
+            }
         }
     }
 }

@@ -80,11 +80,12 @@ namespace WPM
         {
             worldMapGlobe.ClearCells(true, false, false);
             List<int> cellIndices = worldMapGlobe.FindPath(startCellIndex, endCellIndex);
-            List<int> finalPath = new List<int>();
-            finalPath.Add(cellIndices[0]);
-
+            
             if (cellIndices == null)
                 return null;   // no path found
+
+            List<int> finalPath = new List<int>();
+            finalPath.Add(cellIndices[0]);
 
             //Check that there is enough remaining movement to travel path
             //Start by getting the cost between the starting cell and the first cell in the path

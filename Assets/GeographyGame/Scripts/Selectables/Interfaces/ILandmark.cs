@@ -9,5 +9,10 @@
         /// The mount point designating this landmarks location on the world map globe
         /// </summary>
         MountPoint MountPoint { get; set; }
+
+        /// <summary> 
+        /// The visual outline of the landmark's model
+        /// </summary>
+        Outline Outline { get; set; }
     }
 }

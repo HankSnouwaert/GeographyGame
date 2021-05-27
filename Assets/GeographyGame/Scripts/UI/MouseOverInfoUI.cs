@@ -55,7 +55,7 @@ namespace WPM
 
         public void UpdateUI()
         {
-            if (!uiManager.CursorOverUI && !gameManager.GamePaused && worldMapGlobe.countryHighlighted != null && worldMapGlobe.lastHighlightedCellIndex >= 0 )
+            if (!gameManager.GamePaused && worldMapGlobe.countryHighlighted != null && worldMapGlobe.lastHighlightedCellIndex >= 0 )
             {
                 UIObject.SetActive(true);
                 Province province = worldMapGlobe.provinceHighlighted;
