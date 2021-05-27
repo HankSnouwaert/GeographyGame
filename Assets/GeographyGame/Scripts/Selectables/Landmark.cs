@@ -10,9 +10,7 @@ namespace WPM
 
         protected override void OnMouseDown()
         {
-            
-            
-            //cellClicker.HandleOnCellClick(CellIndex);
+            //Landmarks do nothing when clicked
         }
 
         public override void OnCellClick(int index)

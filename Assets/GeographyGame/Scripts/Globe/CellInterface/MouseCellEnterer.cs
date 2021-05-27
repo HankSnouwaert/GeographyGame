@@ -43,7 +43,8 @@ namespace WPM
             gameManager = interfaceFactory.GameManager;
             globeManager = interfaceFactory.GlobeManager;
             uiManager = interfaceFactory.UIManager;
-            if (gameManager == null || globeManager == null || uiManager == null)
+            errorHandler = interfaceFactory.ErrorHandler;
+            if (gameManager == null || globeManager == null || uiManager == null || errorHandler == null)
                 gameObject.SetActive(false);
             else
             {
@@ -93,7 +94,7 @@ namespace WPM
                 }
                 catch
                 {
-                    errorHandler.ReportError("Invalid cell index for cell cell enterer", ErrorState.close_window);
+                    errorHandler.ReportError("Invalid cell index for cell enterer", ErrorState.close_window);
                 }
             }
         }

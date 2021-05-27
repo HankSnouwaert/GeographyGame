@@ -145,11 +145,6 @@ namespace WPM
                     Pathfinder.PathIndices = newPath;
                     Pathfinder.PathIndices.Insert(0, CellLocation.index);
                 }
-                //Pathfinder.PathIndices = Pathfinder.FindPath(CellLocation.index, index);
-                //if (Pathfinder.PathIndices != null)
-                //{
-                //    Pathfinder.PathIndices.Insert(0, CellLocation.index);
-                //}
                 Pathfinder.ColorPath(Pathfinder.PathIndices, CellLocation.index);
                 //worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
             }

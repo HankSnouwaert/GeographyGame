@@ -80,6 +80,8 @@ namespace WPM
         {
             worldMapGlobe.ClearCells(true, false, false);
             List<int> cellIndices = worldMapGlobe.FindPath(startCellIndex, endCellIndex);
+            List<int> finalPath = new List<int>();
+            finalPath.Add(cellIndices[0]);
 
             if (cellIndices == null)
                 return null;   // no path found
@@ -96,25 +98,14 @@ namespace WPM
                 {
                     neighborIndex = worldMapGlobe.GetCellNeighbourIndex(cellIndices[i], cellIndices[i + 1]);
                     pathCost = pathCost + worldMapGlobe.GetCellNeighbourCost(cellIndices[i], neighborIndex);
+                    if (pathCost <= TravelRange)
+                        finalPath.Add(cellIndices[i + 1]);
+                    else
+                        return finalPath;
                     i++;
                 }
             }
-
-            if (pathCost > TravelRange)
-                return null;   //Path costs more movement than is available
-
-            //Path Successful
-            // Color starting cell, end cell and path
-            ColorPath(cellIndices, startCellIndex);
-            /*
-            if (pathCost == TravelRange)
-                worldMapGlobe.SetCellColor(cellIndices, Color.red, true);
-            else
-                worldMapGlobe.SetCellColor(cellIndices, Color.grey, true);
-
-            worldMapGlobe.SetCellColor(startCellIndex, Color.green, true);
-            */
-            return cellIndices;
+            return finalPath;
         }
 
         public void ColorPath(List<int> cellIndices, int startCellIndex)

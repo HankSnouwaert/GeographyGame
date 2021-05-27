@@ -35,6 +35,12 @@ namespace WPM
         ///<returns> The cell indicies of the path that was found </returns>
         List<int> FindPath(int startCellIndex, int endCellIndex);
 
+        /// <summary>
+        /// Colors a given path of cells
+        /// </summary>
+        /// <param name="cellIndices"> Cell indices of the path.</param>
+        /// <param name="startCellIndex"> Starting cell of the path.</param>
+        ///<returns> The cell indicies of the path that was found </returns>
         void ColorPath(List<int> cellIndices, int startCellIndex);
 
         /// <summary>
