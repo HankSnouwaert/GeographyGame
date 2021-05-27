@@ -10,7 +10,9 @@ namespace WPM
 
         protected override void OnMouseDown()
         {
-            cellClicker.HandleOnCellClick(CellIndex);
+            
+            
+            //cellClicker.HandleOnCellClick(CellIndex);
         }
 
         public override void OnCellClick(int index)
