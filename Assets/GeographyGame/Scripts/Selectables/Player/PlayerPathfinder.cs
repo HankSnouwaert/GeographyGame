@@ -193,6 +193,11 @@ namespace WPM
         {
             PathIndices.Clear();
             worldMapGlobe.ClearCells(true, false, false);
+            ClearCellCosts();
+            Array.Clear(CellsInRange, 0, CellsInRange.Length);
+            CellsInRange = globeParser.GetCellsInRange(playerCharacter.CellLocation, TravelRange + 1);
+            SetCellCosts();
+
             if (playerCharacter.Selected)
             {
                 if(playerCharacter.CellLocation == null)
@@ -206,11 +211,6 @@ namespace WPM
                     playerCharacter.OnCellEnter(worldMapGlobe.lastHighlightedCellIndex);
                 }
             }
-
-            ClearCellCosts();
-            Array.Clear(CellsInRange, 0, CellsInRange.Length);
-            CellsInRange = globeParser.GetCellsInRange(playerCharacter.CellLocation, TravelRange + 1);
-            SetCellCosts();
 
             geoPosAnimator.Moving = false;
             geoPosAnimator.Stop = false;

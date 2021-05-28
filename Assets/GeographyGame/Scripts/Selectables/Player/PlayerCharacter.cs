@@ -187,21 +187,7 @@ namespace WPM
             
             base.UpdateLocation(newCellIndex);
             UpdateLandmarksInRange(newCell);
-            /*
-            List<Landmark>[] landmarksInRangeTemp = landmarkParser.GetLandmarksInRange(newCell, 1);
-            //landmarksInRange.Clear();
-            ClearLandmarksInRange();
-            foreach (List<Landmark> landmarkList in landmarksInRangeTemp)
-            {
-                if(landmarkList != null)
-                    landmarksInRange.AddRange(landmarkList);
-            }
-            foreach(Landmark landmark in landmarksInRange)
-            {
-                if (landmark.Outline != null)
-                    landmark.Outline.enabled = true;
-            }
-            */
+
             List<IMappableObject> mappableLandmarks = landmarksInRange.Cast<IMappableObject>().ToList();
 
             navigationUI.UpdateNavigationDisplay(ProvincesOccupied, CountriesOccupied, mappableLandmarks);
