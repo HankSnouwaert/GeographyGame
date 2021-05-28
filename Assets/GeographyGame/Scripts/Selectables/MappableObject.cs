@@ -69,22 +69,26 @@ namespace WPM
 
         protected virtual void OnMouseDown()
         {
-            if (selectionEnabled && !uiManager.CursorOverUI)
+            if (selectionEnabled)
             {
-                cellClicker.ObjectClicked = true;
+                if (!uiManager.CursorOverUI)
+                {
+                    cellClicker.ObjectClicked = true;
 
-                if (Selected)
-                    Deselect();
-                else  
-                    Select();
+                    if (Selected)
+                        Deselect();
+                    else
+                        Select();
+                }
             }
         }
 
         protected virtual void OnMouseEnter()
         {
-            if (!uiManager.CursorOverUI && selectionEnabled)
+            if (selectionEnabled)
             {
-                gameManager.HighlightedObject = this;
+                if(!uiManager.CursorOverUI)
+                    gameManager.HighlightedObject = this;
             }
         }
 

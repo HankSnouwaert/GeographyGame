@@ -8,9 +8,12 @@ namespace WPM
 
     public class ScoreUI : UIElement, IScoreUI, ITurnsUI
     {
+        //Displayed Text
+        [SerializeField]
+        private Text scoreText;
+        [SerializeField]
+        private Text turnsText;
         //Private Variables
-        private Text[] textComponents;
-        private Text displayText;
         private int currentScore;
         private int currentTurnsRamaining;
         //Error Checking
@@ -21,14 +24,12 @@ namespace WPM
             base.Awake();
             if (gameObject.activeSelf)
             {
-                textComponents = UIObject.GetComponentsInChildren<Text>();
-                if (textComponents == null || textComponents.Length > 1)
+                if (scoreText == null || turnsText == null)
                 {
                     componentMissing = true;
                 }
                 else
                 {
-                    displayText = textComponents[0];
                     UIOpen = true;
                 }
             }
@@ -55,7 +56,8 @@ namespace WPM
 
         private void UpdateDisplayedText()
         {
-            displayText.text = "Score: " + currentScore + System.Environment.NewLine + "Turns Left: " + currentTurnsRamaining;
+            scoreText.text = currentScore.ToString(); 
+            turnsText.text = currentTurnsRamaining.ToString();
         }
     }
 }
