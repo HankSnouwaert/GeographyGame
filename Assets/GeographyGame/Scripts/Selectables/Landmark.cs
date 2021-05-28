@@ -20,13 +20,6 @@ namespace WPM
 
         protected override void OnMouseDown()
         {
-            if(Outline != null)
-            {
-                if (Outline.enabled)
-                    Outline.enabled = false;
-                else
-                    Outline.enabled = true;
-            }
             
         }
 
