@@ -10,7 +10,7 @@ namespace WPM
         public List<IInventoryItem> InventoryList { get; protected set; } = new List<IInventoryItem>();
         //Private Variables
         private bool started = false;
-        private readonly int inventorySize = 7;
+        private readonly int inventorySize = 9;
         //Private Interface References
         private IInventoryUI inventoryUI;
         private IGameManager gameManager;
