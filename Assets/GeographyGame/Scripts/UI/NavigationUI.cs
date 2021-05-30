@@ -146,9 +146,11 @@ namespace WPM
                                 nameType = "State: ";
                             else
                                 nameType = "Province: ";
-                            displayString += province.name + System.Environment.NewLine;// + "PoliticalProvince: " + politicalProvince +
+                            displayString += province.name + "," + System.Environment.NewLine;// + "PoliticalProvince: " + politicalProvince +
                             //System.Environment.NewLine + "Climate: " + climate + System.Environment.NewLine;
                         }
+                        displayString = displayString.TrimEnd('\r', '\n');
+                        displayString = displayString.TrimEnd(',');
                     }
                 }
             }
