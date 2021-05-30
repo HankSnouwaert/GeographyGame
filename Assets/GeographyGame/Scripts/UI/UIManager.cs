@@ -116,6 +116,10 @@ namespace WPM
         void Update()
         {
             CursorOverUI = CheckForMouseOverUI();
+            bool debug;
+            if (CursorOverUI)
+                debug = true;
+
             //Make sure the player doesn't click through a UI while closing it
             if (ClosingUI)
             {

@@ -9,11 +9,12 @@ namespace WPM
     {
         //Private Variables
         private Text[] textComponents;
-        private Text displayText;
+        //private Text displayText;
         private IScoreManager scoreManager;
         //Error Checking
-        private bool componentMissing = false;
-
+        //private bool componentMissing = false;
+        
+            /*
         protected override void Awake()
         {
             base.Awake();
@@ -27,14 +28,15 @@ namespace WPM
                 displayText = textComponents[0];
             }
         }
+        */
 
         protected override void Start()
         {
             base.Start();
             if (gameObject.activeSelf)
             {
-                if (componentMissing)
-                    errorHandler.ReportError("Error getting Inventory Game Over UI Elements", ErrorState.close_window);
+               // if (componentMissing)
+               //     errorHandler.ReportError("Error getting Inventory Game Over UI Elements", ErrorState.close_window);
 
                 scoreManager = gameManager.ScoreManager;
                 if (scoreManager == null)
@@ -43,16 +45,19 @@ namespace WPM
             CloseUI();
         }
 
+        /*
         public override void OpenUI()
         {
             base.OpenUI();
             SetGameOverMessage();
         }
 
+     
         private void SetGameOverMessage()
         {
             displayText.text = "Time's Up!" + System.Environment.NewLine + "Your Score Was: " + scoreManager.Score;
         }
+        */
 
         public void ResetGameSelected()
         {
