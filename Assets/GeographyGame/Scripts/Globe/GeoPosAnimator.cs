@@ -28,8 +28,8 @@ namespace WPM
         private float totalLength;
         private float currentProgress = 0;
         private List<Vector2> latLon = new List<Vector2>(); // Array field with latitude/longitude positions
-        //private const float MOVE_SPEED = 0.06f;  //For Build
-        private const float MOVE_SPEED = 0.01f;  //For Development
+        private const float MOVE_SPEED = 0.06f;  //For Build
+        //private const float MOVE_SPEED = 0.01f;  //For Development
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;

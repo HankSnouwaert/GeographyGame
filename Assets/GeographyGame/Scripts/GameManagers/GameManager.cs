@@ -131,7 +131,7 @@ namespace WPM
                         GamePaused = true;
                     }
                 }
-            }
+            }   
         }
 
         private void DeselectAllObjects()

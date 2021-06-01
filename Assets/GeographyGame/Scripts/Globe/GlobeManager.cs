@@ -80,6 +80,14 @@ namespace WPM
             }
         }
 
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                WorldMapGlobe.dragOnScreenEdges = false;
+            else
+                WorldMapGlobe.dragOnScreenEdges = true;
+        }
+
         private void ApplyGlobeSettings()
         {
             foreach (Country country in WorldMapGlobe.countries)
