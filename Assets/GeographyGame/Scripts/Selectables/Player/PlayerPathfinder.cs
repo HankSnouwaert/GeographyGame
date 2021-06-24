@@ -79,10 +79,18 @@ namespace WPM
         public List<int> FindPath(int startCellIndex, int endCellIndex)
         {
             worldMapGlobe.ClearCells(true, false, false);
+
             List<int> cellIndices = worldMapGlobe.FindPath(startCellIndex, endCellIndex);
             
-            if (cellIndices == null)
+            if (cellIndices == null )
                 return null;   // no path found
+
+            //This might be a redundant check
+            if (cellIndices.Count == 0)
+            {
+                cellIndices = null;
+                return null;
+            }
 
             List<int> finalPath = new List<int>();
             finalPath.Add(cellIndices[0]);

@@ -142,11 +142,15 @@ namespace WPM
                 //Attempt to display path to new location
                 worldMapGlobe.ClearCells(true, false, false);
                 List<int> newPath = Pathfinder.FindPath(CellLocation.index, index);
-                if(newPath != null)
+
+                //NEW
+                Pathfinder.PathIndices = newPath;
+                if (newPath != null)
                 {
-                    Pathfinder.PathIndices = newPath;
+                    //Pathfinder.PathIndices = newPath;
                     Pathfinder.PathIndices.Insert(0, CellLocation.index);
                 }
+
                 Pathfinder.ColorPath(Pathfinder.PathIndices, CellLocation.index);
                 //worldMapGlobe.SetCellColor(CellLocation.index, Color.green, true);
             }
@@ -161,11 +165,12 @@ namespace WPM
             }
             //Attempt to move to new location
             else
-            {
+            {                
                 if (Pathfinder.PathIndices != null && geoPosAnimator.Moving == false)
                 {
-                    geoPosAnimator.InitiateMovement(Pathfinder.PathIndices);
-                }
+                    if (Pathfinder.PathIndices.Count > 0)
+                        geoPosAnimator.InitiateMovement(Pathfinder.PathIndices);
+                } 
             } 
         }
 
