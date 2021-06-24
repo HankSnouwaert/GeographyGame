@@ -6,10 +6,10 @@
 
 namespace WPM {
 				class ColorHSV : System.Object {
-								private float h;
+								private readonly float h;
 								private float s;
-								private float v;
-								private float a;
+								private readonly float v;
+								private readonly float a;
 
 								/**
     * Construct without alpha (which defaults to 1)

@@ -268,25 +268,25 @@ namespace WPM {
         }
 
         void HighlightCity(int cityIndex) {
-            if (cityIndex == _cityHighlightedIndex)
+            if (cityIndex == cityHighlightedIndex)
                 return;
-            _cityHighlightedIndex = cityIndex;
-            _cityHighlighted = cities[cityIndex];
+            cityHighlightedIndex = cityIndex;
+            cityHighlighted = cities[cityIndex];
 
             // Raise event
             if (OnCityEnter != null)
-                OnCityEnter(_cityHighlightedIndex);
+                OnCityEnter(cityHighlightedIndex);
         }
 
         void HideCityHighlight() {
-            if (_cityHighlightedIndex < 0)
+            if (cityHighlightedIndex < 0)
                 return;
 
             // Raise event
             if (OnCityExit != null)
-                OnCityExit(_cityHighlightedIndex);
-            _cityHighlighted = null;
-            _cityHighlightedIndex = -1;
+                OnCityExit(cityHighlightedIndex);
+            cityHighlighted = null;
+            cityHighlightedIndex = -1;
         }
 
         #endregion

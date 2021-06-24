@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 namespace WPM {
 	public class Triangulator {
-		Vector3[] m_points;
-		int m_numPoints;
+        readonly Vector3[] m_points;
+        readonly int m_numPoints;
 
 		public static int[]  GetPoints (Vector3[] points) {
 			Triangulator triangulator = new Triangulator (points);

@@ -25,7 +25,7 @@ namespace SpeedTutorMainMenuSystem
         [SerializeField] private float defaultBrightness;
         [SerializeField] private float defaultVolume;
         [SerializeField] private int defaultSen;
-        [SerializeField] private bool defaultInvertY;
+        [SerializeField] private readonly bool defaultInvertY;
 
         [Header("Levels To Load")]
         public string _newGameButtonLevel;

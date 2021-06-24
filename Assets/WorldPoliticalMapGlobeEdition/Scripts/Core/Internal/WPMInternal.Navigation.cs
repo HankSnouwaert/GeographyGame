@@ -136,7 +136,7 @@ namespace WPM {
 
         void KeepCameraStraight() {
             if (currentPitch != 0) return;
-            if (_keepStraight && !flyToActive) {
+            if (_keepStraight && !isFlyingToActive) {
                 if (_navigationMode == NAVIGATION_MODE.EARTH_ROTATES) {
                     StraightenGlobe(SMOOTH_STRAIGHTEN_ON_POLES, true);
                 } else {
@@ -390,7 +390,7 @@ namespace WPM {
             if (yawTransform == null) return;
 
             bool triggerRotateEnds = false;
-            if (orbitRotateToActive) {
+            if (isOrbitRotateToActive) {
                 float t = (Time.time - orbitRotateToStartTime) / orbitRotateToDuration;
                 if (t >= 1f) {
                     t = 1f;
@@ -450,7 +450,7 @@ namespace WPM {
         }
 
 
-        bool orbitRotateToActive, orbitRotateToComplete;
+        bool orbitRotateToComplete;
         float orbitRotateToYawStart, orbitRotateToYawEnd;
         float orbitRotateToPitchStart, orbitRotateToPitchEnd;
         float orbitRotateToStartTime, orbitRotateToDuration;
@@ -474,7 +474,7 @@ namespace WPM {
 
             orbitRotateToStartTime = Time.time;
             orbitRotateToDuration = duration;
-            orbitRotateToActive = true;
+            isOrbitRotateToActive = true;
             orbitRotateToComplete = false;
 
             if (OnOrbitRotateStart != null) {

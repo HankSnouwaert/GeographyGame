@@ -17,7 +17,7 @@ namespace Mirror.GeographyGame
         public Transform studentTransform3;
         public Transform studentTransform4;
         public Text mapSettingsPath;
-        private GameObject[] players = new GameObject[4];
+        private readonly GameObject[] players = new GameObject[4];
         private int playerNum = 0;
 
         public override void OnServerAddPlayer(NetworkConnection conn)

@@ -33,7 +33,7 @@ using System;
 namespace WPM.Poly2Tri {
 	public class PolygonGenerator {
 		static readonly Random RNG = new Random ();
-		private static double PI_2 = 2.0 * Math.PI;
+		private static readonly double PI_2 = 2.0 * Math.PI;
 
 		public static Polygon RandomCircleSweep (double scale, int vertexCount) {
 			PolygonPoint point;

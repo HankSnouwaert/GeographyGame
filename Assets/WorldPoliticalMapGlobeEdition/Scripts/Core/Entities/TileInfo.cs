@@ -46,8 +46,7 @@ namespace WPM {
         public bool isAddedToInactive;
         public int loadDelay;
         public int stage;
-
-        Texture2D currentEarthTexture;
+        readonly Texture2D currentEarthTexture;
         TileAnimator anim;
 
         public TileInfo(int x, int y, int zoomLevel, int subquadIndex, Texture2D currentEarthTexture) {

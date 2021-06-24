@@ -63,48 +63,36 @@ namespace WPM {
             }
         }
 
-        Country _countryHighlighted;
-
         /// <summary>
         /// Returns Country under mouse position or null if none.
         /// </summary>
-        public Country countryHighlighted { get { return _countryHighlighted; } }
-
-        int _countryHighlightedIndex = -1;
+        public Country countryHighlighted { get; private set; }
 
         /// <summary>
         /// Returns currently highlighted country index in the countries list.
         /// </summary>
-        public int countryHighlightedIndex { get { return _countryHighlightedIndex; } }
-
-        Region _countryRegionHighlighted;
+        public int countryHighlightedIndex { get; private set; } = -1;
 
         /// <summary>
         /// Returns currently highlightd country's region.
         /// </summary>
         /// <value>The country region highlighted.</value>
-        public Region countryRegionHighlighted { get { return _countryRegionHighlighted; } }
-
-        int _countryRegionHighlightedIndex = -1;
+        public Region countryRegionHighlighted { get; private set; }
 
         /// <summary>
         /// Returns currently highlighted region of the country.
         /// </summary>
-        public int countryRegionHighlightedIndex { get { return _countryRegionHighlightedIndex; } }
-
-        int _countryLastClicked = -1;
+        public int countryRegionHighlightedIndex { get; private set; } = -1;
 
         /// <summary>
         /// Returns the last clicked country.
         /// </summary>
-        public int countryLastClicked { get { return _countryLastClicked; } }
-
-        int _countryRegionLastClicked = -1;
+        public int countryLastClicked { get; private set; } = -1;
 
         /// <summary>
         /// Returns the last clicked country region index.
         /// </summary>
-        public int countryRegionLastClicked { get { return _countryRegionLastClicked; } }
+        public int countryRegionLastClicked { get; private set; } = -1;
 
         [SerializeField]
         bool

@@ -63,11 +63,9 @@ namespace WPM.Poly2Tri {
 
 								public float DisplayRotate { get; set; }
 
-								private double mPrecision = TriangulationPoint.kVertexCodeDefaultPrecision;
+        public double Precision { get; set; } = TriangulationPoint.kVertexCodeDefaultPrecision;
 
-								public double Precision { get { return mPrecision; } set { mPrecision = value; } }
-
-								public double MinX { get { return mBoundingBox.MinX; } }
+        public double MinX { get { return mBoundingBox.MinX; } }
 
 								public double MaxX { get { return mBoundingBox.MaxX; } }
 

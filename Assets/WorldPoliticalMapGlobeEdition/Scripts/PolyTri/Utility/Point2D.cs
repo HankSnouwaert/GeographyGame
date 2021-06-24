@@ -394,7 +394,7 @@ namespace WPM.Poly2Tri {
 	public class Point2DEnumerator : IEnumerator<Point2D> {
 		protected IList<Point2D> mPoints;
 		protected int position = -1;  // Enumerators are positioned before the first element until the first MoveNext() call.
-		int pointCount;
+        readonly int pointCount;
 
 		public Point2DEnumerator (IList<Point2D> points) {
 			mPoints = points;

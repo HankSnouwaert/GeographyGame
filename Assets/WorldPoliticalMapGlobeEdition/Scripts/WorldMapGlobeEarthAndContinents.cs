@@ -780,7 +780,7 @@ namespace WPM {
             flyToDuration = duration;
             flyToStartQuaternion = transform.localRotation;
             flyToStartTime = Time.time;
-            flyToActive = true;
+            isFlyingToActive = true;
             flyToCameraStartPosition = flyToCameraEndPosition = _cursorLocation;
             flyToCameraStartUpVector = pivotTransform.up;
             flyToMode = NAVIGATION_MODE.EARTH_ROTATES;
@@ -812,7 +812,7 @@ namespace WPM {
             flyToDuration = duration;
             flyToStartQuaternion = transform.localRotation;
             flyToStartTime = Time.time;
-            flyToActive = true;
+            isFlyingToActive = true;
             flyToMode = NAVIGATION_MODE.EARTH_ROTATES;
             if (flyToDuration == 0) {
                 NavigateToDestination();

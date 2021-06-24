@@ -878,8 +878,8 @@ namespace WPM {
             zoomToDuration = duration;
             zoomToStartDistance = GetCameraDistance();
             zoomToEndDistance = GetZoomLevelDistance(destinationZoomLevel);
-            zoomToActive = true;
-            zoomComplete = false;
+            isZoomToActive = true;
+            isZoomComplete = false;
 
             if (duration == 0) {
                 ZoomToDestination();
@@ -947,8 +947,8 @@ namespace WPM {
                 flyToStartQuaternion = pivotTransform.rotation;
             }
             flyToDuration = duration;
-            flyToActive = true;
-            flyToComplete = false;
+            isFlyingToActive = true;
+            isFlyingComplete = false;
             flyToStartTime = Time.time;
             flyToCameraStartPosition = (pivotTransform.position - transform.position).normalized;
             flyToCameraStartUpVector = pivotTransform.up;
@@ -987,45 +987,33 @@ namespace WPM {
         /// <summary>
         /// Returns whether a FlyToXXX() operation is executing
         /// </summary>
-        public bool isFlyingToActive {
-            get { return flyToActive; }
-        }
+        public bool isFlyingToActive { get; private set; }
 
 
         /// <summary>
         /// Returns true if latest FlyToXXX() operation was completed successfully (ie. not interrupted)
         /// </summary>
-        public bool isFlyingComplete {
-            get { return flyToComplete; }
-        }
+        public bool isFlyingComplete { get; private set; }
 
         /// <summary>
         /// Returns true if a ZoomTo() operation is executing
         /// </summary>
-        public bool isZoomToActive {
-            get { return zoomToActive; }
-        }
+        public bool isZoomToActive { get; private set; }
 
         /// <summary>
         /// Returns true if latest ZoomTo() operation was completed successfully (ie. not interrupted)
         /// </summary>
-        public bool isZoomComplete {
-            get { return zoomComplete; }
-        }
+        public bool isZoomComplete { get; private set; }
 
         /// <summary>
         /// Returns true if a OrbitRotateTo() operation is executing
         /// </summary>
-        public bool isOrbitRotateToActive {
-            get { return orbitRotateToActive; }
-        }
+        public bool isOrbitRotateToActive { get; private set; }
 
         /// <summary>
         /// Returns true if latest OrbitRotateTo() operation was completed successfully (ie. not interrupted)
         /// </summary>
-        public bool isOrbitRotateToComplete {
-            get { return orbitRotateToComplete; }
-        }
+        public bool isOrbitRotateToComplete { get; private set; }
 
 
         /// <summary>

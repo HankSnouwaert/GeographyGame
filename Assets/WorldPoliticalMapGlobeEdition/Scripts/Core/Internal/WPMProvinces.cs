@@ -564,9 +564,9 @@ namespace WPM {
             float maxArea = float.MaxValue;
 
             // Is this the same province currently selected?
-            if (_provinceHighlightedIndex >= 0 && _provinceRegionHighlightedIndex >= 0 && _provinceHighlighted.countryIndex == countryIndex && !_provinceHighlighted.hidden) {
-                if (_provinceRegionHighlighted.Contains(mousePos)) {
-                    maxArea = _provinceHighlighted.mainRegionArea;
+            if (provinceHighlightedIndex >= 0 && provinceRegionHighlightedIndex >= 0 && provinceHighlighted.countryIndex == countryIndex && !provinceHighlighted.hidden) {
+                if (provinceRegionHighlighted.Contains(mousePos)) {
+                    maxArea = provinceHighlighted.mainRegionArea;
                     // cannot return yet - need to check if any other province (smaller than this) could be highlighted
                 }
             }
@@ -609,7 +609,7 @@ namespace WPM {
 
         public void HighlightProvinceRegion(int provinceIndex, int regionIndex, bool refreshGeometry) {
             if (provinceRegionHighlightedObj != null) {
-                if (!refreshGeometry && _provinceHighlightedIndex == provinceIndex && _provinceRegionHighlightedIndex == regionIndex)
+                if (!refreshGeometry && provinceHighlightedIndex == provinceIndex && provinceRegionHighlightedIndex == regionIndex)
                     return;
                 HideProvinceRegionHighlight();
             }
@@ -652,22 +652,22 @@ namespace WPM {
                     provinceRegionHighlightedObj = GenerateProvinceRegionSurface(provinceIndex, regionIndex, hudMatProvince, Misc.Vector2one, Misc.Vector2zero, 0, true);
                 }
             }
-            _provinceHighlighted = provinces[provinceIndex];
-            _provinceHighlightedIndex = provinceIndex;
-            _provinceRegionHighlighted = _provinceHighlighted.regions[regionIndex];
-            _provinceRegionHighlightedIndex = regionIndex;
+            provinceHighlighted = provinces[provinceIndex];
+            provinceHighlightedIndex = provinceIndex;
+            provinceRegionHighlighted = provinceHighlighted.regions[regionIndex];
+            provinceRegionHighlightedIndex = regionIndex;
 
         }
 
         void HideProvinceRegionHighlight() {
-            if (provinceCountryOutlineRef != null && _countryRegionHighlighted == null)
+            if (provinceCountryOutlineRef != null && countryRegionHighlighted == null)
                 provinceCountryOutlineRef.SetActive(false);
-            if (_provinceHighlightedIndex < 0)
+            if (provinceHighlightedIndex < 0)
                 return;
 
-            if (_provinceRegionHighlighted != null && provinceRegionHighlightedObj != null) {
-                if (_provinceRegionHighlighted.customMaterial != null) {
-                    ApplyMaterialToSurface(provinceRegionHighlightedObj, _provinceRegionHighlighted.customMaterial);
+            if (provinceRegionHighlighted != null && provinceRegionHighlightedObj != null) {
+                if (provinceRegionHighlighted.customMaterial != null) {
+                    ApplyMaterialToSurface(provinceRegionHighlightedObj, provinceRegionHighlighted.customMaterial);
                 } else {
                     provinceRegionHighlightedObj.SetActive(false);
                 }
@@ -677,12 +677,12 @@ namespace WPM {
 
             // Raise exit event
             if (OnProvinceExit != null)
-                OnProvinceExit(_provinceHighlightedIndex, _provinceRegionHighlightedIndex);
+                OnProvinceExit(provinceHighlightedIndex, provinceRegionHighlightedIndex);
 
-            _provinceHighlighted = null;
-            _provinceHighlightedIndex = -1;
-            _provinceRegionHighlighted = null;
-            _provinceRegionHighlightedIndex = -1;
+            provinceHighlighted = null;
+            provinceHighlightedIndex = -1;
+            provinceRegionHighlighted = null;
+            provinceRegionHighlightedIndex = -1;
         }
 
         void ProvinceSubstractProvinceEnclaves(int provinceIndex, Region region, Poly2Tri.Polygon poly) {

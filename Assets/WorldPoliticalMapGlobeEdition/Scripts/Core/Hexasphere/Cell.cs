@@ -11,6 +11,11 @@ namespace WPM {
         /// </summary>
         public bool flag;
 
+        /// <summary>
+        /// A list of mappable objects occupying the cell
+        /// </summary>
+        public List<IMappableObject> occupants = new List<IMappableObject>();
+
         #endregion
 
         #region Public properties

@@ -33,12 +33,10 @@ namespace WPM {
 			}
 		}
 
-		int _surfacesCount;
-
-		/// <summary>
-		/// Returns number of visible (active) colorized surfaces.
-		/// </summary>
-		public int surfacesCount { get { return _surfacesCount; } }
+        /// <summary>
+        /// Returns number of visible (active) colorized surfaces.
+        /// </summary>
+        public int surfacesCount { get; private set; }
 
         [SerializeField]
         string _geodataResourcesPath = "Geodata";

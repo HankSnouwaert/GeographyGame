@@ -1,6 +1,6 @@
 ﻿[
 	{
-		"Name":"The Statue Of Liberty",
+		"Name":"Statue Of Liberty",
 		"Country":"United States of America",
 		"Province":3915,
 		"Type":2,
@@ -10,17 +10,17 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Washington Monument",
+		"Name":"Washington Monument",
 		"Country":"United States of America",
 		"Province":3913,
 		"Type":2,
-		"X":1892457,
-		"Y":1572729,
-		"Z":441722,
+		"X":1903613,
+		"Y":1559776,
+		"Z":439714,
 		"Attrib":null
 	},
 	{
-		"Name":"The Hoover Dam",
+		"Name":"Hoover Dam",
 		"Country":"United States of America",
 		"Province":3879,
 		"Type":2,
@@ -30,7 +30,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Golden Gate Bridge",
+		"Name":"Golden Gate Bridge",
 		"Country":"United States of America",
 		"Province":3877,
 		"Type":2,
@@ -60,7 +60,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Space Needle",
+		"Name":"Space Needle",
 		"Country":"United States of America",
 		"Province":3875,
 		"Type":2,
@@ -70,7 +70,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Gateway Arch",
+		"Name":"Gateway Arch",
 		"Country":"United States of America",
 		"Province":3887,
 		"Type":2,
@@ -80,7 +80,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"El Castillo of Chichen Itza",
+		"Name":"Castillo of Chichen Itza",
 		"Country":"Mexico",
 		"Province":2307,
 		"Type":2,
@@ -90,7 +90,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The CN Tower",
+		"Name":"CN Tower",
 		"Country":"Canada",
 		"Province":490,
 		"Type":2,
@@ -100,7 +100,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Fairmont Le Château Frontenac",
+		"Name":"Fairmont Le Château Frontenac",
 		"Country":"Canada",
 		"Province":491,
 		"Type":2,
@@ -120,7 +120,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Ruins of Tikal",
+		"Name":"Ruins of Tikal",
 		"Country":"Guatemala",
 		"Province":1391,
 		"Type":2,
@@ -130,7 +130,7 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Angel of Mexican Independence",
+		"Name":"Angel of Mexican Independence",
 		"Country":"Mexico",
 		"Province":2297,
 		"Type":2,
@@ -140,13 +140,63 @@
 		"Attrib":null
 	},
 	{
-		"Name":"The Panama Canal",
+		"Name":"Panama Canal",
 		"Country":"Panama",
 		"Province":2695,
 		"Type":2,
-		"X":2429085,
+		"X":2429084,
 		"Y":402943,
-		"Z":432642,
+		"Z":432640,
+		"Attrib":null
+	},
+	{
+		"Name":"Mesa Verde National Park",
+		"Country":"United States of America",
+		"Province":3878,
+		"Type":2,
+		"X":1887346,
+		"Y":1511722,
+		"Z":-634509,
+		"Attrib":null
+	},
+	{
+		"Name":"UrosFloatingIslands",
+		"Country":"Peru",
+		"Province":2713,
+		"Type":2,
+		"X":2256684,
+		"Y":-687389,
+		"Z":827568,
+		"Attrib":null
+	},
+	{
+		"Name":"NazcaLines",
+		"Country":"Peru",
+		"Province":2728,
+		"Type":0,
+		"X":2335312,
+		"Y":-638604,
+		"Z":623290,
+		"Attrib":null
+	},
+	{
+		"Name":"Lincoln Memorial",
+		"Country":"United States of America",
+		"Province":3912,
+		"Type":2,
+		"X":1885744,
+		"Y":1583205,
+		"Z":432928,
+		"Attrib":null
+	},
+	{
+		"Name":"PearlHarborNationalMonument",
+		"Country":"United States of America",
+		"Province":-1,
+		"Type":4,
+		"X":873349,
+		"Y":910860,
+		"Z":-2158145,
 		"Attrib":null
 	}
 ]

@@ -1181,13 +1181,12 @@ namespace WPM.Poly2Tri {
          * (in other words, is A "righter" than B)
          */
 		private List<SplitComplexPolygonNode> mConnected = new List<SplitComplexPolygonNode> ();
-		private Point2D mPosition = null;
 
-		public int NumConnected { get { return mConnected.Count; } }
+        public int NumConnected { get { return mConnected.Count; } }
 
-		public Point2D Position { get { return mPosition; } set { mPosition = value; } }
+        public Point2D Position { get; set; } = null;
 
-		public SplitComplexPolygonNode this [int index] {
+        public SplitComplexPolygonNode this [int index] {
 			get { return mConnected [index]; }
 		}
 
@@ -1195,7 +1194,7 @@ namespace WPM.Poly2Tri {
 		}
 
 		public SplitComplexPolygonNode (Point2D pos) {
-			mPosition = pos;
+			Position = pos;
 		}
 
 		public override bool Equals (Object obj) {
@@ -1211,11 +1210,11 @@ namespace WPM.Poly2Tri {
 			if ((Object)pn == null) {
 				return false;
 			}
-			if (mPosition == null || pn.Position == null) {
+			if (Position == null || pn.Position == null) {
 				return false;
 			}
 
-			return mPosition.Equals (pn.Position);
+			return Position.Equals (pn.Position);
 		}
 
 		public override int GetHashCode () {
@@ -1246,7 +1245,7 @@ namespace WPM.Poly2Tri {
 
 		public override string ToString () {
 			StringBuilder sb = new StringBuilder (256);
-			sb.Append (mPosition.ToString ());
+			sb.Append (Position.ToString ());
 			sb.Append (" -> ");
 			for (int i = 0; i < NumConnected; ++i) {
 				if (i != 0) {
@@ -1320,7 +1319,7 @@ namespace WPM.Poly2Tri {
 				// The correct behavior here is to turn around.
 				return incoming;
 			}
-			Point2D inDir = mPosition - incoming.mPosition;
+			Point2D inDir = Position - incoming.Position;
 
 			double inLength = inDir.Magnitude ();
 			inDir.Normalize ();
@@ -1334,7 +1333,7 @@ namespace WPM.Poly2Tri {
 				if (mConnected [i] == incoming) {
 					continue;
 				}
-				Point2D testDir = mConnected [i].mPosition - mPosition;
+				Point2D testDir = mConnected [i].Position - Position;
 				double testLengthSqr = testDir.MagnitudeSquared ();
 				testDir.Normalize ();
 				/*
@@ -1351,7 +1350,7 @@ namespace WPM.Poly2Tri {
 				double myCos = Point2D.Dot (inDir, testDir);
 				double mySin = Point2D.Cross (inDir, testDir);
 				if (result != null) {
-					Point2D resultDir = result.mPosition - mPosition;
+					Point2D resultDir = result.Position - Position;
 					resultDir.Normalize ();
 					double resCos = Point2D.Dot (inDir, resultDir);
 					double resSin = Point2D.Cross (inDir, resultDir);
@@ -1377,7 +1376,7 @@ namespace WPM.Poly2Tri {
 		}
 
 		public SplitComplexPolygonNode GetRightestConnection (Point2D incomingDir) {
-			Point2D diff = mPosition - incomingDir;
+			Point2D diff = Position - incomingDir;
 			SplitComplexPolygonNode temp = new SplitComplexPolygonNode (diff);
 			SplitComplexPolygonNode res = GetRightestConnection (temp);
 			//Debug.Assert(res != null);
