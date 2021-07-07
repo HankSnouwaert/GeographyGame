@@ -41,5 +41,7 @@ namespace WPM
         /// Generate a new tourist
         /// </summary>
         void GenerateTourist();
+
+        void InitiateTourists();
     }
 }

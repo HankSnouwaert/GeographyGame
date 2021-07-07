@@ -31,7 +31,12 @@ namespace WPM
         /// Interface used to access game score
         /// </summary>
         IScoreManager ScoreManager { get; }
-        
+
+        /// <summary> 
+        /// Interface used to access tutorial manager
+        /// </summary>
+        ITutorialManager TutorialManager { get; }
+
         /// <summary> 
         /// Object the cursor is currently over
         /// </summary>

@@ -26,6 +26,8 @@ namespace WPM
         [SerializeField]
         private GameObject scoreManagerObject;
         [SerializeField]
+        private GameObject tutorialManagerObject;
+        [SerializeField]
         private AudioSource gameAmbience;
         //Child Interfaces
         public IPlayerManager PlayerManager { get; protected set; }
@@ -33,6 +35,7 @@ namespace WPM
         public ICameraManager CameraManager { get; protected set; }
         public ITurnsManager TurnsManager { get; protected set; }
         public IScoreManager ScoreManager { get; protected set; }
+        public ITutorialManager TutorialManager { get; protected set; }
         //Local Interface References
         private IUIManager uiManager;
         private IGlobeManager globeManager;
@@ -47,13 +50,15 @@ namespace WPM
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
         private bool componentMissing = false;
+        private GameSettings gameSettings;
 
         #endregion
 
         private void Awake()
         {
             interfaceFactory = FindObjectOfType<InterfaceFactory>();
-            if(interfaceFactory == null)
+            gameSettings = FindObjectOfType<GameSettings>();
+            if(interfaceFactory == null || gameSettings == null)
                 gameObject.SetActive(false);
             try
             {
@@ -71,6 +76,9 @@ namespace WPM
                     componentMissing = true;
                 ScoreManager = scoreManagerObject.GetComponent(typeof(IScoreManager)) as IScoreManager;
                 if (ScoreManager == null)
+                    componentMissing = true;
+                TutorialManager = turnsManagerObject.GetComponent(typeof(ITutorialManager)) as ITutorialManager;
+                if (TutorialManager == null)
                     componentMissing = true;
             }
             catch

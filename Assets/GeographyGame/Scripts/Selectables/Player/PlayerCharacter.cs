@@ -28,9 +28,10 @@ namespace WPM
         private ICameraManager cameraManager;
         private ITurnsManager turnsManager;
         private ILandmarkParser landmarkParser;
-        
+        private ITutorialManager tutorialManager;
         //Error Checking
         private bool componentMissing = false;
+        private GameSettings gameSettings;
 
         protected override void Awake()
         {
@@ -60,6 +61,12 @@ namespace WPM
         protected override void Start()
         {
             base.Start();
+            gameSettings = FindObjectOfType<GameSettings>();
+            if (gameSettings == null)
+            {
+                errorHandler.ReportError("Game Settings missing", ErrorState.restart_scene);
+                return;
+            }
             if (gameObject.activeSelf)
             {
                 if (componentMissing == true)
@@ -74,17 +81,19 @@ namespace WPM
                     if (navigationUI == null)
                         errorHandler.ReportError("Navigation UI missing", ErrorState.restart_scene);
 
+                    tutorialManager = gameManager.TutorialManager;
+                    if (tutorialManager == null)
+                        errorHandler.ReportError("Tutorial Manager missing", ErrorState.restart_scene);
+
                     touristManager = gameManager.TouristManager;
                     if (touristManager == null)
                         errorHandler.ReportError("Tourist Manager missing", ErrorState.restart_scene);
                     else
                     {
-                        for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
-                        {
-                            touristManager.GenerateTourist();
-                        }
+                        if(!gameSettings.TutorialActive)        //This has to be here because the player spawns in the scene after an uncertain amount of time
+                            touristManager.InitiateTourists();  //Ideally it would be in the TouristManager
                     }
-
+                    
                     cameraManager = gameManager.CameraManager;
                     if (cameraManager == null)
                         errorHandler.ReportError("Camera Manager missing", ErrorState.restart_scene);

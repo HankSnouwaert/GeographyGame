@@ -34,6 +34,7 @@ namespace WPM
         //Constants
         private const int MIN_TIME_IN_REGION = 5;  
         private const int MAX_TIME_IN_REGION = 10;
+        private const int STARTING_NUMBER_OF_TOURISTS = 2;
         //Tourist Image Management
         private string[] touristImageFiles; 
         private const int NUMBER_OF_TOURIST_IMAGES = 8;
@@ -147,6 +148,14 @@ namespace WPM
                     errorHandler.CatchException(ex, ErrorState.restart_scene);
                 }
                 
+            }
+        }
+
+        public void InitiateTourists()
+        {
+            for (int i = 0; i < STARTING_NUMBER_OF_TOURISTS; i++)
+            {
+                GenerateTourist();
             }
         }
 
