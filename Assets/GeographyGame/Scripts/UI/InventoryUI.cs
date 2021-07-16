@@ -142,27 +142,10 @@ namespace WPM
 
         public void UpdateInventory(List<IInventoryItem> inventory)
         {
+            ClearInventory(inventory);
             try
             {
                 int i = 0;
-                //Clear the inventory
-                foreach (IInventoryItem item in displayedItems)
-                {
-                    displayedItems[i] = null;
-                    displayedItemButtons[i].gameObject.SetActive(false);
-                    displayedItemButtons[i].GetComponent<Image>().sprite = null;
-                    i++;
-                }
-
-                //See if your currently selected object still exists
-                if(selectedItemIndex >= inventory.Count)
-                {
-                    selectedItemIndex = -1;
-                    inventorySelected = false;
-                    selectedObject = null;
-                }
-
-                i = 0;
                 //Update the inventory
                 foreach (IInventoryItem item in inventory)
                 {
@@ -244,6 +227,46 @@ namespace WPM
                 }
 
                 displayedItems[inventoryNumber].MouseExit();
+            }
+        }
+
+        /// <summary>
+        /// Clears all the items from the inventory UI
+        /// </summary>
+        /// <param name="inventory">The in-game inventory to use as a reference.</param>
+        private void ClearInventory(List<IInventoryItem> inventory)
+        {
+            if(displayedItems == null || displayedItemButtons == null)
+            {
+                errorHandler.ReportError("Inventory item list null", ErrorState.restart_scene);
+                return;
+            }
+
+            if (displayedItemButtons.Length != displayedItems.Length)
+            {
+                errorHandler.ReportError("Mismatch between number of inventory items and inventory buttons", ErrorState.restart_scene);
+                return;
+            }
+
+            if(inventory != null)
+            {
+                int i = 0;
+                //Clear the inventory
+                foreach (IInventoryItem item in displayedItems)
+                {
+                    displayedItems[i] = null;
+                    displayedItemButtons[i].gameObject.SetActive(false);
+                    displayedItemButtons[i].GetComponent<Image>().sprite = null;
+                    i++;
+                }
+
+                //See if your currently selected object still exists
+                if (selectedItemIndex >= inventory.Count)
+                {
+                    selectedItemIndex = -1;
+                    inventorySelected = false;
+                    selectedObject = null;
+                }
             }
         }
     }
