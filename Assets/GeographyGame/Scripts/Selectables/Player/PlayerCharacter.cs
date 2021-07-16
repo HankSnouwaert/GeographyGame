@@ -61,7 +61,7 @@ namespace WPM
         protected override void Start()
         {
             base.Start();
-            gameSettings = FindObjectOfType<GameSettings>();
+            gameSettings  = FindObjectOfType<GameSettings>();
             if (gameSettings == null)
             {
                 errorHandler.ReportError("Game Settings missing", ErrorState.restart_scene);
@@ -90,8 +90,11 @@ namespace WPM
                         errorHandler.ReportError("Tourist Manager missing", ErrorState.restart_scene);
                     else
                     {
-                        if(!gameSettings.TutorialActive)        //This has to be here because the player spawns in the scene after an uncertain amount of time
+                        if (!gameSettings.TutorialActive)
+                        {                                       //This has to be here because the player spawns in the scene after an uncertain amount of time
                             touristManager.InitiateTourists();  //Ideally it would be in the TouristManager
+                            selectionEnabled = true;
+                        }
                     }
                     
                     cameraManager = gameManager.CameraManager;

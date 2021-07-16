@@ -68,7 +68,12 @@ namespace WPM
         /// Exit the application
         /// </summary>
         void ExitGame();
-        
+
+        /// <summary> 
+        /// Return to the game's main menu
+        /// </summary>
+        void ReturnToMainMenu();
+
         /// <summary> 
         /// End the game
         /// </summary>

@@ -26,6 +26,8 @@ namespace WPM
         private GameObject gameMenuUIObject; 
         [SerializeField]
         private GameObject inventoryPopUpUIObject;
+        [SerializeField]
+        private GameObject tutorialUIObject;
         //Child Interfaces
         public IMouseOverInfoUI MouseOverInfoUI { get; protected set; }
         public IInventoryUI InventoryUI { get; protected set; }
@@ -36,6 +38,7 @@ namespace WPM
         public IGameOverUI GameOverUI { get; protected set; }
         public IGameMenuUI GameMenuUI { get; protected set; }
         public IInventoryPopUpUI InventoryPopUpUI { get; protected set; }
+        public ITutorialUI TutorialUI { get; protected set; }
         //Public Flags
         public bool CursorOverUI { get; set; } = false;
         public bool ClosingUI { get; set; } = false;
@@ -90,6 +93,10 @@ namespace WPM
                 InventoryUI = inventoryUIObject.GetComponent(typeof(IInventoryUI)) as IInventoryUI;
                 if (inventoryUIObject == null)
                     componentMissing = true;
+
+                TutorialUI = tutorialUIObject.GetComponent(typeof(ITutorialUI)) as ITutorialUI;
+                if (tutorialUIObject == null)
+                    componentMissing = true;
             }
             catch
             {
@@ -106,6 +113,11 @@ namespace WPM
                 gameObject.SetActive(false);
             else
             {
+                if (componentMissing)
+                {
+                    errorHandler.ReportError("UI component missing", ErrorState.restart_scene);
+                }
+
                 cellCursorInterface = globeManager.CellCursorInterface;
                 if (cellCursorInterface == null)
                     errorHandler.ReportError("CellCurserInterface no found", ErrorState.restart_scene);

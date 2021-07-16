@@ -38,6 +38,8 @@ namespace WPM
         //Local Constants
         private const int TOURIST_DROP_OFF_SCORE = 100;
 
+        private GameSettings gameSettings;
+
         protected override void Awake()
         {
             base.Awake();
@@ -55,6 +57,12 @@ namespace WPM
         protected override void Start()
         {
             base.Start();
+            gameSettings = FindObjectOfType<GameSettings>();
+            if (gameSettings == null)
+            {
+                errorHandler.ReportError("Game Settings missing", ErrorState.restart_scene);
+                return;
+            }
             if (gameObject.activeSelf)
             {
                 if (componentMissing == true)
@@ -80,6 +88,9 @@ namespace WPM
                 destinationSet = destinationSetter.SetDestination(this, touristManager.CurrentRegion);
                 if (!destinationSet)
                     errorHandler.ReportError("Tourist destination not set", ErrorState.close_window);
+
+                if(!gameSettings.TutorialActive)
+                    selectionEnabled = true;
             }
         }
 

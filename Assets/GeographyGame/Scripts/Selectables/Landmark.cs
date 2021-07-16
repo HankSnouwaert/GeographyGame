@@ -18,12 +18,6 @@ namespace WPM
                 Outline.enabled = false;
         }
 
-        protected override void Start()
-        {
-            base.Start();
-            selectionEnabled = false;
-        }
-
         protected override void OnMouseDown()
         {
             

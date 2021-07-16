@@ -51,6 +51,10 @@ namespace WPM
         /// </summary>
         IInventoryPopUpUI InventoryPopUpUI { get; }
         /// <summary>
+        ///  The UI used in the player tutorial
+        /// </summary>
+        ITutorialUI TutorialUI { get; }
+        /// <summary>
         ///  Sets up UIs for end of game display
         /// </summary>
         void GameOver();

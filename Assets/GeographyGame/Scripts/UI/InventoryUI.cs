@@ -154,6 +154,14 @@ namespace WPM
                     i++;
                 }
 
+                //See if your currently selected object still exists
+                if(selectedItemIndex >= inventory.Count)
+                {
+                    selectedItemIndex = -1;
+                    inventorySelected = false;
+                    selectedObject = null;
+                }
+
                 i = 0;
                 //Update the inventory
                 foreach (IInventoryItem item in inventory)

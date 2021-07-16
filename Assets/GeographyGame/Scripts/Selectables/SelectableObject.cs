@@ -34,7 +34,7 @@ namespace WPM
                 gameObject.SetActive(false);
             }
             else
-                selectionEnabled = true;
+                selectionEnabled = false;
         }
 
         public virtual void Select()

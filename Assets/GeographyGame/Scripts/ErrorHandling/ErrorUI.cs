@@ -93,6 +93,8 @@ namespace WPM
 
             if (uiManager != null)
                 uiManager.ClosingUI = true;
+
+            errorUIClosed();
         }
 
         public void setErrorMessage(string message)

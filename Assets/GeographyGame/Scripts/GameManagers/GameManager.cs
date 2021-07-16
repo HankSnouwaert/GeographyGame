@@ -77,7 +77,7 @@ namespace WPM
                 ScoreManager = scoreManagerObject.GetComponent(typeof(IScoreManager)) as IScoreManager;
                 if (ScoreManager == null)
                     componentMissing = true;
-                TutorialManager = turnsManagerObject.GetComponent(typeof(ITutorialManager)) as ITutorialManager;
+                TutorialManager = tutorialManagerObject.GetComponent(typeof(ITutorialManager)) as ITutorialManager;
                 if (TutorialManager == null)
                     componentMissing = true;
             }
@@ -101,6 +101,7 @@ namespace WPM
                 if (componentMissing)
                 {
                     errorHandler.ReportError("GameManager component missing", ErrorState.restart_scene);
+                    return;
                 }
 
                 ICellCursorInterface cellCursorInterface = globeManager.CellCursorInterface;
@@ -115,7 +116,10 @@ namespace WPM
                 if (gameMenuUI == null)
                     errorHandler.ReportError("Game Menu UI Missing", ErrorState.restart_scene);
 
+
                 gameAmbience.Play();
+                if (gameSettings.TutorialActive == true)
+                    TutorialManager.BeginTutorial();
             }
         }
 
@@ -192,6 +196,11 @@ namespace WPM
         public void GameReset()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        public void ReturnToMainMenu()
+        {
+            SceneManager.LoadScene("MainGameMenu");
         }
 
         /// <summary> 

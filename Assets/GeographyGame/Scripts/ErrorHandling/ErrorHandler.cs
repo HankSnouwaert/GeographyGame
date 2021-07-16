@@ -87,31 +87,34 @@ namespace WPM
             if (!errorUIInitialized)
                 Awake();
 
-            ErrorState = state;
-            string combinedStackTrace;
-            if(errorUI != null)
+            if(ErrorState == ErrorState.no_error)  //Don't display a new error if there is already on active
             {
-                if (ex == null)
+                ErrorState = state;
+                string combinedStackTrace;
+                if (errorUI != null)
                 {
-                    errorUI.setErrorMessage("Exception Missing");
+                    if (ex == null)
+                    {
+                        errorUI.setErrorMessage("Exception Missing");
+                    }
+                    else
+                    {
+                        combinedStackTrace = ex.StackTrace;
+                        var inner = ex.InnerException;
+                        while (inner != null)
+                        {
+                            combinedStackTrace = combinedStackTrace + inner.StackTrace;
+                            inner = inner.InnerException;
+                        }
+                        errorUI.setErrorMessage(ex.Message);
+                        errorUI.setStackTrace(combinedStackTrace);
+                    }
+
+                    errorUI.OpenUI();
                 }
                 else
-                {
-                    combinedStackTrace = ex.StackTrace;
-                    var inner = ex.InnerException;
-                    while (inner != null)
-                    {
-                        combinedStackTrace = combinedStackTrace + inner.StackTrace;
-                        inner = inner.InnerException;
-                    }
-                    errorUI.setErrorMessage(ex.Message);
-                    errorUI.setStackTrace(combinedStackTrace);
-                }
-
-                errorUI.OpenUI();
+                    EmergencyExit("Error UI Script Not Found");
             }
-            else
-                EmergencyExit("Error UI Script Not Found");
         }
 
         /// <summary>
