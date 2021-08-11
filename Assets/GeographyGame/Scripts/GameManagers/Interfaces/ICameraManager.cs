@@ -12,5 +12,9 @@ namespace WPM
         /// </summary>
         /// <param name="vectorLocation">The location the camera is being oriented.</param>
         void OrientOnLocation(Vector3 vectorLocation);
+
+        void LockCamera();
+
+        void UnlockCamera();
     }
 }

@@ -75,7 +75,6 @@ namespace WPM
                     errorHandler.ReportError("World Map Globe Missing", ErrorState.close_application);
                 if (componentMissing)
                     errorHandler.ReportError("Component Missing", ErrorState.restart_scene);
-
                 ApplyGlobeSettings();
             }
         }

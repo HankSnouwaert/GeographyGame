@@ -15,12 +15,14 @@ namespace WPM
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
         private bool componentMissing = false;
+        private GameSettings gameSettings;
 
         // Start is called before the first frame update
         private void Awake()
         {
             interfaceFactory = FindObjectOfType<InterfaceFactory>();
-            if (interfaceFactory == null)
+            gameSettings = FindObjectOfType<GameSettings>();
+            if (interfaceFactory == null || gameSettings == null)
                 gameObject.SetActive(false);
         }
 
@@ -38,6 +40,9 @@ namespace WPM
                 worldMapGlobe = globeManager.WorldMapGlobe;
                 if (worldMapGlobe == null)
                     errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
+                else
+                    if (gameSettings.TutorialActive == true)
+                        LockCamera();
             }
         }
 
@@ -59,6 +64,20 @@ namespace WPM
             worldMapGlobe.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
             worldMapGlobe.pitch = 0;
             worldMapGlobe.yaw = 0;
+        }
+
+        public void LockCamera()
+        {
+            worldMapGlobe.allowUserKeys = false;
+            worldMapGlobe.allowUserRotation = false;
+            worldMapGlobe.allowUserZoom = false;
+        }
+
+        public void UnlockCamera()
+        {
+            worldMapGlobe.allowUserKeys = true;
+            worldMapGlobe.allowUserRotation = true;
+            worldMapGlobe.allowUserZoom = true;
         }
     }
 }
