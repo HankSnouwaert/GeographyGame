@@ -10,6 +10,10 @@ namespace WPM
         private IGameManager gameManager;
         private IUIManager uiManager;
         private ITutorialUI tutorialUI;
+        //Tutorial Interface References
+        [SerializeField]
+        private GameObject cameraTutorialObject;
+        public ICameraTutorial CameraTutorial { get; protected set; }
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
@@ -23,6 +27,16 @@ namespace WPM
             gameSettings = FindObjectOfType<GameSettings>();
             if (interfaceFactory == null || gameSettings == null)
                 gameObject.SetActive(false);
+            try
+            {
+                CameraTutorial = cameraTutorialObject.GetComponent(typeof(ICameraTutorial)) as ICameraTutorial;
+                if (CameraTutorial == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
         }
 
         void Start()
@@ -60,6 +74,9 @@ namespace WPM
         public void EndTutorial()
         {
             gameSettings.TutorialActive = false;
+
+            tutorialUI.SetUIPosition();
+
             tutorialUI.SetMainText("Tutorial finished!");
             tutorialUI.EnableButton1(true);
             tutorialUI.EnableButton2(true);

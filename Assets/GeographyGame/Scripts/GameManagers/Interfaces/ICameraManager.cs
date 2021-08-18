@@ -7,6 +7,8 @@ namespace WPM
     /// </summary>
     public interface ICameraManager
     {
+        GameObject CameraGameObject { get; }
+
         /// <summary>
         /// Orients the camera to a given vector location
         /// </summary>

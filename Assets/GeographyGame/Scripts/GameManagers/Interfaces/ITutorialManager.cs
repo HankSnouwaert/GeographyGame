@@ -2,6 +2,7 @@
 {
     public interface ITutorialManager
     {
+        ICameraTutorial CameraTutorial { get; }
         void BeginTutorial();
         void EndTutorial();
     }

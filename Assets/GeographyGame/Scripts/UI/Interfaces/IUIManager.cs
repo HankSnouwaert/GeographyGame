@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 namespace WPM
 {
     /// <summary>
@@ -6,6 +8,8 @@ namespace WPM
     /// </summary>
     public interface IUIManager
     {
+        UnityEngine.Canvas MainCanvas { get; }
+
         /// <summary>
         ///  Flag indicating if the cursor is being block by a UI element
         /// </summary>
@@ -58,5 +62,10 @@ namespace WPM
         ///  Sets up UIs for end of game display
         /// </summary>
         void GameOver();
+
+        void ApplyAnchorPreset(RectTransform rectTransform,
+                                                TextAnchor presetToApply,
+                                                bool alsoSetPivot = false,
+                                                bool alsoSetPosition = false);
     }
 }

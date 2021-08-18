@@ -9,5 +9,7 @@
         void SetButton1Text(string textString);
         void SetButton2Text(string textString);
         void SetMainText(string textString);
+
+        void SetUIPosition();
     }
 }

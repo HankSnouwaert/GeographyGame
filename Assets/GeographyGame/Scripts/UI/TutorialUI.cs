@@ -17,13 +17,17 @@ namespace WPM
         private Text button2Text;
         [SerializeField]
         private Text mainText;
+        //Components
+        RectTransform rectTransform;
+        //Error Checking
         private bool componentsMissing = false;
         private GameSettings gameSettings;
 
         protected override void Awake()
         {
             base.Awake();
-            if(button1 == null || button2 == null || button1Text == null || button2Text == null || mainText == null)
+            rectTransform = gameObject.GetComponent(typeof(RectTransform)) as RectTransform;
+            if (button1 == null || button2 == null || button1Text == null || button2Text == null || mainText == null || rectTransform == null)
                 componentsMissing = true;
         }
 
@@ -85,6 +89,13 @@ namespace WPM
                 return;
             }
             button2.onClick.AddListener(delegate { buttonDelegate(); });
+        }
+
+        public void SetUIPosition()
+        {
+            uiManager.ApplyAnchorPreset(rectTransform, TextAnchor.UpperRight, false, true);
+            //rectTransform.pivot = new Vector2(uiManager.MainCanvas.GetComponent<RectTransform>().rect.xMax, uiManager.MainCanvas.GetComponent<RectTransform>().rect.yMax);
+            //rectTransform.anchoredPosition = new Vector2(uiManager.MainCanvas.GetComponent<RectTransform>().rect.xMax, uiManager.MainCanvas.GetComponent<RectTransform>().rect.yMax);
         }
     }
 }
