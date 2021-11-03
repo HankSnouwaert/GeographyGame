@@ -79,7 +79,9 @@ namespace WPM
         {
             tutorialUI.SetUIPosition(TextAnchor.UpperRight);
             tutorialUI.SetMainText("This is the camera tutorial");
+            tutorialUI.SetButton1Text("Next");
             tutorialUI.SetButton1Delegate(EndTutorial);
+            tutorialUI.EnableButton1(true);
             tutorialUI.EnableButton2(false);
         }
 

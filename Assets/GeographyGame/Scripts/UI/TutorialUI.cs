@@ -78,6 +78,7 @@ namespace WPM
                 errorHandler.ReportError("Drop Off Delegate Null", ErrorState.close_window);
                 return;
             }
+            button1.onClick.RemoveAllListeners();
             button1.onClick.AddListener(delegate { buttonDelegate(); });
         }
 
@@ -88,6 +89,7 @@ namespace WPM
                 errorHandler.ReportError("Drop Off Delegate Null", ErrorState.close_window);
                 return;
             }
+            button2.onClick.RemoveAllListeners();
             button2.onClick.AddListener(delegate { buttonDelegate(); });
         }
 

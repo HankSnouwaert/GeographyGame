@@ -72,7 +72,7 @@ namespace WPM
                 tutorialUI.EnableButton1(false);
                 tutorialUI.EnableButton2(true);
                 tutorialUI.SetButton2Text("Start");
-                tutorialUI.SetButton2Delegate(EndTutorial);
+                tutorialUI.SetButton2Delegate(tutorials[0].StartTutorial);
             }
         }
   
