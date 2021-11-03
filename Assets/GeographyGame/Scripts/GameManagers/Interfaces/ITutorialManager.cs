@@ -4,6 +4,6 @@
     {
         ICameraTutorial CameraTutorial { get; }
         void BeginTutorial();
-        void EndTutorial();
+        void CurrentTutorialFinished();
     }
 }

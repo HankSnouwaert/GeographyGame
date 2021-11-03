@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace WPM
 {
-    public class CameraTutorial : MonoBehaviour, ICameraTutorial
+    public class CameraTutorial : Tutorial, ICameraTutorial
     {
         //Private Interface References
         private IGameManager gameManager;
@@ -12,6 +12,9 @@ namespace WPM
         private ITutorialManager tutorialManager;
         private IUIManager uiManager;
         private ITutorialUI tutorialUI;
+        //Local Variables
+        private int tutorialCounter = -1;
+        const int CameraMovePlacement = 0;
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
@@ -49,12 +52,35 @@ namespace WPM
 
         void Update()
         {
+            switch(tutorialCounter)
+            {
+                case (CameraMovePlacement):
 
+                    break;
+
+                default:
+                    break;
+
+            }
+        }
+
+        public override void StartTutorial()
+        {
+            StartCameraMoveTutorial();
+        }
+
+        public void EndTutorial()
+        {
+            tutorialCounter = -1;
+            tutorialManager.CurrentTutorialFinished();
         }
 
         public void StartCameraMoveTutorial()
         {
-
+            tutorialUI.SetUIPosition(TextAnchor.UpperRight);
+            tutorialUI.SetMainText("This is the camera tutorial");
+            tutorialUI.SetButton1Delegate(EndTutorial);
+            tutorialUI.EnableButton2(false);
         }
 
     }

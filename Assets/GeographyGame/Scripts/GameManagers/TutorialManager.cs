@@ -14,12 +14,16 @@ namespace WPM
         [SerializeField]
         private GameObject cameraTutorialObject;
         public ICameraTutorial CameraTutorial { get; protected set; }
+        private List<ITutorial> tutorials = new List<ITutorial>();
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
         private bool componentMissing;
         private bool started = false;
         private GameSettings gameSettings;
+        private int tutorialCounter = 0;
+        const int CameraPlacement = 0;
+
 
         private void Awake()
         {
@@ -63,6 +67,7 @@ namespace WPM
                 Start();
             if (gameObject.activeSelf)
             {
+                InitializeTutorialList();
                 tutorialUI.SetMainText("Welcome to the Tutorial!");
                 tutorialUI.EnableButton1(false);
                 tutorialUI.EnableButton2(true);
@@ -70,13 +75,31 @@ namespace WPM
                 tutorialUI.SetButton2Delegate(EndTutorial);
             }
         }
+  
+        private void InitializeTutorialList()
+        {
+            tutorials.Insert(CameraPlacement, CameraTutorial);
+        }
 
-        public void EndTutorial()
+        private void StartNextTutorial()
+        {
+            ITutorial nextTutorial = tutorials[tutorialCounter];
+            nextTutorial.StartTutorial();
+        }
+
+        public void CurrentTutorialFinished()
+        {
+            tutorialCounter++;
+            if (tutorialCounter >= tutorials.Count)
+                EndTutorial();
+            else
+                StartNextTutorial();
+        }
+
+        private void EndTutorial()
         {
             gameSettings.TutorialActive = false;
-
-            tutorialUI.SetUIPosition();
-
+            tutorialUI.SetUIPosition(TextAnchor.MiddleCenter);
             tutorialUI.SetMainText("Tutorial finished!");
             tutorialUI.EnableButton1(true);
             tutorialUI.EnableButton2(true);

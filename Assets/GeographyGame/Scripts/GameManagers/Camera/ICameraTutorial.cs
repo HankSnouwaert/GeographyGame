@@ -1,6 +1,6 @@
 ﻿namespace WPM
 {
-    public interface ICameraTutorial
+    public interface ICameraTutorial : ITutorial
     {
         void StartCameraMoveTutorial();
     }

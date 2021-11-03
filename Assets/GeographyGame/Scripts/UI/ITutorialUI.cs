@@ -1,4 +1,6 @@
-﻿namespace WPM
+﻿using UnityEngine;
+
+namespace WPM
 {
     public interface ITutorialUI : IUIElement
     {
@@ -10,6 +12,6 @@
         void SetButton2Text(string textString);
         void SetMainText(string textString);
 
-        void SetUIPosition();
+        void SetUIPosition(TextAnchor textAnchor);
     }
 }

@@ -91,11 +91,9 @@ namespace WPM
             button2.onClick.AddListener(delegate { buttonDelegate(); });
         }
 
-        public void SetUIPosition()
+        public void SetUIPosition(TextAnchor textAnchor)
         {
-            uiManager.ApplyAnchorPreset(rectTransform, TextAnchor.UpperRight, false, true);
-            //rectTransform.pivot = new Vector2(uiManager.MainCanvas.GetComponent<RectTransform>().rect.xMax, uiManager.MainCanvas.GetComponent<RectTransform>().rect.yMax);
-            //rectTransform.anchoredPosition = new Vector2(uiManager.MainCanvas.GetComponent<RectTransform>().rect.xMax, uiManager.MainCanvas.GetComponent<RectTransform>().rect.yMax);
+            uiManager.ApplyAnchorPreset(rectTransform, textAnchor, false, true);
         }
     }
 }
