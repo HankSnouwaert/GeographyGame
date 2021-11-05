@@ -1,5 +1,9 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
+using System;
 using System.Collections.Generic;
+
+
 using UnityEngine;
 
 namespace WPM
@@ -15,6 +19,8 @@ namespace WPM
         //Local Variables
         private int tutorialCounter = -1;
         const int CameraMovePlacement = 0;
+        float lastCameraPositionMagnitude = 0;
+        const double cameraMovementThreshhold = 0.1;
         //Error Checking
         private InterfaceFactory interfaceFactory;
         private IErrorHandler errorHandler;
@@ -56,6 +62,8 @@ namespace WPM
             {
                 case (CameraMovePlacement):
 
+                    if (Math.Abs(Camera.main.transform.position.z - lastCameraPositionMagnitude) >= cameraMovementThreshhold)
+                        EndTutorial();
                     break;
 
                 default:
@@ -80,9 +88,19 @@ namespace WPM
             tutorialUI.SetUIPosition(TextAnchor.UpperRight);
             tutorialUI.SetMainText("This is the camera tutorial");
             tutorialUI.SetButton1Text("Next");
-            tutorialUI.SetButton1Delegate(EndTutorial);
+            tutorialUI.SetButton1Delegate(MoveTheCamera);
             tutorialUI.EnableButton1(true);
             tutorialUI.EnableButton2(false);
+        }
+
+        public void MoveTheCamera()
+        {
+            tutorialUI.SetUIPosition(TextAnchor.UpperRight);
+            tutorialUI.SetMainText("Try moving the camera");
+            tutorialUI.EnableButton1(false);
+            tutorialUI.EnableButton2(false);
+            tutorialCounter = CameraMovePlacement;
+            lastCameraPositionMagnitude = Camera.main.transform.position.z;
         }
 
     }
