@@ -6,11 +6,18 @@ namespace WPM
 {
     public class CameraManager : MonoBehaviour, ICameraManager
     {
+        [SerializeField]
+        private GameObject cameraTutorialObject;
         //Public Variables
         public GameObject CameraGameObject { get; protected set; }
+        //FIX: This may need to be in a shared header file
+        public const int None = 0;
+        public const int OrientOnLocationTutorial = 1;
+        public int ActiveTutorial { get; set; } = 0; 
         //Local Interface References
         private IGameManager gameManager;
         private IGlobeManager globeManager;
+        private ICameraTutorial cameraTutorial;
         //World Map Globe does not use an interface
         private WorldMapGlobe worldMapGlobe;
         //Error Checking
@@ -26,8 +33,17 @@ namespace WPM
             gameSettings = FindObjectOfType<GameSettings>();
             if (interfaceFactory == null || gameSettings == null)
                 gameObject.SetActive(false);
+            try
+            {
+                cameraTutorial = cameraTutorialObject.GetComponent(typeof(ICameraTutorial)) as ICameraTutorial;
+                if (cameraTutorial == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
         }
-
         private void Start()
         {
             globeManager = interfaceFactory.GlobeManager;
@@ -39,6 +55,12 @@ namespace WPM
             }
             else
             {
+                if (componentMissing)
+                {
+                    errorHandler.ReportError("Camera Manager component missing", ErrorState.restart_scene);
+                    return;
+                }
+
                 worldMapGlobe = globeManager.WorldMapGlobe;
                 if (worldMapGlobe == null)
                     errorHandler.ReportError("World Map Globe missing", ErrorState.restart_scene);
@@ -66,6 +88,11 @@ namespace WPM
             worldMapGlobe.FlyToLocation(vectorLocation, 1.5F, 0.05F, 0.01F, 0);
             worldMapGlobe.pitch = 0;
             worldMapGlobe.yaw = 0;
+            if (ActiveTutorial == 1)
+            {
+                cameraTutorial.TutorialActionComplete = true;
+                ActiveTutorial = 0;
+            }
         }
 
         public void LockCamera()

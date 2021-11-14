@@ -9,6 +9,8 @@ namespace WPM
     {
         GameObject CameraGameObject { get; }
 
+        int ActiveTutorial { get; set; }
+
         /// <summary>
         /// Orients the camera to a given vector location
         /// </summary>
