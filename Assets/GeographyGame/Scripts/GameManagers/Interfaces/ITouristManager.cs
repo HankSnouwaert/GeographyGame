@@ -46,5 +46,7 @@ namespace WPM
         /// Generate initial tourists
         /// </summary>
         void InitiateTourists();
+
+        int ActiveTutorial { get; set; }
     }
 }

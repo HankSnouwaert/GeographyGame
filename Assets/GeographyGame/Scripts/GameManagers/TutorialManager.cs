@@ -13,7 +13,10 @@ namespace WPM
         //Tutorial Interface References
         [SerializeField]
         private GameObject cameraTutorialObject;
+        [SerializeField]
+        private GameObject touristTutorialObject;
         public ICameraTutorial CameraTutorial { get; protected set; }
+        public ITouristTutorial TouristTutorial { get; protected set; }
         private List<ITutorial> tutorials = new List<ITutorial>();
         //Error Checking
         private InterfaceFactory interfaceFactory;
@@ -23,6 +26,7 @@ namespace WPM
         private GameSettings gameSettings;
         private int tutorialCounter = 0;
         const int CameraPlacement = 0;
+        const int TouristSelection = 1;
 
 
         private void Awake()
@@ -34,6 +38,9 @@ namespace WPM
             try
             {
                 CameraTutorial = cameraTutorialObject.GetComponent(typeof(ICameraTutorial)) as ICameraTutorial;
+                if (CameraTutorial == null)
+                    componentMissing = true;
+                TouristTutorial = touristTutorialObject.GetComponent(typeof(ITouristTutorial)) as ITouristTutorial;
                 if (CameraTutorial == null)
                     componentMissing = true;
             }
@@ -79,6 +86,7 @@ namespace WPM
         private void InitializeTutorialList()
         {
             tutorials.Insert(CameraPlacement, CameraTutorial);
+            tutorials.Insert(TouristSelection, TouristTutorial);
         }
 
         private void StartNextTutorial()

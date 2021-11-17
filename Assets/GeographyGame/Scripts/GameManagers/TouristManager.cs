@@ -9,6 +9,8 @@ namespace WPM
         [SerializeField]
         private GameObject touristPrefab;
 
+        public int ActiveTutorial { get; set; } = 0;
+
         //Protected Public Variables
         public TouristRegion CurrentRegion { get; protected set; }
         public int TouristSpawnRate { get; protected set; } = 10; //Number of rounds for a tourist to spawn
