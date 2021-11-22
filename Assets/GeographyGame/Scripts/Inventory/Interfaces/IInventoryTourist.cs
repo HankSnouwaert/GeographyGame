@@ -40,5 +40,7 @@
         /// </summary>
         /// <param name="persistant"> Whether the pop up stays up if the player interacts with other objects</param>
         void SetPopUpRequest(bool persistant);
+
+        int ActiveTutorial { get; set; }
     }
 }

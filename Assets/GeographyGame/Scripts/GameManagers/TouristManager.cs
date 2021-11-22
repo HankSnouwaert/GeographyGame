@@ -8,7 +8,8 @@ namespace WPM
     {
         [SerializeField]
         private GameObject touristPrefab;
-
+        [SerializeField]
+        private GameObject touristTutorialObject;
         public int ActiveTutorial { get; set; } = 0;
 
         //Protected Public Variables
@@ -20,6 +21,9 @@ namespace WPM
         public List<string> RecentLandmarkDestinations { get; set; } = new List<string>();  
         public List<int> RecentCountryDestinations { get; set; } = new List<int>();
 
+        //Public Method Executed Flags
+        public bool TouristSelected { get; set; } = false;
+
         //private List<TouristRegion> regionsVisited = new List<TouristRegion>(); (Currently Unused)
 
         //Local Interface References
@@ -28,6 +32,7 @@ namespace WPM
         private ITurnsManager turnsManager;
         private IUIManager uiManager;
         private IInventoryUI inventoryUI;
+        private ITouristTutorial touristTutorial;
         //Internal Variables
         private List<TouristRegion> touristRegions = new List<TouristRegion>(); 
         private int touristCounter = 0;
@@ -53,6 +58,17 @@ namespace WPM
 
             if (touristPrefab == null)
                 componentMissing = true;
+
+            try
+            {
+                touristTutorial = touristTutorialObject.GetComponent(typeof(ITouristTutorial)) as ITouristTutorial;
+                if (touristTutorial == null)
+                    componentMissing = true;
+            }
+            catch
+            {
+                componentMissing = true;
+            }
 
             InitTouristRegions();
             InitTouristImages();
@@ -106,7 +122,7 @@ namespace WPM
         }
 
         /// <summary> 
-        /// Called when a tourist needs to be generated and added to the palyer's inventory
+        /// Called when a tourist needs to be generated and added to the player's inventory
         /// </summary>
         public void GenerateTourist()
         {
@@ -133,23 +149,29 @@ namespace WPM
                 touristImageIndex = 0;
             //Add tourist to player's inventory
             playerCharacter.Inventory.AddItem(tourist, 0);
-            //Check if a region switch is needed
-            touristsInCurrentRegion++;
-            int rand = Random.Range(MIN_TIME_IN_REGION, MAX_TIME_IN_REGION);
-            if (touristsInCurrentRegion >= rand)
+            if (ActiveTutorial == 1)
             {
-                //Switch regions
-                try
+                //Add Code Here to Change the Tourist's Destination
+            }
+            else
+            {
+                //Check if a region switch is needed
+                touristsInCurrentRegion++;
+                int rand = Random.Range(MIN_TIME_IN_REGION, MAX_TIME_IN_REGION);
+                if (touristsInCurrentRegion >= rand)
                 {
-                    int newRegionNeighbourIndex = Random.Range(0, CurrentRegion.neighbouringRegions.Count - 1);
-                    CurrentRegion = CurrentRegion.neighbouringRegions[newRegionNeighbourIndex];
-                    touristsInCurrentRegion = 0;
+                    //Switch regions
+                    try
+                    {
+                        int newRegionNeighbourIndex = Random.Range(0, CurrentRegion.neighbouringRegions.Count - 1);
+                        CurrentRegion = CurrentRegion.neighbouringRegions[newRegionNeighbourIndex];
+                        touristsInCurrentRegion = 0;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        errorHandler.CatchException(ex, ErrorState.restart_scene);
+                    }
                 }
-                catch(System.Exception ex)
-                {
-                    errorHandler.CatchException(ex, ErrorState.restart_scene);
-                }
-                
             }
         }
 

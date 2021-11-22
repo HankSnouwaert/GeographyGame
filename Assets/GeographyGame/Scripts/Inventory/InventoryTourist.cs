@@ -25,6 +25,7 @@ namespace WPM
         private IDestinationSetter destinationSetter;
         private ITouristDropper touristDropper;
         //Public Variables
+        public int ActiveTutorial { get; set; } = 0;
         public string DestinationName { get; set; }
         public Province ProvinceDestination { get; set; }
         public Landmark LandmarkDestination { get; set; }
@@ -100,6 +101,7 @@ namespace WPM
             dropOffUI.ToggleOptionForDropOff(true);
             dropOffUI.SetDropOffDelegate(AttemptDropOff);
             SetPopUpRequest(true);
+            touristManager.TouristSelected = true;
         }
 
         public override void Deselect()
@@ -109,6 +111,7 @@ namespace WPM
             dropOffUI.ToggleOptionForDropOff(false);
             dropOffUI.ClearDropOffDelegate();
             inventoryPopUpUI.ClearPopUp(true);
+            touristManager.TouristSelected = false;
         }
 
         public override void MouseEnter()

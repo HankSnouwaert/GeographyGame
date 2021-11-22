@@ -29,7 +29,6 @@ namespace WPM
             interfaceFactory = FindObjectOfType<InterfaceFactory>();
             if (interfaceFactory == null)
                 gameObject.SetActive(false);
-
         }
 
         void Start()
@@ -60,8 +59,11 @@ namespace WPM
             switch (tutorialCounter)
             {
                 case (SelectTourist):
-                    if (touristSelected)
+                    if (touristManager.TouristSelected)
+                    {
+                        touristManager.ActiveTutorial = 0;
                         NextTutorial();
+                    }
                     break;
 
                 default:
@@ -105,12 +107,13 @@ namespace WPM
 
         private void SelectTouristTutorial()
         {
+            touristManager.ActiveTutorial = 1;
             tutorialUI.SetUIPosition(TextAnchor.UpperRight);
             tutorialUI.SetMainText("Select the Tourist");
-            tutorialUI.SetButton1Text("Tourist");
             tutorialUI.SetButton1Delegate(SelectTouristTemp);
-            tutorialUI.EnableButton1(true);
+            tutorialUI.EnableButton1(false);
             tutorialUI.EnableButton2(false);
+            touristManager.GenerateTourist();
         }
 
         //Temp Function

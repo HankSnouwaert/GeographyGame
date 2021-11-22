@@ -48,5 +48,7 @@ namespace WPM
         void InitiateTourists();
 
         int ActiveTutorial { get; set; }
+
+        bool TouristSelected { get; set; }
     }
 }
